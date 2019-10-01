@@ -1,1 +1,1 @@
-This repository is meant to store programs that created for feasibility studies.
+This repository is meant for programs that are created for feasibility studies.
