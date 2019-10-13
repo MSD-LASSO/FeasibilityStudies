@@ -26,9 +26,9 @@ elev_max = elevation+sea_lev+elev_er;
 [x_min, y_min, z_min] = sph2cart(long_min, lat_min, elev_min);
 [x_max, y_max, z_max] = sph2cart(long_max, lat_max, elev_max);
 
-x_er = abs(x_max-x_min);
-y_er = abs(y_max-y_min);
-z_er = abs(z_max-z_min);
+x_er = abs(x_max-x_min)/2;
+y_er = abs(y_max-y_min)/2;
+z_er = abs(z_max-z_min)/2;
 x = x_out;
 y = y_out;
 z = z_out;
