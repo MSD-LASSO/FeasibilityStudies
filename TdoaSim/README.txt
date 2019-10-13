@@ -2,11 +2,10 @@ This folder contains a program to run a 3 station TDoA simulation, which will be
 
 We currently have three programs.
 
-Program 1. Main (TopLevel)
+1. Main (TopLevel)
 
-Program 2. Calculate Time Difference (TimeDiff)
+2. Calculate Time Difference (TimeDiff)
 Calculate the time difference of satellite signal arrival among stations, and iits associated error.
-
 Inputs: Station locations (lat, long)
 	Clock sync error
 	Alignment error
@@ -17,9 +16,8 @@ Outputs: Time differences among stations and center of the earth
 	 Absolute time of signal arrival at center of the earth?
 	 Error of time difference among stations
 
-Program 3. Determine Satellite Location (LocateSat)
+3. Determine Satellite Location (LocateSat)
 This will use the output of Program 2 to determine the satellite's location and its error.
-
 Inputs: The ouputs of Calculate Time Difference
 Outputs: Satellite location at the time it transmitted
 	 Error of satellite location calculation
