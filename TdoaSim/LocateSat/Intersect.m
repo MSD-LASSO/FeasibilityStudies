@@ -15,7 +15,7 @@ function Solutions=Intersect(Surf,SymVars)
     %Expect SymbolicEqns length to be the smaller of Eqns or the number of
     %SymVars. Two equations and three unknowns returns 
     
-SymbolicEqns=solve(Surf,'Real',true);
+SymbolicEqns=solve(vpa(Surf),'Real',true);
 Solutions=struct2cell(SymbolicEqns); %easier to work with. 
 %each entry in the cell array corresponds to the associated variable in
 %SymVars.
@@ -42,7 +42,7 @@ for i=1:length(Solutions{1})
     
     %verify the ith solution is identically 0. 
     out=simplify(subs(Eqn,SymVars(1:length(Solutions)),soln));
-    if ~logical(out==0)
+    if ~logical(abs(out)<1.0e-10)
        %if the answer does not equal to 0. Its not on the hyperbola!
        RemoveList(i)=false;
     end
