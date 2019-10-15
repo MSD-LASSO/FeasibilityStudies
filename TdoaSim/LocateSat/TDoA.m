@@ -30,6 +30,7 @@ p=p-1; %number of hyperboloids.
 
 %see if there is one solution to all curves
 solveOutput=Intersect(Hyperboloid,SymVars);
+% solveOutput=cell(1,2);
 
 %% for debugging purposes. Plot all intersections.
 % figure()
@@ -63,7 +64,9 @@ if size(solveOutput{1},1)==0
             Intersect2Hypers=Intersect([Hyperboloid(i),Hyperboloid(j)],SymVars);
             Intersect2HypersX{k}=Intersect2Hypers{1};
             Intersect2HypersY{k}=Intersect2Hypers{2};
-            %plot the intersections.
+%             plot the intersections.
+
+%             fimplicit(Hyperboloid)
 %             for ii=1:length(Intersect2Hypers{k}{1})
 %                 fplot(Intersect2Hypers{k}{1}(ii),Intersect2Hypers{k}{2}(ii),'x','MarkerSize',5,'linewidth',3);
 %                 hold on
@@ -121,6 +124,14 @@ if size(solveOutput{1},1)==0
         
         
     else
+        h2=gca;
+        X1=h2.XLim;
+        Y1=h2.YLim;
+        fimplicit3(Hyperboloid,[X1 Y1 h2.ZLim])
+        for i=1:length(Hyperboloid)
+            figure()
+            fimplicit3(Hyperboloid(i),[X1 Y1 h2.ZLim])
+        end
         error('3D not implemented yet')
     end
     

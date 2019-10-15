@@ -16,6 +16,7 @@ plot(R2(1),R2(2),'.','MarkerSize',10);
 grid on
 fimplicit(Hyperboloid);
 expected=100*x^2 - (100*y^2)/99 - 1;
+fimplicit(expected);
 assert(logical(expected==Hyperboloid));
 
 %% 2D. 45 degree angle. Centered around zero still.
@@ -141,3 +142,32 @@ fimplicit(Hyperboloid);
 expected=sym(4*(1/2*(x-5/2)+sqrt(3)/2*(y-5/2*sqrt(3)))^2/(25*(sqrt(3)-1)^2)-4*(-sqrt(3)/2*(x-5/2)+1/2*(y-5/2*sqrt(3)))^2/(100-25*(sqrt(3)-1)^2)-1);
 AssertTolerance(0,double(subs(expected,[x y],[5 0])),0.000001);
 assert(logical(expected==Hyperboloid));
+
+%% Part of the equilateral triangle in 3D.
+syms x y z
+L1=x^2+y^2+z^2;
+L2=(x-10)^2+y^2+(z-0.05)^2;
+D=(sqrt(10000+49+16)-sqrt((100-0.05)^2+9+16));
+Eqn1=L1+L2-D^2-2*sqrt(L1)*sqrt(L2);
+figure()
+% fimplicit3(Eqn1,[-100 100 -100 100 -100 100])
+fimplicit3(Eqn1,[2 7 -5 10 0 100])
+X=10;
+x=7; %receiver location
+y=-4; %receiver location
+z=100;
+R1=[0,0,0];
+R2=[X,0,0.05];
+R3=[X/2,X/2*sqrt(3),0.1];
+d1=sqrt((R1(1)-x)^2+(R1(2)-y)^2+(R1(3)-z)^2);
+d2=sqrt((R2(1)-x)^2+(R2(2)-y)^2+(R2(3)-z)^2);
+delta=abs(d1-d2);
+Hyperboloid=CreateHyperboloid(R1,R2,delta);
+hold on
+fimplicit3(Hyperboloid,[-100 100 -100 100 -100 100])
+figure()
+fimplicit3(Hyperboloid)
+
+assert(logical(Eqn1==Hyperboloid));
+
+
