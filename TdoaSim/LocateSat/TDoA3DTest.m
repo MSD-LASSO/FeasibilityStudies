@@ -8,12 +8,15 @@ z=100;
 R1=[0,0,0];
 R2=[X,0,0.05];
 R3=[X/2,X/2*sqrt(3),0.1];
+R4=[X/2,-X/2*sqrt(3),-0.1];
 expected=[x y z];
 
 d1=sqrt((R1(1)-x)^2+(R1(2)-y)^2+(R1(3)-z)^2);
 d2=sqrt((R2(1)-x)^2+(R2(2)-y)^2+(R2(3)-z)^2);
 d3=sqrt((R3(1)-x)^2+(R3(2)-y)^2+(R3(3)-z)^2);
+d4=sqrt((R4(1)-x)^2+(R4(2)-y)^2+(R4(3)-z)^2);
 
+% distanceDiffs=abs([0 d1-d2 d1-d3 d1-d4; 0 0 d2-d3 d2-d4; 0 0 0 d3-d4; 0 0 0 0]);
 distanceDiffs=abs([0 d1-d2 d1-d3; 0 0 d2-d3; 0 0 0]);
 
 figure()

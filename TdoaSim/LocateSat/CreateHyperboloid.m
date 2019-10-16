@@ -15,35 +15,34 @@ function [Hyperboloid,SymVars] = CreateHyperboloid(Station1Coordinates,Station2C
 %[x y z] are the coordinates in the fixed frame.
 syms xb yb zb x y z
 
-% [RM,Offset,distance]=getRMandOffsets(Station1Coordinates,Station2Coordinates);
+[RM,Offset,distance]=getRMandOffsets(Station1Coordinates,Station2Coordinates);
 
  
-% if abs(DifferenceInDistance)<1.0e-14
-%     %vertical plane in the body frame
-%     HyperboloidBody=xb;
-% else
-%     %hyperboloid.
-%     a=DifferenceInDistance/2;
-%     b=sqrt((distance/2)^2-a^2);
-% 
-%     %body frame hyperboloid
-%     HyperboloidBody=xb^2/a^2-yb^2/b^2+zb^2/a^2-1;
-% end
+if abs(DifferenceInDistance)<1.0e-14
+    %vertical plane in the body frame
+    HyperboloidBody=xb;
+else
+    %hyperboloid.
+    a=DifferenceInDistance/2;
+    b=sqrt((distance/2)^2-a^2);
+
+    %body frame hyperboloid
+    HyperboloidBody=xb^2/a^2-yb^2/b^2-zb^2/b^2-1;
+end
 
 
 %Rotate to the fixed frame
-% fixedCoord=[x;y;z];
-% Hyperboloid=subs(HyperboloidBody,[xb,yb,zb],[dot(RM(:,1),fixedCoord),dot(RM(:,2),fixedCoord),dot(RM(:,3),fixedCoord)]);
-% %Shift the origin
-% Hyperboloid=subs(Hyperboloid,[x,y,z],[x-Offset(1),y-Offset(2),z-Offset(3)]);
+fixedCoord=[x;y;z];
+Hyperboloid=subs(HyperboloidBody,[xb,yb,zb],[dot(RM(:,1),fixedCoord),dot(RM(:,2),fixedCoord),dot(RM(:,3),fixedCoord)]);
+%Shift the origin
+Hyperboloid=subs(Hyperboloid,[x,y,z],[x-Offset(1),y-Offset(2),z-Offset(3)]);
 
-% Hyperboloid=sqrt((x-Station1Coordinates(1))^2+(y-Station1Coordinates(2))^2+...
-%     (z-Station1Coordinates(3))^2)-sqrt((x-Station2Coordinates(1))^2+...
-%     (y-Station2Coordinates(2))^2+(z-Station2Coordinates(3))^2)+DifferenceInDistance;
-d1=(x-Station1Coordinates(1))^2+(y-Station1Coordinates(2))^2+(z-Station1Coordinates(3))^2;
-d2=(x-Station2Coordinates(1))^2+(y-Station2Coordinates(2))^2+(z-Station2Coordinates(3))^2;
-Hyperboloid=d1+d2-2*sqrt(d1)*sqrt(d2)-DifferenceInDistance^2;
+%% Direct Solution
+% d1=(x-Station1Coordinates(1))^2+(y-Station1Coordinates(2))^2+(z-Station1Coordinates(3))^2;
+% d2=(x-Station2Coordinates(1))^2+(y-Station2Coordinates(2))^2+(z-Station2Coordinates(3))^2;
+% Hyperboloid=d1+d2-2*sqrt(d1)*sqrt(d2)-DifferenceInDistance^2;
 
+%% Make 2D if neccessary.
 SymVars=[x y z];
 
 %remove z if 2D.

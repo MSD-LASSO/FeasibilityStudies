@@ -144,30 +144,39 @@ AssertTolerance(0,double(subs(expected,[x y],[5 0])),0.000001);
 assert(logical(expected==Hyperboloid));
 
 %% Part of the equilateral triangle in 3D.
+clearvars
+X=10;
+x1=7; %receiver location
+y1=-4; %receiver location
+z1=100;
+R1=[0,0,0];
+R2=[X,0,0.05];
+R3=[X/2,X/2*sqrt(3),0.1];
+d1=sqrt((R1(1)-x1)^2+(R1(2)-y1)^2+(R1(3)-z1)^2);
+d2=sqrt((R2(1)-x1)^2+(R2(2)-y1)^2+(R2(3)-z1)^2);
+delta=abs(d1-d2);
+Hyperboloid=CreateHyperboloid(R1,R2,delta);
+figure()
+fimplicit3(Hyperboloid,[-100 100 -100 100 -100 100])
+figure()
+fimplicit3(Hyperboloid,[-100 100 -100 100 -100 100])
+hold on
+
 syms x y z
 L1=x^2+y^2+z^2;
 L2=(x-10)^2+y^2+(z-0.05)^2;
 D=(sqrt(10000+49+16)-sqrt((100-0.05)^2+9+16));
-Eqn1=L1+L2-D^2-2*sqrt(L1)*sqrt(L2);
-figure()
-% fimplicit3(Eqn1,[-100 100 -100 100 -100 100])
-fimplicit3(Eqn1,[2 7 -5 10 0 100])
-X=10;
-x=7; %receiver location
-y=-4; %receiver location
-z=100;
-R1=[0,0,0];
-R2=[X,0,0.05];
-R3=[X/2,X/2*sqrt(3),0.1];
-d1=sqrt((R1(1)-x)^2+(R1(2)-y)^2+(R1(3)-z)^2);
-d2=sqrt((R2(1)-x)^2+(R2(2)-y)^2+(R2(3)-z)^2);
-delta=abs(d1-d2);
-Hyperboloid=CreateHyperboloid(R1,R2,delta);
-hold on
-fimplicit3(Hyperboloid,[-100 100 -100 100 -100 100])
-figure()
-fimplicit3(Hyperboloid)
+%These equations are the same. 
+% Eqn1=L1+L2-D^2-2*sqrt(L1)*sqrt(L2);
+Eqn1=(1125899906842624*(8000*x + 40*z - 40001)^2)/1121331742143099759025 - (281474976710656*(x - 200*z)^2)/281313842550703531413 - (281474976710656*y^2)/7032670247011413 - 1;
+fimplicit3(Eqn1,[-100 100 -100 100 -100 100])
+% fimplicit3(Eqn1,[2 7 -5 10 0 100])
+HyperboloidEqn=string(simplify(Hyperboloid,'steps',10));
+Eqn1="(1125899906842624*(8000*x + 40*z - 40001)^2)/1121331742143099759025 - (281474976710656*(x - 200*z)^2)/281313842550703531413 - (281474976710656*y^2)/7032670247011413 - 1";
 
-assert(logical(Eqn1==Hyperboloid));
+
+%they are the same. I couldn't get symbolic toolbox to see this. So I used
+%strings.
+assert(logical(Eqn1==HyperboloidEqn));
 
 

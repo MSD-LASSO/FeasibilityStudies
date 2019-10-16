@@ -29,8 +29,8 @@ end
 p=p-1; %number of hyperboloids.
 
 %see if there is one solution to all curves
-solveOutput=Intersect(Hyperboloid,SymVars);
-% solveOutput=cell(1,2);
+% solveOutput=Intersect(Hyperboloid,SymVars);
+solveOutput=cell(1,3);
 
 %% for debugging purposes. Plot all intersections.
 % figure()
@@ -53,63 +53,35 @@ end
 
 %if there's not one solution...
 if size(solveOutput{1},1)==0
-    %we need to approximate the solution the nearest intersections.
-    Intersect2HypersX=cell(p*(p-1)/2,1);
-    Intersect2HypersY=cell(p*(p-1)/2,1);
-    k=1;
     
-    %intersect the ith hyperboloid with every hypboloid after it.
-    for i=1:p
-        for j=i+1:p
-            Intersect2Hypers=Intersect([Hyperboloid(i),Hyperboloid(j)],SymVars);
-            Intersect2HypersX{k}=Intersect2Hypers{1};
-            Intersect2HypersY{k}=Intersect2Hypers{2};
-%             plot the intersections.
+    if TwoD==1
+        %we need to approximate the solution the nearest intersections.
+        Intersect2HypersX=cell(p*(p-1)/2,1);
+        Intersect2HypersY=cell(p*(p-1)/2,1);
+        k=1;
 
-%             fimplicit(Hyperboloid)
-%             for ii=1:length(Intersect2Hypers{k}{1})
-%                 fplot(Intersect2Hypers{k}{1}(ii),Intersect2Hypers{k}{2}(ii),'x','MarkerSize',5,'linewidth',3);
-%                 hold on
-%             end
-            k=k+1;
+        %intersect the ith hyperboloid with every hypboloid after it.
+        for i=1:p
+            for j=i+1:p
+                Intersect2Hypers=Intersect([Hyperboloid(i),Hyperboloid(j)],SymVars);
+                Intersect2HypersX{k}=Intersect2Hypers{1};
+                Intersect2HypersY{k}=Intersect2Hypers{2};
+    %             plot the intersections.
+
+    %             fimplicit(Hyperboloid)
+    %             for ii=1:length(Intersect2Hypers{k}{1})
+    %                 fplot(Intersect2Hypers{k}{1}(ii),Intersect2Hypers{k}{2}(ii),'x','MarkerSize',5,'linewidth',3);
+    %                 hold on
+    %             end
+                k=k+1;
+            end
         end
     end
     
     %Are the solution points or lines?
     %assume 2D points, 3D lines
     if TwoD==1
-        %for Points, the strategy is as follows:
-        %1. sort the points and find the points closest together via a finite
-        %difference. If the finite difference is less than some threshold,
-        %call that the same point.
-        %2. figure out how many solutions there are and split up the "same"
-        %points into different bins based on the number of solutions
-        %3. Average the "same" points together.
-        
-        
-        potentialPoints=real(double([vpa(Intersect2HypersX) vpa(Intersect2HypersY)]));
-        %Sort by X.
-        potentialPoints=sortrows(potentialPoints);
-        %get the differences and find the ones below a certain threshold.
-        differences=diff(potentialPoints);
-        Indices=find(abs(differences(:,1))<1.0e-10 & abs(differences(:,2))<1.0e-10);
-        %Decide the number of solutions
-        IndicesDifferences=diff(Indices)-1;
-        numSolns=sum(IndicesDifferences>0)+1;
-        dividingIndices=find(IndicesDifferences>0);
-        dividingIndices=[0; dividingIndices; length(Indices)];
-        
-        %now get the points associated with differences below that
-        %threshold.
-        soln=cell(numSolns,1);
-        location=zeros(numSolns,3);
-        for i=1:numSolns
-            pointsForThisSolution=Indices(dividingIndices(i)+1:dividingIndices(i+1));
-            pointsForThisSolution=[pointsForThisSolution; pointsForThisSolution(end)+1];
-            soln{i}=potentialPoints(pointsForThisSolution,:);
-            %average those points together
-            location(i,1:2)=mean(soln{i});
-        end
+        location=findSolnsFromIntersects(Intersect2HypersX, Intersect2HypersY,0);
         
         figure(h1)
         plot(location(:,1),location(:,2),'.','MarkerSize',10,'color','black');
@@ -124,17 +96,52 @@ if size(solveOutput{1},1)==0
         
         
     else
+        %%3d
         h2=gca;
         X1=h2.XLim;
         Y1=h2.YLim;
-        fimplicit3(Hyperboloid,[X1 Y1 h2.ZLim])
+        fimplicit3(Hyperboloid,[X1 Y1 0 250])
         for i=1:length(Hyperboloid)
             figure()
             fimplicit3(Hyperboloid(i),[X1 Y1 h2.ZLim])
         end
-        error('3D not implemented yet')
+        
+
+        k=1;
+        %intersect the ith hyperboloid with every hypboloid after it.
+        stop=1000;
+        step=5;
+        location=zeros((stop/step+1)*2,3);
+        m=0;
+        for u=0:step:stop
+            Hyperboloidtemp=subs(Hyperboloid,SymVars(3),u); %restrict z to a plane.
+            Intersect2HypersX=cell(p*(p-1)/2,1);
+            Intersect2HypersY=cell(p*(p-1)/2,1);
+            for i=1:p
+                for j=i+1:p
+                    Intersect2Hypers=Intersect([Hyperboloidtemp(i),Hyperboloidtemp(j)],SymVars);
+                    Intersect2HypersX{k}=Intersect2Hypers{1};
+                    Intersect2HypersY{k}=Intersect2Hypers{2};
+                    %             plot the intersections.
+
+                    %             fimplicit(Hyperboloid)
+                    %             for ii=1:length(Intersect2Hypers{k}{1})
+                    %                 fplot(Intersect2Hypers{k}{1}(ii),Intersect2Hypers{k}{2}(ii),'x','MarkerSize',5,'linewidth',3);
+                    %                 hold on
+                    %             end
+                    k=k+1;
+                end
+            end
+            location(2*m+1:2*m+2,:)=findSolnsFromIntersects(Intersect2HypersX,Intersect2HypersY,u)
+            m=m+1;
+        end
     end
-    
+    save location
+    figure(h1)
+    plot3(location(:,1),location(:,2),location(:,3),'.','MarkerSize',10,'color','black')
+    figure()
+    plot3(location(:,1),location(:,2),location(:,3),'.','MarkerSize',10,'color','black')
+    hi=1;
 elseif size(solveOutput{1},1)==1 
     %one unique location
     location=double([solveOutput{1} solveOutput{2} solveOutput{3}]);
@@ -169,3 +176,38 @@ end
 
 end
 
+function location=findSolnsFromIntersects(Intersect2HypersX, Intersect2HypersY,z)
+%for Points, the strategy is as follows:
+        %1. sort the points and find the points closest together via a finite
+        %difference. If the finite difference is less than some threshold,
+        %call that the same point.
+        %2. figure out how many solutions there are and split up the "same"
+        %points into different bins based on the number of solutions
+        %3. Average the "same" points together.
+        
+        
+        potentialPoints=real(double([vpa(Intersect2HypersX) vpa(Intersect2HypersY)]));
+        %Sort by X.
+        potentialPoints=sortrows(potentialPoints);
+        %get the differences and find the ones below a certain threshold.
+        differences=diff(potentialPoints);
+        Indices=find(abs(differences(:,1))<1.0e-10 & abs(differences(:,2))<1.0e-10);
+        %Decide the number of solutions
+        IndicesDifferences=diff(Indices)-1;
+        numSolns=sum(IndicesDifferences>0)+1;
+        dividingIndices=find(IndicesDifferences>0);
+        dividingIndices=[0; dividingIndices; length(Indices)];
+        
+        %now get the points associated with differences below that
+        %threshold.
+        soln=cell(numSolns,1);
+        location=zeros(numSolns,3);
+        for i=1:numSolns
+            pointsForThisSolution=Indices(dividingIndices(i)+1:dividingIndices(i+1));
+            pointsForThisSolution=[pointsForThisSolution; pointsForThisSolution(end)+1];
+            soln{i}=potentialPoints(pointsForThisSolution,:);
+            %average those points together
+            location(i,1:2)=mean(soln{i});
+            location(i,3)=z;
+        end
+end
