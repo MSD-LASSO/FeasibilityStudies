@@ -37,7 +37,7 @@ solveOutput=cell(1,3);
 h1=gcf;
 RL=receiverLocations;
 RL(end+1,:)=RL(1,:);
-plot(RL(:,1),RL(:,2),'linewidth',3);
+plot3(RL(:,1),RL(:,2),RL(:,3),'linewidth',3);
 % hold on
 % figure()
 
@@ -100,20 +100,22 @@ if size(solveOutput{1},1)==0
         h2=gca;
         X1=h2.XLim;
         Y1=h2.YLim;
-        fimplicit3(Hyperboloid,[X1 Y1 0 250])
+        Z1=h2.ZLim;
+        fimplicit3(Hyperboloid,[X1 Y1 Z1],'meshdensity',40)
         for i=1:length(Hyperboloid)
             figure()
-            fimplicit3(Hyperboloid(i),[X1 Y1 h2.ZLim])
+            fimplicit3(Hyperboloid(i),[X1 Y1 h2.ZLim],'meshdensity',40);
         end
         
 
         k=1;
         %intersect the ith hyperboloid with every hypboloid after it.
-        stop=1000;
-        step=5;
-        location=zeros((stop/step+1)*2,3);
+        start=4.349e6;
+        stop=4.881e6;
+        step=5320;
+        location=zeros(((stop-start)/step+1)*2,3);
         m=0;
-        for u=0:step:stop
+        for u=start:step:stop
             Hyperboloidtemp=subs(Hyperboloid,SymVars(3),u); %restrict z to a plane.
             Intersect2HypersX=cell(p*(p-1)/2,1);
             Intersect2HypersY=cell(p*(p-1)/2,1);
@@ -132,7 +134,8 @@ if size(solveOutput{1},1)==0
                     k=k+1;
                 end
             end
-            location(2*m+1:2*m+2,:)=findSolnsFromIntersects(Intersect2HypersX,Intersect2HypersY,u)
+            location(2*m+1:2*m+2,:)=findSolnsFromIntersects(Intersect2HypersX,Intersect2HypersY,u);
+            disp(u)
             m=m+1;
         end
     end
@@ -191,7 +194,10 @@ function location=findSolnsFromIntersects(Intersect2HypersX, Intersect2HypersY,z
         potentialPoints=sortrows(potentialPoints);
         %get the differences and find the ones below a certain threshold.
         differences=diff(potentialPoints);
-        Indices=find(abs(differences(:,1))<1.0e-10 & abs(differences(:,2))<1.0e-10);
+        Indices=find(abs(differences(:,1))<1.0e-8 & abs(differences(:,2))<1.0e-8);
+        if isempty(Indices)
+            error('Tolerance may be set too low. No common solutions were found.')
+        end
         %Decide the number of solutions
         IndicesDifferences=diff(Indices)-1;
         numSolns=sum(IndicesDifferences>0)+1;

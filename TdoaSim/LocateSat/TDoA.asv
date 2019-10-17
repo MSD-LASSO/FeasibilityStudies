@@ -37,7 +37,7 @@ solveOutput=cell(1,3);
 h1=gcf;
 RL=receiverLocations;
 RL(end+1,:)=RL(1,:);
-plot(RL(:,1),RL(:,2),'linewidth',3);
+plot3(RL(:,1),RL(:,2),RL(:,3),'linewidth',3);
 % hold on
 % figure()
 
@@ -81,7 +81,7 @@ if size(solveOutput{1},1)==0
     %Are the solution points or lines?
     %assume 2D points, 3D lines
     if TwoD==1
-        xxx
+        location=findSolnsFromIntersects(Intersect2HypersX, Intersect2HypersY,0);
         
         figure(h1)
         plot(location(:,1),location(:,2),'.','MarkerSize',10,'color','black');
@@ -100,17 +100,21 @@ if size(solveOutput{1},1)==0
         h2=gca;
         X1=h2.XLim;
         Y1=h2.YLim;
-        fimplicit3(Hyperboloid,[X1 Y1 0 250])
+        Z1=h2.ZLim;
+        fimplicit3(Hyperboloid,[X1 Y1 Z1],'meshdensity',40)
         for i=1:length(Hyperboloid)
             figure()
-            fimplicit3(Hyperboloid(i),[X1 Y1 h2.ZLim])
+            fimplicit3(Hyperboloid(i),[X1 Y1 h2.ZLim],'meshdensity',4);
         end
         
 
         k=1;
         %intersect the ith hyperboloid with every hypboloid after it.
-        location=zeros(
-        for u=0:s
+        stop=1000;
+        step=5;
+        location=zeros((stop/step+1)*2,3);
+        m=0;
+        for u=0:step:stop
             Hyperboloidtemp=subs(Hyperboloid,SymVars(3),u); %restrict z to a plane.
             Intersect2HypersX=cell(p*(p-1)/2,1);
             Intersect2HypersY=cell(p*(p-1)/2,1);
@@ -129,10 +133,16 @@ if size(solveOutput{1},1)==0
                     k=k+1;
                 end
             end
-            temp=findSolnsFromIntersects(Intersect2HypersX,Intersect2HypersY);
+            location(2*m+1:2*m+2,:)=findSolnsFromIntersects(Intersect2HypersX,Intersect2HypersY,u)
+            m=m+1;
         end
     end
-    
+    save location
+    figure(h1)
+    plot3(location(:,1),location(:,2),location(:,3),'.','MarkerSize',10,'color','black')
+    figure()
+    plot3(location(:,1),location(:,2),location(:,3),'.','MarkerSize',10,'color','black')
+    hi=1;
 elseif size(solveOutput{1},1)==1 
     %one unique location
     location=double([solveOutput{1} solveOutput{2} solveOutput{3}]);
@@ -167,7 +177,7 @@ end
 
 end
 
-function location=findSolnsFromIntersects(Intersect2HypersX, Intersect2HypersY)
+function location=findSolnsFromIntersects(Intersect2HypersX, Intersect2HypersY,z)
 %for Points, the strategy is as follows:
         %1. sort the points and find the points closest together via a finite
         %difference. If the finite difference is less than some threshold,
@@ -199,5 +209,6 @@ function location=findSolnsFromIntersects(Intersect2HypersX, Intersect2HypersY)
             soln{i}=potentialPoints(pointsForThisSolution,:);
             %average those points together
             location(i,1:2)=mean(soln{i});
+            location(i,3)=z;
         end
 end
