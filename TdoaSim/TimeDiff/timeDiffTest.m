@@ -6,7 +6,7 @@ SAT_Error = [0.000001 0.000001 0 0];
 GND = getStruct(Stations, GND_Error);
 SAT = getStruct(Satellites, SAT_Error);
 
-timeDifferences = timeDiff(GND, SAT);
+timeDifferences = timeDiff(GND, SAT)
 
 AssertTolerance(-0.2618e-7,timeDifferences(1,1,2),0.000000001)
 
