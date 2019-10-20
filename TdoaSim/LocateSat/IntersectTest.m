@@ -63,6 +63,14 @@ figure()
 fplot3(subs(Output{1},z,t),subs(Output{2},z,t),Zeqn,'linewidth',5);
 axis square
 
+figure()
+fimplicit3(Surf)
+axis square
+hold on
+for i=-5:2:5
+    
+end
+
 assert(length(Output{1})==4);
 assert(logical(Output{1}(1)==-(z^2 + 1)^(1/2)));
 assert(logical(Output{1}(2)==0));

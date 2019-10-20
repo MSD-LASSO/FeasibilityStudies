@@ -10,11 +10,12 @@ R2=[1 0 0];
 delta=0.2;
 Hyperboloid=CreateHyperboloid(R1,R2,delta);
 figure()
-plot(R1(1),R1(2),'.','MarkerSize',10);
+plot(R1(1),R1(2),'.','MarkerSize',20);
 hold on
-plot(R2(1),R2(2),'.','MarkerSize',10);
+plot(R2(1),R2(2),'.','MarkerSize',20);
+plot([R1(1) R2(1)],[R1(2) R2(2)],'linewidth',2,'color','black');
 grid on
-fimplicit(Hyperboloid);
+fimplicit(Hyperboloid,'linewidth',3);
 expected=100*x^2 - (100*y^2)/99 - 1;
 fimplicit(expected);
 assert(logical(expected==Hyperboloid));
@@ -134,11 +135,12 @@ R3=[5 5*sqrt(3) 0];
 delta=5*(sqrt(3)-1);
 Hyperboloid=CreateHyperboloid(R1,R3,delta);
 figure()
-plot(R1(1),R1(2),'.','MarkerSize',10);
+plot(R1(1),R1(2),'.','MarkerSize',20);
 hold on
-plot(R3(1),R3(2),'.','MarkerSize',10);
+plot(R3(1),R3(2),'.','MarkerSize',20);
+plot([R1(1) R3(1)],[R1(2) R3(2)],'linewidth',2,'color','black');
 grid on
-fimplicit(Hyperboloid);
+fimplicit(Hyperboloid,'linewidth',3);
 expected=sym(4*(1/2*(x-5/2)+sqrt(3)/2*(y-5/2*sqrt(3)))^2/(25*(sqrt(3)-1)^2)-4*(-sqrt(3)/2*(x-5/2)+1/2*(y-5/2*sqrt(3)))^2/(100-25*(sqrt(3)-1)^2)-1);
 AssertTolerance(0,double(subs(expected,[x y],[5 0])),0.000001);
 assert(logical(expected==Hyperboloid));
