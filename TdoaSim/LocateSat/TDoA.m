@@ -1,4 +1,4 @@
-function location = TDoA(receiverLocations,distanceDifferences)
+function location = TDoA(receiverLocations,distanceDifferences,zPlanes)
 %INPUTS: nx3 vector of receiver Locations (x,y,z) pairs, measured from a
         %fixed reference.
         %nxn upper triangular matrix of all combinations of 
@@ -7,11 +7,17 @@ function location = TDoA(receiverLocations,distanceDifferences)
         % 0 d12 d13
         % 0  0  d23
         % 0  0   0
+        %zPlanes is a vector of all planes to solve for. If left blank, the
+        %code will only solve for the plane z=0. 
 %OUTPUTS: Location of the transmitter.
 
 n=size(receiverLocations,1);
 
-%we construct n*(n-1)/2 hyperboloids.
+if nargin<3
+    zPlanes=0;
+end
+
+%% we construct n*(n-1)/2 hyperboloids.
 p=1;
 Hyperboloid=sym(zeros(n*(n-1)/2,1));
 for i=1:n
@@ -28,6 +34,41 @@ for i=1:n
 end
 p=p-1; %number of hyperboloids.
 
+%% Identify all combinations of 3 Hyperboloids
+%not 100% sure how to count these generically.
+% HyperboloidSets=cell(
+%the series looks something like 1,4,10,20,35,56,84 for n=[3 4 5 6 7 8 9].
+m=0;
+for i=1:p
+    for j=i+1:p
+        for k=j+1:p
+            m=m+1;
+            HyperboloidSet{m}=Hyperboloid([i j k]);
+        end
+    end
+end
+
+
+%% Solve each set of 3 on 3-4 different planes. Fit a Line to it.
+LineFit=cell(m,3);
+for i=1:m
+    Locations=solvePlanes(HyperboloidSet{m},zPlanes);
+    if size(Locations,1)==1
+        %then we just have a point. LineFit is 
+        LineFit{m}=[Locations; 0 0 0];
+    else
+        %lineFit
+        LineFit{m}=fitLineParametric(Locations);
+    end
+end
+
+
+%% If many lines, solve for single point. 
+if m>1
+    location=LeastSquaresLines(LineFit);
+end
+
+%% old.
 %see if there is one solution to all curves
 % solveOutput=Intersect(Hyperboloid,SymVars);
 solveOutput=cell(1,3);

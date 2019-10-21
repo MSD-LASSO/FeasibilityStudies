@@ -30,6 +30,6 @@ function w=fitLine2D(data,n,t)
 
 
 M=[ones(n,1), t];
-w=(M'*M)\M'*data;
+w=LinearRegressionFit(M,data);
 
 end

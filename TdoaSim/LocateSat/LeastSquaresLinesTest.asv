@@ -1,0 +1,8 @@
+%% Test 2 3D lines that intersect.
+%cardinal directions. Should intersect at 0 0 0.
+w1=[0 0 0; 1 0 0];
+w2=[0 0 0; 0 1 0];
+w3=[0 0 0; 0 0 1]; 
+
+expected=[0 0 0];
+point1=LeastSquaresLines(

@@ -29,3 +29,8 @@ ExpectedW=[-1 0; 1 1];
 [weights,error]=fitLineParametric([x' y']);
 AssertToleranceMatrix(ExpectedW,weights,1e-4);
 AssertTolerance(PredErr,error,1e-4);
+
+%% Single point
+% [weights,error]=fitLineParametric([1 1 1]);
+%singular. The real answer is direction is [0 0 0] not a line. 
+
