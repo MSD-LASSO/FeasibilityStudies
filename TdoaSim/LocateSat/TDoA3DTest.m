@@ -16,13 +16,14 @@ d2=sqrt((R2(1)-x)^2+(R2(2)-y)^2+(R2(3)-z)^2);
 d3=sqrt((R3(1)-x)^2+(R3(2)-y)^2+(R3(3)-z)^2);
 d4=sqrt((R4(1)-x)^2+(R4(2)-y)^2+(R4(3)-z)^2);
 
-% distanceDiffs=abs([0 d1-d2 d1-d3 d1-d4; 0 0 d2-d3 d2-d4; 0 0 0 d3-d4; 0 0 0 0]);
-distanceDiffs=abs([0 d1-d2 d1-d3; 0 0 d2-d3; 0 0 0]);
+distanceDiffs=abs([0 d1-d2 d1-d3 d1-d4; 0 0 d2-d3 d2-d4; 0 0 0 d3-d4; 0 0 0 0]);
+% distanceDiffs=abs([0 d1-d2 d1-d3; 0 0 d2-d3; 0 0 0]);
 
 figure()
 plot3(x,y,z,'o','linewidth',3);
 hold on
-location=TDoA([R1;R2;R3],distanceDiffs);
+location=TDoA([R1;R2;R3;R4],distanceDiffs);
+% location=TDoA([R1;R2;R3],distanceDiffs);
 AssertToleranceMatrix(expected,location,0.001);
 
 %% 

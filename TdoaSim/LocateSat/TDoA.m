@@ -107,12 +107,21 @@ if size(solveOutput{1},1)==0
             fimplicit3(Hyperboloid(i),[X1 Y1 h2.ZLim],'meshdensity',40);
         end
         
+        figure()
+        fimplicit(subs(Hyperboloid,SymVars(3),0),[-10 10 -10 10])
+        
 
         k=1;
-        %intersect the ith hyperboloid with every hypboloid after it.
-        start=4.349e6;
-        stop=4.881e6;
-        step=5320;
+        %intersect the ith hyperboloid with every hyperboloid after it.
+        %single Test ex.
+%         start=4.349e6;
+%         stop=4.881e6;
+%         step=5320;
+        %4 Receivers Ex.
+        start=0;
+        stop=100;
+        step=20;
+
         location=zeros(((stop-start)/step+1)*2,3);
         m=0;
         for u=start:step:stop
@@ -139,7 +148,7 @@ if size(solveOutput{1},1)==0
             m=m+1;
         end
     end
-    save location
+%     save location
     figure(h1)
     plot3(location(:,1),location(:,2),location(:,3),'.','MarkerSize',10,'color','black')
     figure()
