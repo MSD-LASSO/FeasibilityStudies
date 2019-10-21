@@ -1,4 +1,4 @@
-function [location, locationError] = TDoA(receiverLocations,distanceDifferences,zPlanes)
+function [location, locationError] = TDoA(receiverLocations,distanceDifferences,AcceptanceTolerance,zPlanes)
 %INPUTS: nx3 vector of receiver Locations (x,y,z) pairs, measured from a
         %fixed reference.
         %nxn upper triangular matrix of all combinations of 
@@ -14,6 +14,10 @@ function [location, locationError] = TDoA(receiverLocations,distanceDifferences,
 n=size(receiverLocations,1);
 
 if nargin<3
+    AcceptanceTolerance=1e-5;
+end
+
+if nargin<4
     zPlanes=0;
 end
 
@@ -59,7 +63,7 @@ end
 %% Solve each set of 3 on 3-4 different planes. Fit a Line to it.
 LineFit=cell(m,1);
 for i=1:m
-    Locations=solvePlanes(HyperboloidSet{m},zPlanes,SymVars,h1);
+    Locations=solvePlanes(HyperboloidSet{m},zPlanes,SymVars,AcceptanceTolerance,h1);
     if size(Locations,1)==2
         %then we just have 2 points. A single plane. No need to do line
         %fits.
@@ -84,7 +88,7 @@ else
     error('Unexpected case')
 end
 
-%% old.
+% %% old.
 % %see if there is one solution to all curves
 % % solveOutput=Intersect(Hyperboloid,SymVars);
 % solveOutput=cell(1,3);
@@ -166,10 +170,14 @@ end
 % %         start=4.349e6;
 % %         stop=4.881e6;
 % %         step=5320;
+%         start=zPlanes(1);
+%         stop=zPlanes(end);
+%         step=diff(zPlanes);
+%         step=step(1);
 %         %4 Receivers Ex.
-%         start=0;
-%         stop=100;
-%         step=20;
+% %         start=0;
+% %         stop=100;
+% %         step=20;
 % 
 %         location=zeros(((stop-start)/step+1)*2,3);
 %         m=0;
@@ -192,7 +200,7 @@ end
 %                     k=k+1;
 %                 end
 %             end
-%             location(2*m+1:2*m+2,:)=findSolnsFromIntersects(Intersect2HypersX,Intersect2HypersY,u);
+%             location(2*m+1:2*m+2,:)=findSolnsFromIntersects(Intersect2HypersX,Intersect2HypersY,u,3,10);
 %             disp(u)
 %             m=m+1;
 %         end
@@ -234,10 +242,10 @@ end
 % 
 % 
 % 
-% 
+
 end
 
-function location=solvePlanes(HyperboloidSet,zPlanes,SymVars,h1)
+function location=solvePlanes(HyperboloidSet,zPlanes,SymVars,AcceptanceTolerance,h1)
 %HyperboloidSet should be 3 Hyperboloids
 %Zplanes a 1D vector of z values to evaluate at. 
 %h1 is the figure handler.
@@ -287,7 +295,7 @@ for u=1:length(zPlanes)
             k=k+1;
         end
     end
-    temp=findSolnsFromIntersects(Intersect2HypersX,Intersect2HypersY,zPlanes(u),3);
+    temp=findSolnsFromIntersects(Intersect2HypersX,Intersect2HypersY,zPlanes(u),3,AcceptanceTolerance);
     if size(temp,1)==1
        %only 1 point was found.
        temp=[temp; temp];
@@ -315,7 +323,7 @@ zlabel('z (m)')
 end
 
 
-function location=findSolnsFromIntersects(Intersect2HypersX, Intersect2HypersY,z,pointThreshold)
+function location=findSolnsFromIntersects(Intersect2HypersX, Intersect2HypersY,z,pointThreshold,AcceptanceTolerance)
 %for Points, the strategy is as follows:
         %1. sort the points and find the points closest together via a finite
         %difference. If the finite difference is less than some threshold,
@@ -330,7 +338,7 @@ function location=findSolnsFromIntersects(Intersect2HypersX, Intersect2HypersY,z
         potentialPoints=sortrows(potentialPoints);
         %get the differences and find the ones below a certain threshold.
         differences=diff(potentialPoints);
-        Indices=find(abs(differences(:,1))<1.0e-8 & abs(differences(:,2))<1.0e-8);
+        Indices=find(abs(differences(:,1))<AcceptanceTolerance & abs(differences(:,2))<AcceptanceTolerance);
         if isempty(Indices)
             error('Tolerance may be set too low. No common solutions were found.')
         end

@@ -57,12 +57,14 @@ end
 
 
 %% Solve each set of 3 on 3-4 different planes. Fit a Line to it.
-LineFit=cell(m,3);
+LineFit=cell(m,1);
 for i=1:m
-    Locations=solvePlanes(HyperboloidSet{m},zPlanes);
-    if size(Locations,1)==1
-        %then we just have a point. LineFit is 
-        LineFit{m}=[Locations; 0 0 0];
+    Locations=solvePlanes(HyperboloidSet{m},zPlanes,SymVars,h1);
+    if size(Locations,1)==2
+        %then we just have 2 points. A single plane. No need to do line
+        %fits.
+        location=Locations;
+        return
     else
         %lineFit
         LineFit{m}=fitLineParametric(Locations);
@@ -74,13 +76,15 @@ end
 if m>1
     %single point. Multiple lines available.
     location=LeastSquaresLines(LineFit);
-else
+elseif sum(LineFit{1}(2,:))>0
     %only 1 line available. Get a direction instead.
-    [azimuth, elevation, GeodeticPointXYZ]=findDirection(LineFit{m},receiverLocation(1,:));
-    location=[azimuth, elevation, 0; GeodeticPointXYZ'];
+    [azimuth, elevation, GeodeticPointXYZ]=findDirection(LineFit{m},receiverLocations(1,:));
+    location=[azimuth, elevation, 0; GeodeticPointXYZ];
+else
+    error('Unexpected case')
 end
 
-% %% old.
+%% old.
 % %see if there is one solution to all curves
 % % solveOutput=Intersect(Hyperboloid,SymVars);
 % solveOutput=cell(1,3);
@@ -233,7 +237,7 @@ end
 % 
 end
 
-function locations=solvePlanes(HyperboloidSet,zPlanes,h1)
+function location=solvePlanes(HyperboloidSet,zPlanes,SymVars,h1)
 %HyperboloidSet should be 3 Hyperboloids
 %Zplanes a 1D vector of z values to evaluate at. 
 %h1 is the figure handler.
@@ -243,9 +247,10 @@ function locations=solvePlanes(HyperboloidSet,zPlanes,h1)
 p=length(HyperboloidSet);
 %% Plot of this set of Hyperboloids and Single Hyperboloids.
 figure(h1)
-X1=h1.XLim;
-Y1=h1.YLim;
-Z1=h1.ZLim;
+h2=h1.Children;
+X1=h2.XLim;
+Y1=h2.YLim;
+Z1=h2.ZLim;
 fimplicit3(HyperboloidSet,[X1 Y1 Z1],'meshdensity',40)
 for i=1:p
     figure()
@@ -257,7 +262,13 @@ location=zeros(length(zPlanes)*2,3); %Expect 2 points in every plane.
 m=0; %Counter for Locations number.
 
 for u=1:length(zPlanes)
-    Hyperboloidtemp=subs(HyperboloidSet,SymVars(3),zPlanes(u)); %restrict z to a plane.
+    if length(SymVars)==3
+        %3D case.
+        Hyperboloidtemp=subs(HyperboloidSet,SymVars(3),zPlanes(u)); %restrict z to a plane.
+    else
+        %2D case. z already taken care of. 
+        Hyperboloidtemp=HyperboloidSet;
+    end
     Intersect2HypersX=cell(p*(p-1)/2,1);
     Intersect2HypersY=cell(p*(p-1)/2,1);
     %intersect the ith hyperboloid with every hyperboloid after it.
@@ -276,23 +287,35 @@ for u=1:length(zPlanes)
             k=k+1;
         end
     end
-    location(2*m+1:2*m+2,:)=findSolnsFromIntersects(Intersect2HypersX,Intersect2HypersY,zPlanes(u));
+    temp=findSolnsFromIntersects(Intersect2HypersX,Intersect2HypersY,zPlanes(u),3);
+    if size(temp,1)==1
+       %only 1 point was found.
+       temp=[temp; temp];
+    elseif size(temp,1)>2
+       %more than 2 points were found.
+       error('TDoA 2D solution failed to converge to 2 values')
+    end
+    location(2*m+1:2*m+2,:)=temp;
     disp(zPlanes(u))
     m=m+1;
 end
 
 figure(h1)
 plot3(location(:,1),location(:,2),location(:,3),'.','MarkerSize',10,'color','black')
-title('System Geometry')
-xlabel('x')
-
+title('System Geometry. Earth Fixed Frame')
+xlabel('x (m)')
+ylabel('y (m)')
+zlabel('z (m)')
 figure()
 plot3(location(:,1),location(:,2),location(:,3),'.','MarkerSize',10,'color','black')
-
+title('System Solutino. Earth Fixed Frame')
+xlabel('x (m)')
+ylabel('y (m)')
+zlabel('z (m)')
 end
 
 
-function location=findSolnsFromIntersects(Intersect2HypersX, Intersect2HypersY,z)
+function location=findSolnsFromIntersects(Intersect2HypersX, Intersect2HypersY,z,pointThreshold)
 %for Points, the strategy is as follows:
         %1. sort the points and find the points closest together via a finite
         %difference. If the finite difference is less than some threshold,
@@ -307,7 +330,7 @@ function location=findSolnsFromIntersects(Intersect2HypersX, Intersect2HypersY,z
         potentialPoints=sortrows(potentialPoints);
         %get the differences and find the ones below a certain threshold.
         differences=diff(potentialPoints);
-        Indices=find(abs(differences(:,1))<1.0e-8 & abs(differences(:,2))<1.0e-8);
+        Indices=find(abs(differences(:,1))<1.0e-8 & abs(differences(:,2))<Toelranc);
         if isempty(Indices)
             error('Tolerance may be set too low. No common solutions were found.')
         end
@@ -321,12 +344,20 @@ function location=findSolnsFromIntersects(Intersect2HypersX, Intersect2HypersY,z
         %threshold.
         soln=cell(numSolns,1);
         location=zeros(numSolns,3);
+        RealSolns=true(numSolns,1);
         for i=1:numSolns
             pointsForThisSolution=Indices(dividingIndices(i)+1:dividingIndices(i+1));
             pointsForThisSolution=[pointsForThisSolution; pointsForThisSolution(end)+1];
-            soln{i}=potentialPoints(pointsForThisSolution,:);
-            %average those points together
-            location(i,1:2)=mean(soln{i});
-            location(i,3)=z;
+            if length(pointsForThisSolution)>=pointThreshold
+                soln{i}=potentialPoints(pointsForThisSolution,:);
+                %average those points together
+                location(i,1:2)=mean(soln{i});
+                location(i,3)=z;
+            else
+                %not enough points converged there.
+                RealSolns(i)=false;
+            end
         end
+        location=location(RealSolns,:);
+        
 end
