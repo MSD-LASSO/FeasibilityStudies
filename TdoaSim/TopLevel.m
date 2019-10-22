@@ -18,4 +18,9 @@ polarZ = 400*cos(theta);
 plot3(x, y, z);
 axis([-7000 7000 -7000 7000 -2000 2000]);
 
+% TODO
+% Edit orbit so it passes over ROC
+% Sample PART of orbit for data
+
 % Calculate Time Difference
+% Locate
