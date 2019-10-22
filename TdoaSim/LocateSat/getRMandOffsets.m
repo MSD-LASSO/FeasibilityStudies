@@ -23,10 +23,8 @@ Offset=R1+unitVector*distance/2;
 %get azimuth and elevation.
 [az el]=getAzEl(distanceVector);
 
-RMaz=[cos(az) -sin(az) 0; sin(az) cos(az) 0; 0 0 1];
-RMel=[cos(el) 0 -sin(el); 0 1 0; sin(el) 0 cos(el)];
+RM=getAzElRotationMatrix(az,el);
 
-RM=RMaz*RMel;
 
 end
 

@@ -61,7 +61,7 @@ end
 
 
 %% Solve each set of 3 on 3-4 different planes. Fit a Line to it.
-LineFit=cell(m,1);
+LineFit=cell(m*2,1); %expect two directions per 3 Hyperboloids.
 for i=1:m
     Locations=solvePlanes(HyperboloidSet{m},zPlanes,SymVars,AcceptanceTolerance,h1);
     if size(Locations,1)==2
@@ -71,7 +71,8 @@ for i=1:m
         return
     else
         %lineFit
-        LineFit{m}=fitLineParametric(Locations);
+        LineFit{2*m-1}=fitLineParametric(Locations(1:2:end,:));
+        LineFit{2*m}=fitLineParametric(Locations(2:2:end,:));
     end
 end
 
@@ -83,7 +84,9 @@ if m>1
 elseif sum(LineFit{1}(2,:))>0
     %only 1 line available. Get a direction instead.
     [azimuth, elevation, GeodeticPointXYZ]=findDirection(LineFit{m},receiverLocations(1,:));
-    location=[azimuth, elevation, 0; GeodeticPointXYZ];
+    [azimuth2, elevation2, GeodeticPointXYZ2]=findDirection(LineFit{m+1},receiverLocations(1,:));
+    location=[azimuth, elevation, 0; GeodeticPointXYZ; azimuth2 elevation2 0; GeodeticPointXYZ2];
+    
 else
     error('Unexpected case')
 end

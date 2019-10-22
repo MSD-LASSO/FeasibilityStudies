@@ -24,3 +24,12 @@ elE=atan2(50,sqrt(950^2+404^2));
 AssertTolerance(azE,az,1e-10);
 AssertTolerance(elE,el,1e-10);
 AssertToleranceMatrix(rExpected,r,1e-4);
+
+%% Visualization
+figure()
+syms x y z
+fimplicit3(x^2+y^2+z^2==1)
+axis square
+syms t
+hold on
+fplot3(0.2+t,-0.3-2*t,0.5+0.5*t,[-1 0.5],'linewidth',3)

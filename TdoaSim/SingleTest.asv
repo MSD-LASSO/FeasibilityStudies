@@ -15,7 +15,7 @@ SAT_Error= zeros(1,4);
 GND = getStruct(Stations, GND_Error);
 SAT = getStruct(Satellites, SAT_Error);
 
-timeDifferences = timeDiff(GND, SAT);a
+timeDifferences = timeDiff(GND, SAT)
 
 
 %% TDoA
@@ -44,13 +44,14 @@ h1=figure(1);
 
 hold on
 RM=getAzElRotationMatrix(locations(1,1),locations(1,2));
-Range=[norm(Satxyz-locations(2,:)) 0 0];
-RangeFixed=RM*Range'+locations(2,:)';
+Range=[norm(Satxyz)-locations(2,:) 0 0];
+RangeFixed=RM*Range'+locations(4,:);
 plot3([locations(2,1) RangeFixed(1)],[locations(2,2) RangeFixed(2)],[locations(2,3) RangeFixed(3)],'linewidth',3); 
 
 RM=getAzElRotationMatrix(locations(3,1),locations(3,2));
-Range=[norm(Satxyz-locations(4,:)) 0 0];
-RangeFixed=RM*Range'+locations(4,:)';
+Range=[norm(Satxyz)-locations(4,:) 0 0];
+RangeFixed=RM*Range'+locations(4,:);
+
 plot3([locations(4,1) RangeFixed(1)],[locations(4,2) RangeFixed(2)],[locations(4,3) RangeFixed(3)],'linewidth',3); 
 % fplot3(locations(1,1)+t*locations(2,1),locations(1,2)+t*locations(2,2),locations(1,3)+t*locations(2,3));%,[X1 Y1 Z1]);
 hi=1;
