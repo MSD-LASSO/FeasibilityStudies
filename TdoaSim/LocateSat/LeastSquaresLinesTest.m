@@ -30,8 +30,8 @@ w3=[-8 5 -19; 2 1 4]+[0.000171186687811562,3.18328463774207e-05,4.61713906311539
 
 expected=[-2 8 -7]';
 %notice these points don't explicitly lie on any line. 
-point1=LeastSquaresLines({w1; w2});
-point2=LeastSquaresLines({w1; w2; w3});
+[point1,err1]=LeastSquaresLines({w1; w2});
+[point2,err2]=LeastSquaresLines({w1; w2; w3});
 
 AssertToleranceMatrix(expected,point1,1e-2);
 AssertToleranceMatrix(expected,point2,1e-2);

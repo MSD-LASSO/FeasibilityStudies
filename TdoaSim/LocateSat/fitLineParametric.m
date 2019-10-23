@@ -1,4 +1,4 @@
-function [weights,error]=fitLineParametric(Locations)
+function [weights,err]=fitLineParametric(Locations)
 %This function fits a parametric line fit to Locations. t is the
 %independent variable, output is 
     %weights = [bx by bz ; mx my mz] 
@@ -22,7 +22,7 @@ end
 
 
 fittedPoints=weights(1,:)+t*weights(2,:);
-error=sum(sum((fittedPoints-Locations).^2));
+err=sum(sum((fittedPoints-Locations).^2));
 end
 
 function w=fitLine2D(data,n,t)

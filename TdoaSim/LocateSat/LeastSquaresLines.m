@@ -1,4 +1,4 @@
-function point = LeastSquaresLines(LineFits)
+function [point,err] = LeastSquaresLines(LineFits)
 %This function will solve for the closest point of intersection between all
 %given lines.
 
@@ -23,7 +23,7 @@ for i=1:n
     y(3*i-2:3*i)=LineFits{i}(1,:)';
 end
 
-point=LinearRegressionFit(M,y);
+[point,err]=LinearRegressionFit(M,y);
 %throw away all but the first 3 elements. Rest of "t" variables.
 point=point(1:3);
 end

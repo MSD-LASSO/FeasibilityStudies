@@ -1,4 +1,4 @@
-function x = LinearRegressionFit(M,y)
+function [x,err] = LinearRegressionFit(M,y)
 %This function will solve the equation y=M*x where M is a non-square
 %matrix. i.e. it is an overconstrained problem
 %it solves it in a least squares sense.
@@ -6,5 +6,7 @@ function x = LinearRegressionFit(M,y)
 
 x=(M'*M)\M'*y;
 
+ypred=M*x;
+err=sum((ypred-y).^2);
 end
 
