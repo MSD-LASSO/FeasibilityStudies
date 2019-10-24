@@ -1,3 +1,6 @@
+% This program samples, filters, and reconstructs a signal.
+% The signal this is performed on is x.
+
 clearvars;
 close all;
 hold off;
