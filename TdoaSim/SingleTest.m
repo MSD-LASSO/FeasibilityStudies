@@ -7,9 +7,12 @@ addpath('TimeDiff');
 
 Stations = [43.063532 -77.689936 154; 43.086285 -77.668015 154; 43.048300 -77.658663 154];
 Stations4= [43.063532 -77.689936 154; 43.086285 -77.668015 154; 43.048300 -77.658663 154; 43.080282, -77.709150 154];
-% GND_Error = [0.000001 0.000001 0 0; 0.000001 0.000001 0 0; 0.000001 0.000001 0 0];
-GND_Error = zeros(3,4);
-GND_Error4 = zeros(4,4);
+locationErr=[0.00005 0.0001 .9];
+timeSyncErr=.3e-9;
+GND_Error = [locationErr timeSyncErr; locationErr timeSyncErr; locationErr timeSyncErr];
+GND_Error4 = [locationErr timeSyncErr; locationErr timeSyncErr; locationErr timeSyncErr; locationErr timeSyncErr];
+% GND_Error = zeros(3,4);
+% GND_Error4 = zeros(4,4);
 Satellites = [43.084625 -77.674371 775000];
 % SAT_Error = [0.000001 0.000001 0 0];
 SAT_Error= zeros(1,4);
@@ -22,6 +25,7 @@ timeDifferences = timeDiff(GND, SAT);
 timeDifferences4 = timeDiff(GND4, SAT);
 
 Test1=0;
+Test2=0;
 %% TDoA 3 Stations. A direction.
 if Test1==1
 receivers=[GND(1).coord; GND(2).coord; GND(3).coord];
@@ -61,6 +65,7 @@ plot3([locations(4,1) RangeFixed(1)],[locations(4,2) RangeFixed(2)],[locations(4
 hi=1;
 end
 %% TDoA 4 stations a Point.
+if Test2==1
 receivers=[GND4(1).coord; GND4(2).coord; GND4(3).coord; GND4(4).coord];
 Satxyz=SAT.coord;
 A_B=timeDifferences4(1,1,1);
@@ -99,3 +104,8 @@ RangeFixed=RM*Range'+locations(4,:)';
 plot3([locations(4,1) RangeFixed(1)],[locations(4,2) RangeFixed(2)],[locations(4,3) RangeFixed(3)],'linewidth',3); 
 % fplot3(locations(1,1)+t*locations(2,1),locations(1,2)+t*locations(2,2),locations(1,3)+t*locations(2,3));%,[X1 Y1 Z1]);
 hi=1;
+end
+
+%% oneatatime
+OneAtaTime3(GND,SAT,1,0);
+% OneAtaTime4(GND4,SAT,0,1);

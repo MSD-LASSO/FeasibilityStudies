@@ -8,7 +8,7 @@ R1=[0,0,0];
 R2=[X,0,0];
 R3=[X/2,X/2*sqrt(3),0];
 expected=[x y 0];
-expected=[expected; expected]
+expected=[expected; expected];
 
 d1=sqrt(x^2+y^2);
 d2=sqrt((R2(1)-x)^2+y^2);

@@ -1,4 +1,4 @@
-function [location, locationError] = TDoA(receiverLocations,distanceDifferences,AcceptanceTolerance,zPlanes)
+function [location, locationError] = TDoA(receiverLocations,distanceDifferences,AcceptanceTolerance,zPlanes,DebugMode)
 %INPUTS: nx3 vector of receiver Locations (x,y,z) pairs, measured from a
         %fixed reference.
         %nxn upper triangular matrix of all combinations of 
@@ -19,6 +19,10 @@ end
 
 if nargin<4
     zPlanes=0;
+end
+
+if nargin<5
+    DebugMode=0;
 end
 
 %% Identify all combinations of 3 receiving Stations.
@@ -81,11 +85,15 @@ end
 % p=p-1; %number of hyperboloids.
 
 %% for debugging purposes. Plot all intersections.
-% figure()
-h1=gcf;
-RL=receiverLocations;
-RL(end+1,:)=RL(1,:);
-plot3(RL(:,1),RL(:,2),RL(:,3),'linewidth',3);
+if DebugMode==1
+    % figure()
+    h1=gcf;
+    RL=receiverLocations;
+    RL(end+1,:)=RL(1,:);
+    plot3(RL(:,1),RL(:,2),RL(:,3),'linewidth',3);
+else
+    h1=[];
+end
 
 
 %% Solve each Receiver Set for 3-4 different planes. Fit a Line to it.
@@ -117,27 +125,28 @@ end
 LineFit=LineFit(realLines(:,1),:);
 m=size(LineFit,1);
 %% Debugging Purposes. Plot all lines
-figure()
-x=1114097.00526875;
-% [1114097.00526875,-5098751.55457051,4881274.05987576]
-tCenter=(x-LineFit{1}(1,1))/LineFit{1}(2,1);
-x=zeros(m,2);
-y=zeros(m,2);
-z=zeros(m,2);
-for i=1:m
-    for u=1:1
-        Line=LineFit{i,u};
-        syms t
-    %     fplot3(Line(1,1)+t*Line(2,1),Line(1,2)+t*Line(2,2),Line(1,3)+t*Line(2,3), [0 2.5]);
-        t=tCenter;
-        x(i,u)=Line(1,1)+t*Line(2,1);
-        y(i,u)=Line(1,2)+t*Line(2,2);
-        z(i,u)=Line(1,3)+t*Line(2,3);
-        plot3(x(i,u),y(i,u),z(i,u),'.','MarkerSize',20);
-        hold on
+if DebugMode==1
+    figure()
+    x=1114097.00526875;
+    % [1114097.00526875,-5098751.55457051,4881274.05987576]
+    tCenter=(x-LineFit{1}(1,1))/LineFit{1}(2,1);
+    x=zeros(m,2);
+    y=zeros(m,2);
+    z=zeros(m,2);
+    for i=1:m
+        for u=1:1
+            Line=LineFit{i,u};
+            syms t
+            %     fplot3(Line(1,1)+t*Line(2,1),Line(1,2)+t*Line(2,2),Line(1,3)+t*Line(2,3), [0 2.5]);
+            t=tCenter;
+            x(i,u)=Line(1,1)+t*Line(2,1);
+            y(i,u)=Line(1,2)+t*Line(2,2);
+            z(i,u)=Line(1,3)+t*Line(2,3);
+            plot3(x(i,u),y(i,u),z(i,u),'.','MarkerSize',20);
+            hold on
+        end
     end
 end
-
 
 %% Solve for single point or Direction. 
 if m>1
@@ -175,6 +184,13 @@ if m>1
     [minEr,I]=min(Error);
     location(2,:)=locations(I,:);
     
+    Real=true(2,1);
+    for i=1:2
+        if location(i,3)<receiverLocations(1,3)
+            Real(i)=false;
+        end
+    end
+    location=location(Real,:);
 %     location=LeastSquaresLines(LineFit);
 elseif sum(LineFit{1}(2,:))>0
     %only 1 line available. Get a direction instead.
@@ -444,7 +460,13 @@ function location=findSolnsFromIntersects(Intersect2HypersX, Intersect2HypersY,z
         potentialPoints=sortrows(potentialPoints);
         %get the differences and find the ones below a certain threshold.
         differences=diff(potentialPoints);
-        Indices=find(abs(differences(:,1))<AcceptanceTolerance & abs(differences(:,2))<AcceptanceTolerance);
+%         Indices=find(abs(differences(:,1))<AcceptanceTolerance & abs(differences(:,2))<AcceptanceTolerance);
+        
+        normDiffs=vecnorm(differences,2,2);
+        normDiffSorted=sort(normDiffs);
+        vals=normDiffSorted(1:4);
+        Indices=find(normDiffs==vals(1) | normDiffs==vals(2) | normDiffs==vals(3)| normDiffs==vals(4));
+        
         if isempty(Indices)
             warning('Tolerance may be set too low. No common solutions were found.')
             location=nan(2,3);
