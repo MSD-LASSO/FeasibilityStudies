@@ -8,7 +8,7 @@ addpath('TimeDiff');
 Stations = [43.063532 -77.689936 154; 43.086285 -77.668015 154; 43.048300 -77.658663 154];
 Stations4= [43.063532 -77.689936 154; 43.086285 -77.668015 154; 43.048300 -77.658663 154; 43.080282, -77.709150 154];
 locationErr=[0.00005 0.0001 .9];
-timeSyncErr=.3e-9;
+timeSyncErr=3e-9;
 GND_Error = [locationErr timeSyncErr; locationErr timeSyncErr; locationErr timeSyncErr];
 GND_Error4 = [locationErr timeSyncErr; locationErr timeSyncErr; locationErr timeSyncErr; locationErr timeSyncErr];
 % GND_Error = zeros(3,4);
@@ -107,5 +107,5 @@ hi=1;
 end
 
 %% oneatatime
-OneAtaTime3(GND,SAT,1,0);
-% OneAtaTime4(GND4,SAT,0,1);
+% OneAtaTime3(GND,SAT,1,0);
+OneAtaTime4(GND4,SAT,0,1);
