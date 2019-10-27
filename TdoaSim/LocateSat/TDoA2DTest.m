@@ -70,6 +70,7 @@ AssertToleranceMatrix(expected,location,0.001);
 
 
 %% Equilateral triangle. Point is outside the triangle. 
+% close all
 X=10;
 x=11; %receiver location
 y=14; %receiver location
@@ -83,10 +84,11 @@ d1=sqrt(x^2+y^2);
 d2=sqrt((R2(1)-x)^2+y^2);
 d3=sqrt((R3(1)-x)^2+(R3(2)-y)^2);
 
-distanceDiffs=abs([0 d1-d2 d1-d3; 0 0 d2-d3; 0 0 0]);
+% distanceDiffs=abs([0 d1-d2 d1-d3; 0 0 d2-d3; 0 0 0]);
+distanceDiffs=abs([0 (d1-d2)+0.15 (d1-d3)-0.075; 0 0 (d2-d3)+0.075; 0 0 0]);
 
 figure()
 plot(x,y,'o','linewidth',3);
 hold on
-location=TDoA([R1;R2;R3],distanceDiffs);
+location=TDoA([R1;R2;R3],distanceDiffs,1e-5,0,1);
 AssertToleranceMatrix(expected,location,0.001);

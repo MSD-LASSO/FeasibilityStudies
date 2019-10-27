@@ -26,19 +26,24 @@ timeDifferences4 = timeDiff(GND4, SAT);
 
 Test1=0;
 Test2=0;
+Test3=1;
 %% TDoA 3 Stations. A direction.
 if Test1==1
 receivers=[GND(1).coord; GND(2).coord; GND(3).coord];
 Satxyz=SAT.coord;
-A_B=timeDifferences(1,1,1);
-A_C=timeDifferences(1,1,2);
-B_C=timeDifferences(1,1,3);
-TimeDiffs=abs([0 A_B A_C; 0 0 B_C; 0 0 0]);
+% A_B=timeDifferences(1,1,1);
+% A_C=timeDifferences(1,1,2);
+% B_C=timeDifferences(1,1,3);
+% TimeDiffs=abs([0 A_B A_C; 0 0 B_C; 0 0 0]);
+[TimeDiffs,TimeDiffsErr]=timeDiff3toMatrix(GND,SAT);
+ErrorAdded=TimeDiffsErr.*(rand(3,3)*2-1);
+TimeDiffs=TimeDiffs+ErrorAdded; %rand -1 to 1.
 DistanceDiffs=TimeDiffs*3e8;
 expected=Satxyz;
 
 figure()
 plot3(expected(1),expected(2),expected(3),'o','linewidth',3);
+title('3 Stations Direction Test')
 % plot3(
 grid on
 hold on
@@ -63,6 +68,7 @@ RangeFixed=RM*Range'+locations(4,:)';
 plot3([locations(4,1) RangeFixed(1)],[locations(4,2) RangeFixed(2)],[locations(4,3) RangeFixed(3)],'linewidth',3); 
 % fplot3(locations(1,1)+t*locations(2,1),locations(1,2)+t*locations(2,2),locations(1,3)+t*locations(2,3));%,[X1 Y1 Z1]);
 hi=1;
+GraphSaver({'png'},'Plots/Plots3Stations',0);
 end
 %% TDoA 4 stations a Point.
 if Test2==1
@@ -107,5 +113,7 @@ hi=1;
 end
 
 %% oneatatime
-% OneAtaTime3(GND,SAT,1,0);
-OneAtaTime4(GND4,SAT,0,1);
+if Test3==1
+OneAtaTime3(GND,SAT,1,1);
+% OneAtaTime4(GND4,SAT,0,1);
+end

@@ -30,6 +30,8 @@ if(location==1)
 test=cell(m,3);
 AbsErr=cell(m,3);
 AbsTotalErr=cell(m,3);
+
+Axis={'x','y','z'};
 for i=1:3 %cycle through x,y,z.
     for j=1:m %cycle through each station.
         ErrorMax=LocationErrs(j,i); %get the location error for this test
@@ -44,7 +46,18 @@ for i=1:3 %cycle through x,y,z.
             Err=zeros(1,3);
             Err(1,i)=test{j,i}(k);
             RT(j,:)=RT(j,:)+Err;
-            locations=TDoA(RT,TimeDiffs*3e8,10,[4.5e6 4.8e6 5.1e6 ]);
+            
+            figure()
+            expected=[1114097.00526875,-5098751.55457051,4881274.05987576];
+            plot3(expected(1),expected(2),expected(3),'o','linewidth',3);
+            title(['3 Stations Direction Test - ' 'With Receiver ' num2str(j) ' Location Error = ' num2str(Err)])
+            % plot3(
+            grid on
+            hold on
+            
+            ErrStr=num2str(Err);
+%             ErrStr=strrep(ErrStr,'-','a');
+            locations=TDoA(RT,TimeDiffs*3e8,10,[4.5e6 4.8e6 5.1e6 ],1,['Run ' num2str(k) ' With Receiver ' num2str(j) ' Location Error = ' ErrStr]);
             
             %Sat in TDoA generated frame location.
             expectedShifted=expected-locations(2,:);
@@ -70,6 +83,7 @@ for i=1:3 %cycle through x,y,z.
             plot(test{j,i},AbsErr{j,i}(:,k-1),'.','MarkerSize',20);
             title(['Resulting Sat Error in Coord: ' variable{k-1}]);
         end
+        GraphSaver({'png'},['Plots/OneAtaTime3Stations/' Axis{i} 'Receiver' num2str(j)],1);
     end
 end
 end
@@ -93,7 +107,10 @@ for i=1:1 %cycle through nothing. Clock error is 1D.
             GNDt(j).clk=test{j,i}(k);
             [TimeDiffs,TimeDiffErr]=timeDifftoMatrix(GNDt,SAT);
             RT=Receivers;
-            locations=TDoA(RT,(TimeDiffs+TimeDiffErr)*3e8,100,[4.5e6 4.8e6 5.1e6 ]);
+            ErrStr=num2str(num2str([TimeDiffErr(1,2) TimeDiffErr(1,3) TimeDiffErr(2,3)]));
+%             ErrStr=strrep(ErrStr,'-','a');
+            locations=TDoA(RT,(TimeDiffs+TimeDiffErr)*3e8,100,[4.5e6 4.8e6 5.1e6 ],1,['Run ' num2str(k) ' With Time Error = ' ErrStr]);
+            
             
             %Sat in TDoA generated frame location.
             expectedShifted=expected-locations(2,:);
@@ -116,9 +133,11 @@ for i=1:1 %cycle through nothing. Clock error is 1D.
             plot(test{j,i},AbsErr{j,i}(:,k-1),'.','MarkerSize',20);
             title(['Resulting Sat Error in Coord: ' variable{k-1}]);
         end
+        GraphSaver({'png'},['Plots/OneAtaTime3Stations/' 'ClockErrInReceiver' num2str(j)],1);
     end
 end
 end
+
 
 
 
@@ -136,18 +155,7 @@ function [TimeDiffs, TimeDiffErr]=timeDifftoMatrix(GND,SAT)
 end
 
 
-function [TimeDiffs, TimeDiffErr]=timeDiff3toMatrix(GND,SAT)
 
-    timeDifferences = timeDiff(GND, SAT);
-    A_B=timeDifferences(1,1,1);
-    A_C=timeDifferences(1,1,2);
-    B_C=timeDifferences(1,1,3);
-    TimeDiffs=abs([0 A_B A_C; 0 0 B_C; 0 0 0]);
-    A_Be=timeDifferences(2,1,1);
-    A_Ce=timeDifferences(2,1,2);
-    B_Ce=timeDifferences(2,1,3);
-    TimeDiffErr=abs([0 A_Be A_Ce; 0 0 B_Ce; 0 0 0]);
-end
 
 function [TimeDiffs, TimeDiffErr]=timeDiff4toMatrix(GND,SAT)
 
