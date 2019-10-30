@@ -1,4 +1,4 @@
-function [stations,satellites,satellitesGT,GTframe,Time]=readGroundTrack(Name)
+function [stations,satellites,satellitesGT,GTframe,Time,names]=readGroundTrack(Name)
 %This data will read the output ground track from Orekit. 
 %The expected text file format is as follows:
 %Lat Long Altitude
@@ -18,7 +18,8 @@ function [stations,satellites,satellitesGT,GTframe,Time]=readGroundTrack(Name)
         %mx3 satellite Ground Truth vector with azimuth, elevation, range
         %of all satellite positions with respect to the specified station.
         %1x3 frame coordinates where az, el, rng is measured from.
-        %nx1 absolute times.
+        %mx1 absolute times.
+        %1x1 name of the fileName. 
 %These outputs are each in a nx1 cell array where n is the number of input
 %files.
         
@@ -30,13 +31,16 @@ if exist(Name,'dir')==7
     temp=dir(Name);
     %removes '.' and '..' and makes format FolderName/FileName
     fileName=cell(size(temp,1)-2,1);
+    names=cell(size(temp,1)-2,1);
     for i=3:size(temp,1)
+        names{i-2}=temp(i).name;
         fileName{i-2}=[Name '/' temp(i).name];
     end
     
 else
     %ASSUMES name is in working directory.
     fileName{1}=Name;
+    names{1}=fileName{1};
 end
 
 %% Read each file.

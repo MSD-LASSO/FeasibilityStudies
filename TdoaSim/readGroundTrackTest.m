@@ -1,7 +1,7 @@
 close all
 clearvars
-Folder='Data';
-[stations,satellites,satellitesGT,GTframe,Time]=readGroundTrack(Folder);
+Folder='TestData';
+[stations,satellites,satellitesGT,GTframe,Time,fileName]=readGroundTrack(Folder);
 
 SE=[0.750	0.698	0.000;
 0.925	0.873	0.000;
@@ -39,6 +39,9 @@ TT=[
 '2019-10-20T23:48:25.227 ';
 '2019-10-20T23:49:25.227 ';	
 '2019-10-20T23:50:25.227 '];
+
+fileName_actual='testOrbitDataV2.txt';
+Assert(strcmp(fileName,fileName_actual));
 
 addpath('LocateSat')
 

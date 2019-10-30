@@ -1,4 +1,4 @@
-function OneAtaTime3(GND,SAT,time,location)
+function OneAtaTime3(GND,SAT,time,location,folderName)
 %This function will perform a OneAtaTime uncertainty analysis for the Time
 %Difference of Arrival signal. 
 %It takes each parameter with a specified error and varies that parameter
@@ -48,7 +48,7 @@ for i=1:3 %cycle through x,y,z.
             RT(j,:)=RT(j,:)+Err;
             
             figure()
-            expected=[1114097.00526875,-5098751.55457051,4881274.05987576];
+%             expected=[1114097.00526875,-5098751.55457051,4881274.05987576];
             plot3(expected(1),expected(2),expected(3),'o','linewidth',3);
             title(['3 Stations Direction Test - ' 'With Receiver ' num2str(j) ' Location Error = ' num2str(Err)])
             % plot3(
@@ -83,7 +83,7 @@ for i=1:3 %cycle through x,y,z.
             plot(test{j,i},AbsErr{j,i}(:,k-1),'.','MarkerSize',20);
             title(['Resulting Sat Error in Coord: ' variable{k-1}]);
         end
-        GraphSaver({'png'},['Plots/OneAtaTime3Stations/' Axis{i} 'Receiver' num2str(j)],1);
+        GraphSaver({'png'},['Plots/' folderName '/OneAtaTime3Stations/' Axis{i} 'Receiver' num2str(j)],1);
     end
 end
 end
@@ -133,7 +133,7 @@ for i=1:1 %cycle through nothing. Clock error is 1D.
             plot(test{j,i},AbsErr{j,i}(:,k-1),'.','MarkerSize',20);
             title(['Resulting Sat Error in Coord: ' variable{k-1}]);
         end
-        GraphSaver({'png'},['Plots/OneAtaTime3Stations/' 'ClockErrInReceiver' num2str(j)],1);
+        GraphSaver({'png'},['Plots/' folderName '/OneAtaTime3Stations/' 'ClockErrInReceiver' num2str(j)],1);
     end
 end
 end
