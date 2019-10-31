@@ -60,8 +60,9 @@ for i=1:3 %cycle through x,y,z.
             locations=TDoA(RT,TimeDiffs*3e8,10,[4.5e6 4.8e6 5.1e6 ],1,['Run ' num2str(k) ' With Receiver ' num2str(j) ' Location Error = ' ErrStr]);
             
             %Sat in TDoA generated frame location.
-            expectedShifted=expected-locations(2,:);
-            [az, el]=getAzEl(expectedShifted);
+%             expectedShifted=expected-locations(2,:);
+%             [az, el]=getAzEl(expectedShifted);
+            [az, el]=geo2AzEl(expected,locations(2,:));
             expectedAzEl=[az el 0];
             
             %ignore 2nd solution...momentarily. 
@@ -97,7 +98,7 @@ for i=1:1 %cycle through nothing. Clock error is 1D.
     for j=1:m %cycle through each station.
         ErrorMax=timeSyncErrs(j,i); %get the location error for this test
         test{j,i}=linspace(-ErrorMax,ErrorMax,10); %set up a range.
-%         test{j,i}=[0 test{j,i}]; %control. no error case.
+        test{j,i}=[0 test{j,i}]; %control. no error case.
         AbsErr{j,i}=zeros(length(test),3);
         AbsTotalErr{j,i}=zeros(length(test),1);
         for k=1:length(test{j,i})
@@ -113,8 +114,9 @@ for i=1:1 %cycle through nothing. Clock error is 1D.
             
             
             %Sat in TDoA generated frame location.
-            expectedShifted=expected-locations(2,:);
-            [az, el]=getAzEl(expectedShifted);
+%             expectedShifted=expected-locations(2,:);
+%             [az, el]=getAzEl(expectedShifted);
+            [az, el]=geo2AzEl(expected,locations(2,:));
             expectedAzEl=[az el 0];
             
             AbsErr{j,i}(k,:)=expectedAzEl-locations(1,:);

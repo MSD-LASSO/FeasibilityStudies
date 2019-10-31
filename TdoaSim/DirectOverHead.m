@@ -12,8 +12,8 @@ RzHA=[cos(HA) sin(HA) 0; -sin(HA) cos(HA) 0; 0 0 1];
 r=rs*[cos(u)*cos(om)-sin(u)*cos(in)*sin(om) ;cos(u)*sin(om)-sin(u)*cos(in)*cos(om); sin(u)*sin(in)];
 
 %% Let elevation = 90 deg.
-lat=-1.355756142252390;	
-long=0.751981147060969;
+lat=0.751981147060969;	
+long=-1.355756142252390;
 t_Oct30th11amUTC=7241.959084409722*24*3600; %from  https://currentmillis.com/?1572433200709
 th_orbit=0;
 
@@ -27,8 +27,8 @@ Cons=simplify(E*R,'steps',10);
 b=satTop+Cons;
 A=E*RzHA;
 rResult=A\b;
-r=subs(r,[la ph t th0 rs Re sz ug],[lat long t_Oct30th11amUTC th_orbit a_orbit Re_model sz_actual ug_actual]);
-rResult=subs(rResult,[la ph t th0 rs Re sz ug],[lat long t_Oct30th11amUTC th_orbit a_orbit Re_model sz_actual ug_actual]);
+r=subs(r,[ph la t th0 rs Re sz ug],[lat long t_Oct30th11amUTC th_orbit a_orbit Re_model sz_actual ug_actual]);
+rResult=subs(rResult,[ph la t th0 rs Re sz ug],[lat long t_Oct30th11amUTC th_orbit a_orbit Re_model sz_actual ug_actual]);
 Eqn=simplify(r-rResult,'steps',10);
 out=vpasolve(r-rResult,[in,om,w]);
 

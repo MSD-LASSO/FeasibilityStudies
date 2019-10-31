@@ -21,9 +21,9 @@ elev_min = GEO_POS(3)+sea_lev-GEO_Error(3);
 elev = GEO_POS(3)+sea_lev;
 elev_max = GEO_POS(3)+sea_lev+GEO_Error(3);
 
-[x_out, y_out, z_out] = sph2cart(long, lat, elev)
-[x_min, y_min, z_min] = sph2cart(long_min, lat_min, elev_min)
-[x_max, y_max, z_max] = sph2cart(long_max, lat_max, elev_max)
+[x_out, y_out, z_out] = sph2cart(long, lat, elev);
+[x_min, y_min, z_min] = sph2cart(long_min, lat_min, elev_min);
+[x_max, y_max, z_max] = sph2cart(long_max, lat_max, elev_max);
 
 Error = [abs(x_max-x_min)/2 abs(y_max-y_min)/2 abs(z_max-z_min)/2];
 POS = [x_out y_out z_out];

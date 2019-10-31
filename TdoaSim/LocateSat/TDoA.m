@@ -30,8 +30,8 @@ if nargin<6
 end
 
 %% Identify all combinations of 3 receiving Stations.
-receiverSet=cell(n*(n+1)*(n+2)/6,1);
-distanceDiffSet=cell(n*(n+1)*(n+2)/6,1);
+receiverSet=cell(n*(n-1)*(n-2)/6,1);
+distanceDiffSet=cell(n*(n-1)*(n-2)/6,1);
 %the series looks something like 1,4,10,20,35,56,84 for n=[3 4 5 6 7 8 9].
 m=0;
 for i=1:n
