@@ -82,7 +82,7 @@ hold on
 plot3(R2(1),R2(2),R1(3),'.','MarkerSize',10);
 grid on
 fimplicit3(Hyperboloid);
-expected=100*(z-1)^2+100*x^2 - (100*y^2)/99 - 1;
+expected=-100*(z-1)^2/99+100*x^2 - (100*y^2)/99 - 1;
 assert(logical(expected==Hyperboloid));
 
 %% 3D. 45 degree angle. With offset in z. 

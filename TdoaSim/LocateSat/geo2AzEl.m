@@ -9,7 +9,8 @@ R=6371e3*[cos(ph)*cos(la); cos(ph)*sin(la); sin(ph)];
 
 
 InTopoFrame=E*(Location-Reference)';
-[azimuth,elevation]=getAzEl(InTopoFrame);
+%x and y are switched. Different definition by Orekit. 
+[azimuth,elevation]=getAzEl([InTopoFrame(2) InTopoFrame(1) InTopoFrame(3)]);
 
 % [las,phs,rads]= cart2sph(Location(1),Location(2),Location(3));
 % earth = referenceSphere('Earth');

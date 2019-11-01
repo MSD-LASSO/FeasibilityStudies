@@ -256,9 +256,11 @@ for u=1:length(zPlanes)
     [temp,AllPts]=findSolnsFromIntersects(Intersect2HypersX,Intersect2HypersY,zPlanes(u),3,AcceptanceTolerance);
     
     %debugging around RIT. 
-%     AllPts=[-19102113.5935823,11105810.9245794;-4242561.74688672,144046.862886079;-131685.449415907,-2422934.19974021;1081538.56313087,-2936674.25951694]
-    
-    %Debugging Purposes
+    %1e6.
+%     AllPts=[2609336.27447559,-4465985.03031150;3123096.09255623,-5678570.99208825;5691569.43165977,-9791094.78373877;16652500.7721629,-24649300.3029585]
+% AllPts=[1647440.63595431,-4517237.67132255;1855079.49953290,-5007104.42806191;2892441.75243371,-6668082.13052221;7319973.30647300,-12669995.2141345];   
+
+%Debugging Purposes
     h2=figure();
 %     fimplicit(Hyperboloidtemp,[min(AllPts(:,1)) max(AllPts(:,1)) min(AllPts(:,2)) max(AllPts(:,2))]);
 %     hold on
