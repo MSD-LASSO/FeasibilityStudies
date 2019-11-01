@@ -185,7 +185,7 @@ if m>1
     end
     location=location(Real,:);
 %     location=LeastSquaresLines(LineFit);
-elseif sum(LineFit{1}(2,:))>0
+elseif abs(sum(LineFit{1}(2,:)))>0
     %only 1 line available. Get a direction instead.
     [azimuth, elevation, GeodeticPointXYZ]=findDirection(LineFit{m},receiverLocations(1,:));
     [azimuth2, elevation2, GeodeticPointXYZ2]=findDirection(LineFit{m+1},receiverLocations(1,:));

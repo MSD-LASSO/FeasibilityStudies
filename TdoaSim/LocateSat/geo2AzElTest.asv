@@ -1,7 +1,7 @@
 %From Orekit textFile 'TestOrbitDataAroundRIT.txt' 
-% long=-1.355756142252390;	
-% lat=0.751981147060969;
-% al=6378137;
+long=-1.355756142252390;	
+lat=0.751981147060969;
+al=6378137;
 
 % longSat=-1.213034173979802;	
 % latSat=0.068130851072552;	
@@ -27,10 +27,6 @@
 % eastStation=[0.9779691468; 0.208749486; 0];
 % ZenithStation=[0.15215; -0.7128; 0.68466];
 % E_expected=[eastStation northStation ZenithStation];
-
-lat=0.751334572386275;
-long=-1.355399362046697;
-al=6378137;
 
 el_expected=0.000617111555499;
 az_expected=3.378243548428418;

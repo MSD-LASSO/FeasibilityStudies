@@ -7,7 +7,8 @@ function [POS, Error] = geo2rect(GEO_POS, GEO_Error)
 %   The longitude is the azimuth (phi)
 %   The latitude is the elevation (theta)
 %   The elevation is added to the radius of earth and its the R value
-sea_lev = 6371000;
+% sea_lev = 6371000;
+sea_lev = 6378137;
 
 lat_min = deg2rad(GEO_POS(1)-GEO_Error(1));
 lat = deg2rad(GEO_POS(1));

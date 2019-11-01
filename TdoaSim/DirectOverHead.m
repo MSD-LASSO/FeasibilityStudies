@@ -9,7 +9,7 @@ th=sqrt(t^2*ug/rs^3)+th0;
 u=th+w;
 HA=(280.4606 + 360.9856473 * t/(24 * 3600))*pi/180;
 RzHA=[cos(HA) sin(HA) 0; -sin(HA) cos(HA) 0; 0 0 1];
-r=rs*[cos(u)*cos(om)-sin(u)*cos(in)*sin(om) ;cos(u)*sin(om)-sin(u)*cos(in)*cos(om); sin(u)*sin(in)];
+r=rs*[cos(u)*cos(om)-sin(u)*cos(in)*sin(om) ;cos(u)*sin(om)+sin(u)*cos(in)*cos(om); sin(u)*sin(in)];
 
 %% Let elevation = 90 deg.
 lat=0.751981147060969;	
@@ -27,10 +27,19 @@ Cons=simplify(E*R,'steps',10);
 b=satTop+Cons;
 A=E*RzHA;
 rResult=A\b;
+R=subs(R,[ph la t th0 rs Re sz ug],[lat long t_Oct30th11amUTC th_orbit a_orbit Re_model sz_actual ug_actual]);
+th=subs(th,[ph la t th0 rs Re sz ug],[lat long t_Oct30th11amUTC-3600 th_orbit a_orbit Re_model sz_actual ug_actual]);
+th=th-floor(th/(2*pi))*2*pi
 r=subs(r,[ph la t th0 rs Re sz ug],[lat long t_Oct30th11amUTC th_orbit a_orbit Re_model sz_actual ug_actual]);
 rResult=subs(rResult,[ph la t th0 rs Re sz ug],[lat long t_Oct30th11amUTC th_orbit a_orbit Re_model sz_actual ug_actual]);
 Eqn=simplify(r-rResult,'steps',10);
-out=vpasolve(r-rResult,[in,om,w]);
+out=solve(Eqn,[in,om,w]);
+
+J2000coord=vpa(rResult);
+norm(J2000coord)
+[longitude latitude altitude]=cart2sph(J2000coord(1),J2000coord(2),J2000coord(3));
+longitude=vpa(longitude*180/pi)
+latitude=vpa(latitude*180/pi)
 
 %parameters to try
 i=out.in
@@ -38,7 +47,7 @@ om=out.om
 w=out.w
 th0=vpa(th_orbit)
 a_orbit=500e3+Re_model
-e=1
+e=0
 t=vpa(t_Oct30th11amUTC)
 
 la=vpa(lat)

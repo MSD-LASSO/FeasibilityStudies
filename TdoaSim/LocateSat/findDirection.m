@@ -23,7 +23,8 @@ Eqnx=x0+t*mx-x;
 Eqny=y0+t*my-y;
 Eqnz=z0+t*mz-z;
 
-R=6371e3;
+% R=6371e3;
+R=6378137;
 % EqnSphere1=sqrt(R^2-x^2-y^2)-z;
 % EqnSphere2=-sqrt(R^2-x^2-y^2)-z;
 Sphere=x^2+y^2+z^2-R^2;

@@ -41,11 +41,11 @@ for i=1:n
     
     %THis could is here because the Lat and Long are incorrect on the text
     %files.
-    temp=stations{i}*180/pi;
-    temp=[temp(:,2) temp(:,1) temp(:,3)];
-    GND = getStruct(temp, GND_error);
+%     temp=stations{i}*180/pi;
+%     temp=[temp(:,2) temp(:,1) temp(:,3)];
+%     GND = getStruct(temp, GND_error);
     %%%%%%%%%%%%%%%%
-%     GND = getStruct(stations{i}*180/pi, GND_error);
+    GND = getStruct(stations{i}*180/pi, GND_error);
     
     %manually set coordinate error.
     for j=1:length(GND)
@@ -57,12 +57,13 @@ for i=1:n
     for j=1:z
         %THis could is here because the Lat and Long are incorrect on the text
         %files.
-        temp=satellites{i}(j,:);
-        temp=[temp(:,2)*180/pi temp(:,1)*180/pi temp(:,3)];
-        SAT = getStruct(temp, zeros(1,4));
+%         temp=satellites{i}(j,:);
+%         temp=[temp(:,2)*180/pi temp(:,1)*180/pi temp(:,3)];
+%         SAT = getStruct(temp, zeros(1,4));
         %%%%%%%%%%%%%%%%
         %no satellite error for now.
-%         SAT = getStruct(satellites{i}(j,:),zeros(1,4));
+        
+        SAT = getStruct(satellites{i}(j,:),zeros(1,4));
 
         OneAtaTime(GND,SAT,1,1,name(1:end-3));
     end
