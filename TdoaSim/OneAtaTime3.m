@@ -57,7 +57,7 @@ for i=1:3 %cycle through x,y,z.
             
             ErrStr=num2str(Err);
 %             ErrStr=strrep(ErrStr,'-','a');
-            locations=TDoA(RT,TimeDiffs*3e8,10,[4.5e6 4.8e6 5.1e6 ],1,['Run ' num2str(k) ' With Receiver ' num2str(j) ' Location Error = ' ErrStr]);
+            locations=TDoA(RT,TimeDiffs*3e8,10,[1e6 2e6 3e6 4e6 5e6 7e6],1,['Run ' num2str(k) ' With Receiver ' num2str(j) ' Location Error = ' ErrStr]);
             
             %Sat in TDoA generated frame location.
 %             expectedShifted=expected-locations(2,:);

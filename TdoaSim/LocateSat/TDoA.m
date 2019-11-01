@@ -202,6 +202,11 @@ function location=solvePlanes(HyperboloidSet,zPlanes,SymVars,AcceptanceTolerance
 %Zplanes a 1D vector of z values to evaluate at. 
 %h1 is the figure handler.
 
+% GTaroundRIT1stpass=[773985.116196977,-6336267.04597780,2542303.67225501];
+% vpa(subs(HyperboloidSet(3),SymVars,[773985.116196977,-6336267.04597780,2542303.67225501]))
+%GTSentinelSat=[1115209.69912918,-5103843.88452363,4886149.18623531]
+% vpa(subs(HyperboloidSet(3),SymVars,[1115209.69912918,-5103843.88452363,4886149.18623531]))
+
 %This function is optimized for p=3. It was programmed to do higher numbers
 %as well. 
 p=length(HyperboloidSet);
@@ -212,13 +217,15 @@ if isempty(h1)==0
     X1=h2.XLim*2;
     Y1=h2.YLim*2;
     Z1=h2.ZLim;
-    fimplicit3(HyperboloidSet,[X1 Y1 Z1],'meshdensity',40)
+    fimplicit3(HyperboloidSet(1))%[X1 Y1 Z1],'meshdensity',40
+    fimplicit3(HyperboloidSet(2))
+    fimplicit3(HyperboloidSet(3))
 %     fimplicit(HyperboloidSet,[-30 30 -30 30])
 %     xlim([-30 30])
 %     ylim([-30 30])
 %     for i=1:p
 %         figure()
-%         fimplicit3(HyperboloidSet(i),[X1 Y1 h2.ZLim],'meshdensity',40);
+%         fimplicit3(HyperboloidSet(i));%,[X1 Y1 h2.ZLim],'meshdensity',40
 %     end
 end
 
@@ -248,6 +255,9 @@ for u=1:length(zPlanes)
     end 
     [temp,AllPts]=findSolnsFromIntersects(Intersect2HypersX,Intersect2HypersY,zPlanes(u),3,AcceptanceTolerance);
     
+    %debugging around RIT. 
+%     AllPts=[-19102113.5935823,11105810.9245794;-4242561.74688672,144046.862886079;-131685.449415907,-2422934.19974021;1081538.56313087,-2936674.25951694]
+    
     %Debugging Purposes
     h2=figure();
 %     fimplicit(Hyperboloidtemp,[min(AllPts(:,1)) max(AllPts(:,1)) min(AllPts(:,2)) max(AllPts(:,2))]);
@@ -256,7 +266,7 @@ for u=1:length(zPlanes)
     hold on
     fimplicit(Hyperboloidtemp);
     title(['ZPlane = ' num2str(zPlanes(u)) ' - ' AdditionalTitleStr]);
-    
+
     %continue with code.
     if size(temp,1)==1
        %only 1 point was found.
