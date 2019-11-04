@@ -323,47 +323,54 @@ function [location,potentialPoints]=findSolnsFromIntersects(Intersect2HypersX, I
         end
         potentialPoints=potentialPoints(realPoints,:);
         
-        %% Solve. 
-        %Sort by X.
-        potentialPoints=sortrows(potentialPoints);
-        %get the differences and find the ones below a certain threshold.
-        differences=diff(potentialPoints);
-%         Indices=find(abs(differences(:,1))<AcceptanceTolerance & abs(differences(:,2))<AcceptanceTolerance);
-        
-        normDiffs=vecnorm(differences,2,2);
-        normDiffSorted=sort(normDiffs);
-        vals=normDiffSorted(1:4);
-        Indices=find(normDiffs==vals(1) | normDiffs==vals(2) | normDiffs==vals(3)| normDiffs==vals(4));
-        
-        if isempty(Indices)
-            warning('Tolerance may be set too low. No common solutions were found.')
-            location=nan(2,3);
-            return
-        end
-        %Decide the number of solutions
-        IndicesDifferences=diff(Indices)-1;
-        numSolns=sum(IndicesDifferences>0)+1;
-        dividingIndices=find(IndicesDifferences>0);
-        dividingIndices=[0; dividingIndices; length(Indices)];
-        
-        %now get the points associated with differences below that
-        %threshold.
-        soln=cell(numSolns,1);
-        location=zeros(numSolns,3);
-        RealSolns=true(numSolns,1);
-        for i=1:numSolns
-            pointsForThisSolution=Indices(dividingIndices(i)+1:dividingIndices(i+1));
-            pointsForThisSolution=[pointsForThisSolution; pointsForThisSolution(end)+1];
-            if length(pointsForThisSolution)>=pointThreshold
-                soln{i}=potentialPoints(pointsForThisSolution,:);
-                %average those points together
-                location(i,1:2)=mean(soln{i});
-                location(i,3)=z;
-            else
-                %not enough points converged there.
-                RealSolns(i)=false;
+        try
+            %% Solve. 
+            %Sort by X.
+            potentialPoints=sortrows(potentialPoints);
+            %get the differences and find the ones below a certain threshold.
+            differences=diff(potentialPoints);
+    %         Indices=find(abs(differences(:,1))<AcceptanceTolerance & abs(differences(:,2))<AcceptanceTolerance);
+
+            normDiffs=vecnorm(differences,2,2);
+            normDiffSorted=sort(normDiffs);
+            vals=normDiffSorted(1:4);
+            Indices=find(normDiffs==vals(1) | normDiffs==vals(2) | normDiffs==vals(3)| normDiffs==vals(4));
+
+            if isempty(Indices)
+                warning('Tolerance may be set too low. No common solutions were found.')
+                location=nan(2,3);
+                return
             end
+            %Decide the number of solutions
+            IndicesDifferences=diff(Indices)-1;
+            numSolns=sum(IndicesDifferences>0)+1;
+            dividingIndices=find(IndicesDifferences>0);
+            dividingIndices=[0; dividingIndices; length(Indices)];
+
+            %now get the points associated with differences below that
+            %threshold.
+            soln=cell(numSolns,1);
+            location=zeros(numSolns,3);
+            RealSolns=true(numSolns,1);
+            for i=1:numSolns
+                pointsForThisSolution=Indices(dividingIndices(i)+1:dividingIndices(i+1));
+                pointsForThisSolution=[pointsForThisSolution; pointsForThisSolution(end)+1];
+                if length(pointsForThisSolution)>=pointThreshold
+                    soln{i}=potentialPoints(pointsForThisSolution,:);
+                    %average those points together
+                    location(i,1:2)=mean(soln{i});
+                    location(i,3)=z;
+                else
+                    %not enough points converged there.
+                    RealSolns(i)=false;
+                end
+            end
+            location=location(RealSolns,:);
+        catch ME
+            location=[];
+            warning('No locations found...see below.')
+            warning([ME.message ' first instance at ' num2str(ME.stack(1).line)])
         end
-        location=location(RealSolns,:);
+            
         
 end

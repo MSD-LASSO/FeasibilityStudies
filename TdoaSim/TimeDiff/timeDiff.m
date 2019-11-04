@@ -30,8 +30,8 @@ count = 1;
 for i = 1:s
     for j = 1:g
         for k = j+1:g
-            [temp_dist1, temp_error1] = gnd2sat(GROUND(j).coord, GROUND(j).coord_error, SAT(i).coord, SAT(i).coord_error);
-            [temp_dist2, temp_error2] = gnd2sat(GROUND(k).coord, GROUND(k).coord_error, SAT(i).coord, SAT(i).coord_error);
+            [temp_dist1, temp_error1] = gnd2sat(GROUND(j).ECFcoord, GROUND(j).ECFcoord_error, SAT(i).ECFcoord, SAT(i).ECFcoord_error);
+            [temp_dist2, temp_error2] = gnd2sat(GROUND(k).ECFcoord, GROUND(k).ECFcoord_error, SAT(i).ECFcoord, SAT(i).ECFcoord_error);
             [timeDifferences(1, i, count), timeDifferences(2, i, count)] = dist2time(temp_dist1, temp_error1, temp_dist2, temp_error2, GROUND(j).clk, GROUND(k).clk);
             count = count + 1;
        end

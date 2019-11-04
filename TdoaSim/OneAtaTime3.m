@@ -5,7 +5,7 @@ function OneAtaTime3(GND,SAT,time,location,folderName)
 %when it calls TDoA. 
 %It then creates plots of perturbation amount vs. absolute error.
 
-expected=SAT.coord;
+expected=SAT.Topocoord;
 
 m=length(GND);
 LocationErrs=zeros(m,3);
@@ -14,9 +14,9 @@ timeSyncErrs=zeros(m,1);
 GNDforTime=GND;
 for i=1:m
     %gather all locations errors.
-    LocationErrs(i,:)=GND(i).coord_error;
+    LocationErrs(i,:)=GND(i).ECFcoord_error;
 
-    Receivers(i,:)=GND(i).coord;
+    Receivers(i,:)=GND(i).Topocoord;
     %for time.
     timeSyncErrs(i)=GND(i).clk;
     GNDforTime(i).clk=0;
@@ -57,7 +57,7 @@ for i=1:3 %cycle through x,y,z.
             
             ErrStr=num2str(Err);
 %             ErrStr=strrep(ErrStr,'-','a');
-            locations=TDoA(RT,TimeDiffs*3e8,10,[3e6 4e6 5e6 7e6],1,['Run ' num2str(k) ' With Receiver ' num2str(j) ' Location Error = ' ErrStr]);
+            locations=TDoA(RT,TimeDiffs*3e8,10,[0 50e3 100e3 200e3 500e3 2000e3],1,['Run ' num2str(k) ' With Receiver ' num2str(j) ' Location Error = ' ErrStr]);
             
             %Sat in TDoA generated frame location.
 %             expectedShifted=expected-locations(2,:);

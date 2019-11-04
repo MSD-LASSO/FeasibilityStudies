@@ -45,7 +45,7 @@ for i=1:n
 %     temp=[temp(:,2) temp(:,1) temp(:,3)];
 %     GND = getStruct(temp, GND_error);
     %%%%%%%%%%%%%%%%
-    GND = getStruct([stations{i}(:,1:2)*180/pi stations{i}(:,3)], GND_error);
+    GND = getStruct([stations{i}(:,1:2)*180/pi stations{i}(:,3)], GND_error, [GTframe{i}(1:2)*180/pi GTframe{i}(3)]);
     
     %manually set coordinate error.
     for j=1:length(GND)
@@ -54,7 +54,7 @@ for i=1:n
     
     %% For each satellite position, solve for the sensitivity.
     z=size(satellites{i},1);
-    for j=1:z
+    for j=2:z
         %THis could is here because the Lat and Long are incorrect on the text
         %files.
 %         temp=satellites{i}(j,:);
@@ -71,7 +71,7 @@ for i=1:n
 %         alSat=492863.000000001300000+al;
 %         [xs2,ys2,zs2]=sph2cart(longSat,latSat,alSat);
 
-        SAT = getStruct([satellites{i}(j,1:2)*180/pi satellites{i}(j,3)],zeros(1,4));
+        SAT = getStruct([satellites{i}(j,1:2)*180/pi satellites{i}(j,3)],zeros(1,4),[GTframe{i}(1:2)*180/pi GTframe{i}(3)]);
 
         OneAtaTime(GND,SAT,1,1,name(1:end-3));
     end
