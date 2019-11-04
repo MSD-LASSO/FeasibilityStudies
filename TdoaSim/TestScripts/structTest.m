@@ -8,7 +8,7 @@ GND = getStruct(Stations, GND_Error);
 SAT = getStruct(Satellites, SAT_Error);
 assert(GND(2).lat==43.086285);
 
-GND(3)
+GND(3);
 
 
 

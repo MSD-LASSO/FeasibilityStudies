@@ -21,20 +21,22 @@ fimplicit(expected);
 assert(logical(expected==Hyperboloid));
 
 %% 2D. 45 degree angle. Centered around zero still.
-%The result is an ellispe. No comment on that right now.
-% R1=1/sqrt(2)*[-cosd(45) -sind(45) 0];
-% R2=1/sqrt(2)*[cosd(45) sind(45) 0];
-% delta=2;
-% Hyperboloid=CreateHyperboloid(R1,R2,delta);
-% figure()
-% plot(R1(1),R1(2),'.','MarkerSize',10);
-% hold on
-% plot(R2(1),R2(2),'.','MarkerSize',10);
-% grid on
-% fimplicit(Hyperboloid);
-% expected=2*x*y - 1;
-% fimplicit(expected);
-% assert(logical(expected==simplify(Hyperboloid)));
+%The result is an ellispe.
+%This is because the delta chosen is larger than the maximum distance
+%between the stations. (not physically possible)
+R1=1/sqrt(2)*[-cosd(45) -sind(45) 0];
+R2=1/sqrt(2)*[cosd(45) sind(45) 0];
+delta=2;
+Hyperboloid=CreateHyperboloid(R1,R2,delta);
+figure()
+plot(R1(1),R1(2),'.','MarkerSize',10);
+hold on
+plot(R2(1),R2(2),'.','MarkerSize',10);
+grid on
+fimplicit(Hyperboloid,[-2 2 -2 2]);
+expected=(3*x^2)/2 - x*y + (3*y^2)/2 - 1;
+fimplicit(expected);
+assert(logical(expected==simplify(expand(Hyperboloid),'steps',10)));
 
 %% 2D. Offset only. No angle.
 R1=[0 1 0];
@@ -51,25 +53,24 @@ expected=100*(x-1)^2 - (100*(y-1)^2)/99 - 1;
 assert(logical(expected==Hyperboloid));
 
 %% 2D. Offset + 60 degree
-% RM=[cosd(60) -sind(60) 0; sind(60) cosd(60) 0; 0 0 1];
-% R1original=[2; 3; 0];
-% R2original=[6; 3; 0];
-% Rcenter=[4; 3; 0]
-% R1=RM*R1original;
-% R2=RM*R2original;
-% delta=1;
-% Hyperboloid=CreateHyperboloid(R1,R2,delta);
-% figure()
-% plot(R1(1),R1(2),'.','MarkerSize',10,'color','blue');
-% hold on
-% plot(R2(1),R2(2),'.','MarkerSize',10,'color','blue');
-% plot(R1original(1),R1original(2),'.','MarkerSize',10,'color','black');
-% plot(R2original(1),R2original(2),'.','MarkerSize',10,'color','black');
-% grid on
-% fimplicit(Hyperboloid);
-% expected=100*(x-1)^2 - (100*(y-1)^2)/399 - 1;
-% assert(logical(expected==Hyperboloid));
-%not sure how to check this one.
+RM=[cosd(60) -sind(60) 0; sind(60) cosd(60) 0; 0 0 1];
+R1original=[2; 3; 0];
+R2original=[6; 3; 0];
+Rcenter=[4; 3; 0];
+R1=RM*R1original;
+R2=RM*R2original;
+delta=1;
+Hyperboloid=CreateHyperboloid(R1,R2,delta);
+figure()
+plot(R1(1),R1(2),'.','MarkerSize',10,'color','blue');
+hold on
+plot(R2(1),R2(2),'.','MarkerSize',10,'color','blue');
+plot(R1original(1),R1original(2),'.','MarkerSize',10,'color','black');
+plot(R2original(1),R2original(2),'.','MarkerSize',10,'color','black');
+grid on
+fimplicit(Hyperboloid);
+expected=4*(x/2 + (3^(1/2)*(y - 5589081546040917/1125899906842624))/2 + 1346747901294977/4503599627370496)^2 - (4*((3^(1/2)*(x + 1346747901294977/2251799813685248))/2 - y/2 + 5589081546040917/2251799813685248)^2)/15 - 1;
+assert(logical(expected==Hyperboloid));
 
 %% 3D. Offset only
 R1=[-1 0 1];
@@ -86,20 +87,21 @@ expected=-100*(z-1)^2/99+100*x^2 - (100*y^2)/99 - 1;
 assert(logical(expected==Hyperboloid));
 
 %% 3D. 45 degree angle. With offset in z. 
-%The result is an ellispsoid. No comment on that right now.
-% R1=1/sqrt(2)*[-cosd(45) -sind(45) 1];
-% R2=1/sqrt(2)*[cosd(45) sind(45) 1];
-% delta=2;
-% Hyperboloid=CreateHyperboloid(R1,R2,delta);
-% figure()
-% plot3(R1(1),R1(2),R1(3),'.','MarkerSize',10);
-% hold on
-% plot3(R2(1),R2(2),R1(3),'.','MarkerSize',10);
-% grid on
-% fimplicit3(Hyperboloid);
-% expected=z^2 - 2^(1/2)*z + 2*x*y - 1/2;
-% fimplicit3(expected);
-% assert(logical(expected==simplify(Hyperboloid)));
+%The result is an ellispsoid.
+%Again the delta is too large. Not physically possible. 
+R1=1/sqrt(2)*[-cosd(45) -sind(45) 1];
+R2=1/sqrt(2)*[cosd(45) sind(45) 1];
+delta=2;
+Hyperboloid=CreateHyperboloid(R1,R2,delta);
+figure()
+plot3(R1(1),R1(2),R1(3),'.','MarkerSize',10);
+hold on
+plot3(R2(1),R2(2),R1(3),'.','MarkerSize',10);
+grid on
+fimplicit3(Hyperboloid);
+expected=(3*x^2)/2 - x*y + (3*y^2)/2 + 2*z^2 - 2*2^(1/2)*z;
+fimplicit3(expected);
+assert(logical(expected==simplify(expand(Hyperboloid))));
 
 %% 0 Difference
 R1=[-1 0 1];

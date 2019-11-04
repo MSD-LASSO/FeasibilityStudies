@@ -1,6 +1,6 @@
 close all
 clearvars
-Folder='TestData';
+Folder='../TestData';
 [stations,satellites,satellitesGT,GTframe,Time,fileName]=readGroundTrack(Folder);
 
 SE=[0.750	0.698	0.000;
@@ -41,9 +41,7 @@ TT=[
 '2019-10-20T23:50:25.227 '];
 
 fileName_actual='testOrbitDataV2.txt';
-Assert(strcmp(fileName,fileName_actual));
-
-addpath('LocateSat')
+assert(strcmp(fileName,fileName_actual));
 
 AssertToleranceMatrix(SE,stations{1},0);
 AssertToleranceMatrix(SS,satellites{1},0);

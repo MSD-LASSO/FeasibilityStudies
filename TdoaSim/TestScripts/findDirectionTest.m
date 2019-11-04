@@ -5,7 +5,7 @@ syms x y z t
 
 %% along X axis
 W=[0 0 0; 1 0 0];
-
+ReceiverLocation=[ 3.34951e6 ,450e4,-302e4];
 [az,el,r]=findDirection(W,ReceiverLocation);
 rExpected=[6371e3 0 0];
 azE=0;
