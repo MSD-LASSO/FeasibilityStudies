@@ -32,7 +32,7 @@ for i=1:m
     %for time.
     timeSyncErrs(i)=GND(i).clk;
     GNDforTime(i).clk=0;
-    GNDforTime(i).coord_error=[0,0,0];
+    GNDforTime(i).ECFcoord_error=[0,0,0];
 end
 
 
@@ -44,14 +44,14 @@ AbsErr=cell(m,3);
 AbsTotalErr=cell(m,3);
 
 Axis={'x','y','z'};
-for i=1:3 %cycle through x,y,z.
+for i=3:3 %cycle through x,y,z.
     for j=1:m %cycle through each station.
         ErrorMax=LocationErrs(j,i); %get the location error for this test
         test{j,i}=linspace(-ErrorMax,ErrorMax,10); %set up a range.
         test{j,i}=[0 test{j,i}]; %control. no error case.
         AbsErr{j,i}=zeros(length(test),3);
         AbsTotalErr{j,i}=zeros(length(test),1);
-        for k=1:length(test{j,i})
+        for k=length(test{j,i}):length(test{j,i})
             %for that test range, perturbate a GND coordinate, but don't
             %change the time differences.
             RT=Receivers;
@@ -113,14 +113,13 @@ AbsErr=cell(m,3);
 AbsTotalErr=cell(m,3);
 for i=1:1 %cycle through nothing. Clock error is 1D.
     for j=1:m %cycle through each station.
-        ErrorMax=timeSyncErrs(j,i); %get the location error for this test
+        ErrorMax=timeSyncErrs(j,i); %get the clock error for this test.
         test{j,i}=linspace(-ErrorMax,ErrorMax,10); %set up a range.
         test{j,i}=[0 test{j,i}]; %control. no error case.
         AbsErr{j,i}=zeros(length(test),3);
         AbsTotalErr{j,i}=zeros(length(test),1);
         for k=1:length(test{j,i})
-            %for that test range, perturbate a GND coordinate, but don't
-            %change the time differences.
+            %for that test range, perturbate a clock error.
             GNDt=GNDforTime;
             GNDt(j).clk=test{j,i}(k);
             [TimeDiffs,TimeDiffErr]=timeDifftoMatrix(GNDt,SAT);
@@ -156,7 +155,7 @@ for i=1:1 %cycle through nothing. Clock error is 1D.
         for k=2:4
             subplot(2,2,k)
             plot(test{j,i},AbsErr{j,i}(:,k-1),'.','MarkerSize',20);
-            title(['Resulting Sat Error in Coord: ' variable{k-1}]);
+            title(['Resulting Sat Error from Clk Coord: ' variable{k-1}]);
         end
         GraphSaver({'png'},['Plots/' folderName '/OneAtaTime3Stations/' 'ClockErrInReceiver' num2str(j)],1);
     end

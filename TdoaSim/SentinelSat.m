@@ -115,6 +115,6 @@ end
 %% oneatatime
 if Test3==1
 % OneAtaTime3(GND,SAT,1,1,'SentinelSatTopo',1);
-OneAtaTime3(GND,SAT,1,1,'SentinelSatECF',0);
+OneAtaTime3(GND,SAT,0,1,'SentinelSatECF',0);
 % OneAtaTime4(GND4,SAT,0,1);
 end
