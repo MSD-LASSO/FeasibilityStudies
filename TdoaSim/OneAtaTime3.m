@@ -1,11 +1,19 @@
-function OneAtaTime3(GND,SAT,time,location,folderName)
+function OneAtaTime3(GND,SAT,time,location,folderName,mode)
 %This function will perform a OneAtaTime uncertainty analysis for the Time
 %Difference of Arrival signal. 
 %It takes each parameter with a specified error and varies that parameter
 %when it calls TDoA. 
 %It then creates plots of perturbation amount vs. absolute error.
 
-expected=SAT.Topocoord;
+if nargin<6
+    mode=1; %use Topo Frame. 
+end
+
+if mode==1
+    expected=SAT.Topocoord;
+else
+    expected=SAT.ECFcoord;
+end
 
 m=length(GND);
 LocationErrs=zeros(m,3);
@@ -16,7 +24,11 @@ for i=1:m
     %gather all locations errors.
     LocationErrs(i,:)=GND(i).ECFcoord_error;
 
-    Receivers(i,:)=GND(i).Topocoord;
+    if mode==1
+        Receivers(i,:)=GND(i).Topocoord;
+    else
+        Receivers(i,:)=GND(i).ECFcoord;
+    end
     %for time.
     timeSyncErrs(i)=GND(i).clk;
     GNDforTime(i).clk=0;
@@ -57,7 +69,12 @@ for i=1:3 %cycle through x,y,z.
             
             ErrStr=num2str(Err);
 %             ErrStr=strrep(ErrStr,'-','a');
-            locations=TDoA(RT,TimeDiffs*3e8,10,[0 50e3 100e3 200e3 500e3 2000e3],1,['Run ' num2str(k) ' With Receiver ' num2str(j) ' Location Error = ' ErrStr]);
+            if mode==1
+                zPlanes=[0 50e3 100e3 200e3 500e3 2000e3];
+            else
+                zPlanes=[4.5e6 4.8e6 5.1e6];
+            end
+            locations=TDoA(RT,TimeDiffs*3e8,10,zPlanes,1,['Run ' num2str(k) ' With Receiver ' num2str(j) ' Location Error = ' ErrStr]);
             
             %Sat in TDoA generated frame location.
 %             expectedShifted=expected-locations(2,:);
@@ -110,7 +127,13 @@ for i=1:1 %cycle through nothing. Clock error is 1D.
             RT=Receivers;
             ErrStr=num2str(num2str([TimeDiffErr(1,2) TimeDiffErr(1,3) TimeDiffErr(2,3)]));
 %             ErrStr=strrep(ErrStr,'-','a');
-            locations=TDoA(RT,(TimeDiffs+TimeDiffErr)*3e8,100,[4.5e6 4.8e6 5.1e6 ],1,['Run ' num2str(k) ' With Time Error = ' ErrStr]);
+
+            if mode==1
+                zPlanes=[0 50e3 100e3 200e3 500e3 2000e3];
+            else
+                zPlanes=[4.5e6 4.8e6 5.1e6];
+            end
+            locations=TDoA(RT,(TimeDiffs+TimeDiffErr)*3e8,100,zPlanes,1,['Run ' num2str(k) ' With Time Error = ' ErrStr]);
             
             
             %Sat in TDoA generated frame location.

@@ -17,9 +17,9 @@ Satellites = [43.084625 -77.674371 775000];
 % SAT_Error = [0.000001 0.000001 0 0];
 SAT_Error= zeros(1,4);
 
-GND = getStruct(Stations, GND_Error);
-GND4= getStruct(Stations4, GND_Error4);
-SAT = getStruct(Satellites, SAT_Error);
+GND = getStruct(Stations, GND_Error, Stations(1,:));
+GND4= getStruct(Stations4, GND_Error4, Stations(1,:));
+SAT = getStruct(Satellites, SAT_Error, Stations(1,:));
 
 timeDifferences = timeDiff(GND, SAT);
 timeDifferences4 = timeDiff(GND4, SAT);
@@ -114,6 +114,7 @@ end
 
 %% oneatatime
 if Test3==1
-OneAtaTime3(GND,SAT,1,1);
+% OneAtaTime3(GND,SAT,1,1,'SentinelSatTopo',1);
+OneAtaTime3(GND,SAT,1,1,'SentinelSatECF',0);
 % OneAtaTime4(GND4,SAT,0,1);
 end

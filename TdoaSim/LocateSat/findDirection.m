@@ -6,8 +6,6 @@ function [azimuth, elevation,EarthCoordinates]=findDirection(lineFit,ReceiverLoc
 %there are 2 intersections of the line with the ellipse. We use the one
 %closer to the ReceiverLocation. 
 
-[azimuth,elevation]=getAzEl(lineFit(2,:));
-
 x0=lineFit(1,1);
 y0=lineFit(1,2);
 z0=lineFit(1,3);
@@ -41,4 +39,9 @@ for i=1:size(EarthCoordinates,1)
 end
 [~,I]=min(d);
 EarthCoordinates=EarthCoordinates(I,:);
+
+% [azimuth,elevation]=getAzEl(lineFit(2,:));
+[azimuth elevation]=geo2AzEl(lineFit(1,:)+lineFit(2,:),EarthCoordinates);
+
+end
 
