@@ -20,6 +20,7 @@ LocationErrs=zeros(m,3);
 Receivers=zeros(m,3);
 timeSyncErrs=zeros(m,1);
 GNDforTime=GND;
+Reference=GND(1).RelativeToECF;
 for i=1:m
     %gather all locations errors.
     LocationErrs(i,:)=GND(i).ECFcoord_error;
@@ -61,7 +62,7 @@ for i=3:3 %cycle through x,y,z.
             
             figure()
 %             expected=[1114097.00526875,-5098751.55457051,4881274.05987576];
-            plot3(expected(1),expected(2),expected(3),'o','linewidth',3);
+            plot3(expected(1),expected(2),expected(3),'.','MarkerSize',100,'color','green');
             title(['3 Stations Direction Test - ' 'With Receiver ' num2str(j) ' Location Error = ' num2str(Err)])
             % plot3(
             grid on
@@ -74,7 +75,15 @@ for i=3:3 %cycle through x,y,z.
             else
                 zPlanes=[4.5e6 4.8e6 5.1e6];
             end
-            locations=TDoA(RT,TimeDiffs*3e8,10,zPlanes,1,['Run ' num2str(k) ' With Receiver ' num2str(j) ' Location Error = ' ErrStr]);
+            locations=TDoA(RT,TimeDiffs*3e8,Reference,10,zPlanes,1,['Run ' num2str(k) ' With Receiver ' num2str(j) ' Location Error = ' ErrStr]);
+            
+            if mode==1
+                temp=locations([2 4],:);
+                tempGeo=SAT(1).RelativeToGeo;
+                Sphere=referenceSphere('Earth');
+                Sphere.Radius=6378137;
+                [xE, yN, zU]=ecef2enu(temp(:,1),temp(:,2),temp(:,3),tempGeo(1),tempGeo(2),tempGeo(3),Sphere);
+            end
             
             %Sat in TDoA generated frame location.
 %             expectedShifted=expected-locations(2,:);
@@ -132,7 +141,7 @@ for i=1:1 %cycle through nothing. Clock error is 1D.
             else
                 zPlanes=[4.5e6 4.8e6 5.1e6];
             end
-            locations=TDoA(RT,(TimeDiffs+TimeDiffErr)*3e8,100,zPlanes,1,['Run ' num2str(k) ' With Time Error = ' ErrStr]);
+            locations=TDoA(RT,(TimeDiffs+TimeDiffErr)*3e8,Reference,100,zPlanes,1,['Run ' num2str(k) ' With Time Error = ' ErrStr]);
             
             
             %Sat in TDoA generated frame location.

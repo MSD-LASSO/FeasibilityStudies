@@ -1,4 +1,4 @@
-function [location, locationError] = TDoA(receiverLocations,distanceDifferences,AcceptanceTolerance,zPlanes,DebugMode,AdditionalTitleStr)
+function [location, locationError] = TDoA(receiverLocations,distanceDifferences,Reference,AcceptanceTolerance,zPlanes,DebugMode,AdditionalTitleStr)
 %INPUTS: nx3 vector of receiver Locations (x,y,z) pairs, measured from a
         %fixed reference.
         %nxn upper triangular matrix of all combinations of 
@@ -13,19 +13,19 @@ function [location, locationError] = TDoA(receiverLocations,distanceDifferences,
 
 n=size(receiverLocations,1);
 
-if nargin<3
+if nargin<4
     AcceptanceTolerance=1e-5;
 end
 
-if nargin<4
+if nargin<5
     zPlanes=0;
 end
 
-if nargin<5
+if nargin<6
     DebugMode=0;
 end
 
-if nargin<6
+if nargin<7
     AdditionalTitleStr='';
 end
 
@@ -187,8 +187,8 @@ if m>1
 %     location=LeastSquaresLines(LineFit);
 elseif abs(sum(LineFit{1}(2,:)))>0
     %only 1 line available. Get a direction instead.
-    [azimuth, elevation, GeodeticPointXYZ]=findDirection(LineFit{m},receiverLocations(1,:));
-    [azimuth2, elevation2, GeodeticPointXYZ2]=findDirection(LineFit{m+1},receiverLocations(1,:));
+    [azimuth, elevation, GeodeticPointXYZ]=findDirection(LineFit{m},Reference);
+    [azimuth2, elevation2, GeodeticPointXYZ2]=findDirection(LineFit{m+1},Reference);
     location=[azimuth, elevation, 0; GeodeticPointXYZ; azimuth2 elevation2 0; GeodeticPointXYZ2];
     
 else

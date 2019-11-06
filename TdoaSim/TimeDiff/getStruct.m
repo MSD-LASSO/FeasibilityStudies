@@ -1,4 +1,4 @@
-function [a] = getStruct(Objects, Error, Reference,Sphere)
+function [a] = getStruct(Objects, Error, Reference,Reference_Error,Sphere)
 %This function inputs the lat, long and elevation as well and an error vector and creates
 %a structure with fields for all of the ground station parameters
 
@@ -8,7 +8,7 @@ function [a] = getStruct(Objects, Error, Reference,Sphere)
 %Reference [lat long elev]
 %Sphere - Reference Sphereoid. If empty, will use Spherical Earth.
 
-if nargin<4
+if nargin<5
     Sphere=referenceSphere('Earth');
     Sphere.Radius=6378137;
 end
@@ -26,6 +26,8 @@ for i = 1:n
     a(i).elev_er = Error(i, 3);
     [a(i).ECFcoord, a(i).ECFcoord_error] = geo2rect(Objects(i,:), Error(i,:));
     a(i).Topocoord = measureInTopocentricFrame(a(i).geo,Reference,Sphere);
+    a(i).RelativeToGeo = Reference;
+    [a(i).RelativeToECF a(i).ReferenceError] = geo2rect(Reference, Reference_Error);
     a(i).clk = Error(i, 4);
 end
 

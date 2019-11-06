@@ -3,9 +3,9 @@ function OneAtaTime(GND,SAT,considerTime,considerLocation,folderName)
 %folderName dictates the name one level below "plots".
 
 if length(GND)==3
-    OneAtaTime3(GND,SAT,considerTime,considerLocation,folderName);
+    OneAtaTime3(GND,SAT,Reference,considerTime,considerLocation,folderName);
 elseif length(GND)==4
-    OneAtaTime4(GND,SAT,considerTime,considerLocation,folderName);
+    OneAtaTime4(GND,SAT,Reference,considerTime,considerLocation,folderName);
 else
     error('Unknown case')
 end

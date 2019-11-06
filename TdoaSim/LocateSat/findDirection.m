@@ -1,10 +1,13 @@
-function [azimuth, elevation,EarthCoordinates]=findDirection(lineFit,ReceiverLocation)
+function [azimuth, elevation,EarthCoordinates]=findDirection(lineFit,Reference)
 %this function will calculate the azimuth and elevation of the fitted line
 %with respect to virtual reference point (point on Earth where line
 %crosses).
-%lineFit and ReceiverLocation is measured in Earth's frame.
+%lineFit and Reference is measured in Earth's frame.
 %there are 2 intersections of the line with the ellipse. We use the one
-%closer to the ReceiverLocation. 
+%closer to the Reference. 
+
+
+
 
 x0=lineFit(1,1);
 y0=lineFit(1,2);
@@ -35,7 +38,7 @@ EarthCoordinates=double([solution{2},solution{3},solution{4}]);
 %choose point closest to the Receiver.
 d=zeros(size(EarthCoordinates,1),1);
 for i=1:size(EarthCoordinates,1)
-    d(i)=norm(EarthCoordinates(i,:)-ReceiverLocation);
+    d(i)=norm(EarthCoordinates(i,:)-Reference);
 end
 [~,I]=min(d);
 EarthCoordinates=EarthCoordinates(I,:);
