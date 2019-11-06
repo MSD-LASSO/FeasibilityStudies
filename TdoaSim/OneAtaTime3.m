@@ -52,7 +52,7 @@ for i=3:3 %cycle through x,y,z.
         test{j,i}=[0 test{j,i}]; %control. no error case.
         AbsErr{j,i}=zeros(length(test),3);
         AbsTotalErr{j,i}=zeros(length(test),1);
-        for k=1:length(test{j,i})
+        for k=length(test{j,i}):length(test{j,i})
             %for that test range, perturbate a GND coordinate, but don't
             %change the time differences.
             RT=Receivers;

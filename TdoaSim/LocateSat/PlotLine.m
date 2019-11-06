@@ -27,6 +27,7 @@ for i=1:n
     z=LineBias(i,3)+t*LineSlope(i,3);
     plot3(x,y,z,'Linewidth',3);
     hold on
+    plot3(LineBias(i,1),LineBias(i,2),LineBias(i,3),'s','linewidth',3,'color','black')
 end
 grid on
 
