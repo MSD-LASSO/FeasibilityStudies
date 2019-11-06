@@ -117,7 +117,22 @@ end
 LineFit=LineFit(realLines(:,1),:); %remove fake lines.
 m=size(LineFit,1); %adjust m to reflect the number of successful sets.
 %% Debugging Purposes. Plot all lines
-if DebugMode==1 & logical(m>1)
+if DebugMode==1
+    for i=1:m
+        for j=1:2
+            LineBias=LineFit{m,j}(1,:);
+            LineSlope=LineFit{m,j}(2,:);
+            rangeLower=(receiverLocations(1,3)-LineBias(3))/LineSlope(3);
+            if rangeLower>0
+                range=[rangeLower rangeLower*5.1];
+            else
+                range=[rangeLower abs(rangeLower)*5.1];
+            end
+            PlotLine(LineBias,LineSlope,range,h1)
+        end
+    end
+    
+    
 %     figure()
 %     x=1114097.00526875;
 %     % [1114097.00526875,-5098751.55457051,4881274.05987576]
@@ -187,9 +202,16 @@ if m>1
 %     location=LeastSquaresLines(LineFit);
 elseif abs(sum(LineFit{1}(2,:)))>0
     %only 1 line available. Get a direction instead.
-    [azimuth, elevation, GeodeticPointXYZ]=findDirection(LineFit{m},Reference);
-    [azimuth2, elevation2, GeodeticPointXYZ2]=findDirection(LineFit{m+1},Reference);
-    location=[azimuth, elevation, 0; GeodeticPointXYZ; azimuth2 elevation2 0; GeodeticPointXYZ2];
+    %instead of finding an "imaginary" ground station by intersecting the
+    %line with Earth...
+%     [azimuth, elevation, GeodeticPointXYZ]=findDirection(LineFit{m},Reference);
+%     [azimuth2, elevation2, GeodeticPointXYZ2]=findDirection(LineFit{m+1},Reference);
+%     location=[azimuth, elevation, 0; GeodeticPointXYZ; azimuth2 elevation2 0; GeodeticPointXYZ2];
+
+    %Let us use the bias term.
+    [azimuth elevation]=geo2AzEl(LineFit{m}(2,:)+LineFit{m}(1,:),LineFit{m}(1,:));
+    [azimuth elevation]=geo2AzEl(LineFit{m+1}(2,:)+LineFit{m+1}(1,:),LineFit{m+1}(1,:));
+    location=[azimuth, elevation, 0; LineFit{m}(1,:); azimuth2 elevation2 0; Li];
     
 else
     error('Unexpected case')

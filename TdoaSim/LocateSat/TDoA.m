@@ -202,9 +202,16 @@ if m>1
 %     location=LeastSquaresLines(LineFit);
 elseif abs(sum(LineFit{1}(2,:)))>0
     %only 1 line available. Get a direction instead.
-    [azimuth, elevation, GeodeticPointXYZ]=findDirection(LineFit{m},Reference);
-    [azimuth2, elevation2, GeodeticPointXYZ2]=findDirection(LineFit{m+1},Reference);
-    location=[azimuth, elevation, 0; GeodeticPointXYZ; azimuth2 elevation2 0; GeodeticPointXYZ2];
+    %instead of finding an "imaginary" ground station by intersecting the
+    %line with Earth...
+%     [azimuth, elevation, GeodeticPointXYZ]=findDirection(LineFit{m},Reference);
+%     [azimuth2, elevation2, GeodeticPointXYZ2]=findDirection(LineFit{m+1},Reference);
+%     location=[azimuth, elevation, 0; GeodeticPointXYZ; azimuth2 elevation2 0; GeodeticPointXYZ2];
+
+    %Let us use the bias term.
+    [azimuth elevation]=geo2AzEl(LineFit{m}(2,:)+LineFit{m}(1,:),LineFit{m}(1,:));
+    [azimuth2 elevation2]=geo2AzEl(LineFit{m+1}(2,:)+LineFit{m+1}(1,:),LineFit{m+1}(1,:));
+    location=[azimuth, elevation, 0; LineFit{m}(1,:); azimuth2 elevation2 0; LineFit{m+1}(2,:)];
     
 else
     error('Unexpected case')
