@@ -117,28 +117,43 @@ end
 LineFit=LineFit(realLines(:,1),:); %remove fake lines.
 m=size(LineFit,1); %adjust m to reflect the number of successful sets.
 %% Debugging Purposes. Plot all lines
-if DebugMode==1 & logical(m>1)
-    figure()
-    x=1114097.00526875;
-    % [1114097.00526875,-5098751.55457051,4881274.05987576]
-    tCenter=(x-LineFit{1}(1,1))/LineFit{1}(2,1);
-    x=zeros(m,2);
-    y=zeros(m,2);
-    z=zeros(m,2);
+if DebugMode==1
     for i=1:m
-        for u=1:1
-            Line=LineFit{i,u};
-            syms t
-            %     fplot3(Line(1,1)+t*Line(2,1),Line(1,2)+t*Line(2,2),Line(1,3)+t*Line(2,3), [0 2.5]);
-            t=tCenter;
-            x(i,u)=Line(1,1)+t*Line(2,1);
-            y(i,u)=Line(1,2)+t*Line(2,2);
-            z(i,u)=Line(1,3)+t*Line(2,3);
-            plot3(x(i,u),y(i,u),z(i,u),'.','MarkerSize',20);
-            hold on
+        for j=1:2
+            LineBias=LineFit{m,j}(1,:);
+            LineSlope=LineFit{m,j}(2,:);
+            rangeLower=(receiverLocations(1,3)-LineBias(3))/LineSlope(3);
+            if rangeLower>0
+                range=[rangeLower rangeLower*5.1];
+            else
+                range=[rangeLower abs(rangeLower)*5.1];
+            end
+            PlotLine(LineBias,LineSlope,range,h1)
         end
     end
-    title(['Lines at Z = 4881274.05987576 - ' AdditionalTitleStr]);
+    
+    
+%     figure()
+%     x=1114097.00526875;
+%     % [1114097.00526875,-5098751.55457051,4881274.05987576]
+%     tCenter=(x-LineFit{1}(1,1))/LineFit{1}(2,1);
+%     x=zeros(m,2);
+%     y=zeros(m,2);
+%     z=zeros(m,2);
+%     for i=1:m
+%         for u=1:1
+%             Line=LineFit{i,u};
+%             syms t
+%             %     fplot3(Line(1,1)+t*Line(2,1),Line(1,2)+t*Line(2,2),Line(1,3)+t*Line(2,3), [0 2.5]);
+%             t=tCenter;
+%             x(i,u)=Line(1,1)+t*Line(2,1);
+%             y(i,u)=Line(1,2)+t*Line(2,2);
+%             z(i,u)=Line(1,3)+t*Line(2,3);
+%             plot3(x(i,u),y(i,u),z(i,u),'.','MarkerSize',20);
+%             hold on
+%         end
+%     end
+%     title(['Lines at Z = 4881274.05987576 - ' AdditionalTitleStr]);
 end
 
 %% Solve for single point or Direction. 

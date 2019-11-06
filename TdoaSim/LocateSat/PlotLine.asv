@@ -1,0 +1,32 @@
+function PlotLine(LineBias,LineSlope,range,handler)
+%PlotLine visualizes a line fit. IT can be added to a figure or plotted on
+%a new figure.
+
+%INPUTS: LineBias of form [x1,y1,z1; x2 y2 z2; etc.] One row for each line.
+        %LineSlope        [x1,y1,z1; x2 y2 z2; etc.]
+        %handler          Figure or empty
+        %range            [-t t; -s s]. Dictated for each line or once.
+        
+if nargin<4
+    handler=figure()
+end
+
+%% plot lines of form [x y z] = [x0 y0 z0] + t * [xd yd zd].
+
+n=size(LineBias,1);
+m=size(range,1);
+if n>m
+    %if range was not specified for every line. Make it the same.
+    range=ones(n,2).*range;
+end
+figure(handler)
+hold on
+for i=1:n
+    
+    plot3(
+    
+end
+
+    
+end
+
