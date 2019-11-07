@@ -18,7 +18,8 @@ Zref=Reference(3);
 [xEast,yNorth,zUp] = ecef2enu(X,Y,Z,lat0,lon0,h0,Sphere);
 [azimuth,elevation]=getAzEl([yNorth xEast zUp]);
 
-
+plot3([0 xEast], [0 yNorth],[0,zUp],'linewidth',3);
+hold on
 
 [la,ph,radius] = cart2sph(Reference(1),Reference(2),Reference(3));
 E=[-sin(la) cos(la) 0; -sin(ph)*cos(la) -sin(ph)*sin(la) cos(ph); cos(ph)*cos(la) cos(ph)*sin(la) sin(ph)];
