@@ -94,9 +94,10 @@ for i=1:m
         h1=[];
     end
     Locations=solvePlanes(HyperboloidSet{i},zPlanes,SymVars,AcceptanceTolerance,h1,AdditionalTitleStr);
-    if size(Locations,1)==2
+    if size(Locations,1)==2 || isempty(Locations)
         %then we just have 2 points. A single plane. No need to do line
         %fits.
+        %Locations can also be empty if the solution did not converge.
         location=Locations;
         return
     else
@@ -208,7 +209,7 @@ elseif abs(sum(LineFit{1}(2,:)))>0
 %     [azimuth2, elevation2, GeodeticPointXYZ2]=findDirection(LineFit{m+1},Reference);
 %     location=[azimuth, elevation, 0; GeodeticPointXYZ; azimuth2 elevation2 0; GeodeticPointXYZ2];
 
-    figure()
+    
     %Let us use the bias term.
     [azimuth elevation]=geo2AzEl(2.285*LineFit{m}(2,:)+LineFit{m}(1,:),LineFit{m}(1,:));
 %     [azimuth2 elevation2]=geo2AzEl(LineFit{m+1}(2,:)+LineFit{m+1}(1,:),LineFit{m+1}(1,:));
@@ -217,24 +218,25 @@ elseif abs(sum(LineFit{1}(2,:)))>0
     location=[azimuth, elevation, 0; LineFit{m}(1,:); azimuth2 elevation2 0; LineFit{m+1}(2,:)];
     
     %Debugging Purposes.
-    expected=[1115209.69912918,-5103843.88452363,4886149.18623531];
-    [az, el]=geo2AzEl(expected,location(2,:));
-    expectedAzEl=[az el 0];
-    plot3([0 500],[0 0],[0 0],'linewidth', 3,'color','black')
-    plot3([0 0],[0 500],[0 0],'linewidth', 3,'color','black')
-    plot3([0 0],[0 0],[0 5e5],'linewidth', 3,'color','black')
-    grid on
-    legend('Soln1','Correct')
-
-    %ignore 2nd solution...momentarily.
-    soln1=expectedAzEl-location(1,:);
-    
-    PlotLine(LineFit{m}(1,:),expected-LineFit{m}(1,:),range,h1);
-    
-    temp=expected-location(2,:);
-    [azex,elex]=getAzEl([temp(2) temp(1) temp(3)]);
-    temp=2.285*LineFit{m}(2,:)+LineFit{m}(1,:)-LineFit{m}(1,:);
-    [az,el]=getAzEl([temp(2) temp(1) temp(3)]);
+%     figure()
+%     expected=[1115209.69912918,-5103843.88452363,4886149.18623531];
+%     [az, el]=geo2AzEl(expected,location(2,:));
+%     expectedAzEl=[az el 0];
+%     plot3([0 500],[0 0],[0 0],'linewidth', 3,'color','black')
+%     plot3([0 0],[0 500],[0 0],'linewidth', 3,'color','black')
+%     plot3([0 0],[0 0],[0 5e5],'linewidth', 3,'color','black')
+%     grid on
+%     legend('Soln1','Correct')
+% 
+%     %ignore 2nd solution...momentarily.
+%     soln1=expectedAzEl-location(1,:);
+%     
+%     PlotLine(LineFit{m}(1,:),expected-LineFit{m}(1,:),range,h1);
+%     
+%     temp=expected-location(2,:);
+%     [azex,elex]=getAzEl([temp(2) temp(1) temp(3)]);
+%     temp=2.285*LineFit{m}(2,:)+LineFit{m}(1,:)-LineFit{m}(1,:);
+%     [az,el]=getAzEl([temp(2) temp(1) temp(3)]);
     
 else
     error('Unexpected case')
@@ -383,7 +385,7 @@ function [location,potentialPoints]=findSolnsFromIntersects(Intersect2HypersX, I
 
             if isempty(Indices)
                 warning('Tolerance may be set too low. No common solutions were found.')
-                location=nan(2,3);
+                location=nan(1,3);
                 return
             end
             %Decide the number of solutions
@@ -412,7 +414,7 @@ function [location,potentialPoints]=findSolnsFromIntersects(Intersect2HypersX, I
             end
             location=location(RealSolns,:);
         catch ME
-            location=[];
+            location=nan(1,3);
             warning('No locations found...see below.')
             warning([ME.message ' first instance at ' num2str(ME.stack(1).line)])
         end
