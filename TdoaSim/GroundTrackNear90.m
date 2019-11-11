@@ -25,6 +25,17 @@ TimeSyncErrRoof=.12e-10;
 %receivers. 
 TimeSyncErrFar=20e-9;
 
+%% Dictate Parameters for One At A Time
+numSamples=0;
+Frame=1; %1 is Topo, 0 ECEF
+DebugMode=1; %set to 1 to save intermediate plots.
+
+if Frame==1
+    FrameStr='Topo';
+else
+    FrameStr='ECEF';
+end
+    
 
 %% Cycle through the ground cycles one at a time.
 n=length(names);
@@ -55,7 +66,7 @@ for i=1:n %1:n
     
     %% For each satellite position, solve for the sensitivity.
     z=size(satellites{i},1);
-    for j=22:z %2:z
+    for j=23:10:z %2:z
         %THis could is here because the Lat and Long are incorrect on the text
         %files.
 %         temp=satellites{i}(j,:);
@@ -74,7 +85,7 @@ for i=1:n %1:n
 
         SAT = getStruct([satellites{i}(j,1:2) satellites{i}(j,3)],zeros(1,4),[GTframe{i}(1:2)*180/pi GTframe{i}(3)],zeros(1,3),Sphere);
 
-        [SensitivityLocation, SensitivityTime]=OneAtaTime(GND,SAT,1,0,name(1:end-3),0,0);
+        [SensitivityLocation, SensitivityTime]=OneAtaTime(GND,SAT,1,1,[name(1:end-3) 'NoError/SATindex' num2str(j) '/Frame' FrameStr],Frame,DebugMode,numSamples);
     end
     
 end

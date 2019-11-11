@@ -88,10 +88,10 @@ for i=1:3 %cycle through x,y,z.
             
             if isempty(locations)==0
                 if Frame==1
-                    temp=locations([2 4],:);
+                    temp=locations([2],:);
                     tempGeo=SAT(1).RelativeToGeo;
                     Sphere=referenceSphere('Earth');
-                    Sphere.Radius=6378137;
+%                     Sphere.Radius=6378137;
                     [xE, yN, zU]=ecef2enu(temp(:,1),temp(:,2),temp(:,3),tempGeo(1),tempGeo(2),tempGeo(3),Sphere);
                 end
 
@@ -144,9 +144,9 @@ for i=1:3 %cycle through x,y,z.
         if DebugMode==1
             %Separate folders.
             GraphSaver({'png'},['Plots/' folderName '/OneAtaTime3Stations/' Axis{i} 'Receiver' num2str(j)],1);
-        else
-            %same folder.
-            GraphSaver({'png'},['Plots/' folderName '/OneAtaTime3Stations/'],1);
+%         else
+%             %same folder.
+%             GraphSaver({'png'},['Plots/' folderName '/OneAtaTime3Stations/'],1);
         end            
     end
 end
@@ -157,8 +157,8 @@ if time==1
 test=cell(m,1);
 AbsErr=cell(m,1);
 AbsTotalErr=cell(m,1);
-AngleSensitivityOut{j,i}=zeros(length(test),2);
-AngleSensitivityIn{j,i}=zeros(length(test),1);
+AngleSensitivityOut=cell(m,1); %azimuth and elevation output
+AngleSensitivityIn=cell(m,1); %whatever parameter we are currently varying. 
 
 for i=1:1 %cycle through nothing. Clock error is 1D.
     for j=1:m %cycle through each station.
@@ -246,16 +246,17 @@ for i=1:1 %cycle through nothing. Clock error is 1D.
         if DebugMode==1
             %Separate folders.
             GraphSaver({'png'},['Plots/' folderName '/OneAtaTime3Stations/' 'ClockErrInReceiver' num2str(j)],1);
-        else
-            %same folder.
-            GraphSaver({'png'},['Plots/' folderName '/OneAtaTime3Stations/'],1);
+%         else
+%             %same folder.
+%             GraphSaver({'png'},['Plots/' folderName '/OneAtaTime3Stations/'],1);
         end
     end
 end
 end
 
-
-
+if DebugMode==0
+    GraphSaver({'png'},['Plots/' folderName '/OneAtaTime3Stations/'],1);
+end
 
 end
 

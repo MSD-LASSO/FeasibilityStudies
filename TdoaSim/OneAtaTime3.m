@@ -1,4 +1,4 @@
-function [SensitivityLocation, SensitivityTime]=OneAtaTime3(GND,SAT,time,location,folderName,Frame,DebugMode)
+function [SensitivityLocation, SensitivityTime]=OneAtaTime3(GND,SAT,time,location,folderName,Frame,DebugMode,numSamples)
 %This function will perform a OneAtaTime uncertainty analysis for the Time
 %Difference of Arrival signal. 
 %It takes each parameter with a specified error and varies that parameter
@@ -49,10 +49,10 @@ AngleSensitivityOut=cell(m,3); %azimuth and elevation output
 AngleSensitivityIn=cell(m,3); %whatever parameter we are currently varying. 
 
 Axis={'x','y','z'};
-for i=1:3 %cycle through x,y,z.
+for i=1:1%3 %cycle through x,y,z.
     for j=1:m %cycle through each station.
         ErrorMax=LocationErrs(j,i); %get the location error for this test
-        test{j,i}=linspace(-ErrorMax,ErrorMax,10); %set up a range.
+        test{j,i}=linspace(-ErrorMax,ErrorMax,numSamples); %set up a range.
         test{j,i}=[0 test{j,i}]; %control. no error case.
         AbsErr{j,i}=zeros(length(test),3);
         AbsTotalErr{j,i}=zeros(length(test),1);
@@ -86,23 +86,27 @@ for i=1:3 %cycle through x,y,z.
             end
             locations=TDoA(RT,TimeDiffs*3e8,Reference,10,zPlanes,DebugMode,['Run ' num2str(k) ' With Receiver ' num2str(j) ' Location Error = ' ErrStr]);
             
-            if isempty(locations)==0
-                if Frame==1
-                    temp=locations([2 4],:);
-                    tempGeo=SAT(1).RelativeToGeo;
-                    Sphere=referenceSphere('Earth');
-                    Sphere.Radius=6378137;
-                    [xE, yN, zU]=ecef2enu(temp(:,1),temp(:,2),temp(:,3),tempGeo(1),tempGeo(2),tempGeo(3),Sphere);
-                end
+            if isempty(locations)==0 && size(locations,1)==4
+                %if we don't have lineFits, then we don't have a solution.
+                %not needed. ---
+%                 if Frame==1 
+%                     temp=locations([2 4],:);
+%                     tempGeo=SAT(1).RelativeToGeo;
+%                     Sphere=referenceSphere('Earth');
+% %                     Sphere.Radius=6378137;
+%                     [xE, yN, zU]=ecef2enu(temp(:,1),temp(:,2),temp(:,3),tempGeo(1),tempGeo(2),tempGeo(3),Sphere);
+%                 end
+%               ---
 
                 %Sat in TDoA generated frame location.
     %             expectedShifted=expected-locations(2,:);
     %             [az, el]=getAzEl(expectedShifted);
                 [az, el]=geo2AzEl(expected,locations(2,:));
                 expectedAzEl=[az el 0];
-
+                actualAzEl=locations(1,:);
+                
                 %ignore 2nd solution...momentarily. 
-                soln1=expectedAzEl-locations(1,:);
+                soln1=expectedAzEl-actualAzEl;
     %             soln2=expectedAzEl-locations(3,:);
                 AbsErr{j,i}(k,:)=soln1;
                 AbsTotalErr{j,i}(k)=norm(AbsErr{j,i}(k,:));
@@ -143,10 +147,11 @@ for i=1:3 %cycle through x,y,z.
 
         if DebugMode==1
             %Separate folders.
-            GraphSaver({'png'},['Plots/' folderName '/OneAtaTime3Stations/' Axis{i} 'Receiver' num2str(j)],1);
-        else
-            %same folder.
-            GraphSaver({'png'},['Plots/' folderName '/OneAtaTime3Stations/'],1);
+%             GraphSaver({'png'},['Plots/' folderName '/OneAtaTime3Stations/' Axis{i} 'Receiver' num2str(j)],1);
+            GraphSaver({'png'},['Plots/' folderName '/' Axis{i} 'Receiver' num2str(j)],1);
+%         else
+%             %same folder.
+%             GraphSaver({'png'},['Plots/' folderName '/OneAtaTime3Stations/'],1);
         end            
     end
 end
@@ -163,7 +168,7 @@ AngleSensitivityIn=cell(m,1); %whatever parameter we are currently varying.
 for i=1:1 %cycle through nothing. Clock error is 1D.
     for j=1:m %cycle through each station.
         ErrorMax=timeSyncErrs(j,i); %get the clock error for this test.
-        test{j,i}=linspace(-ErrorMax,ErrorMax,10); %set up a range.
+        test{j,i}=linspace(-ErrorMax,ErrorMax,numSamples); %set up a range.
         test{j,i}=[0 test{j,i}]; %control. no error case.
         AbsErr{j,i}=zeros(length(test),3);
         AbsTotalErr{j,i}=zeros(length(test),1);
@@ -245,17 +250,18 @@ for i=1:1 %cycle through nothing. Clock error is 1D.
         
         if DebugMode==1
             %Separate folders.
-            GraphSaver({'png'},['Plots/' folderName '/OneAtaTime3Stations/' 'ClockErrInReceiver' num2str(j)],1);
-        else
-            %same folder.
-            GraphSaver({'png'},['Plots/' folderName '/OneAtaTime3Stations/'],1);
+            GraphSaver({'png'},['Plots/' folderName '/ClockErrInReceiver' num2str(j)],1);
+%         else
+%             %same folder.
+%             GraphSaver({'png'},['Plots/' folderName '/OneAtaTime3Stations/'],1);
         end
     end
 end
 end
 
-
-
+if DebugMode==0
+    GraphSaver({'png'},['Plots/' folderName],1);
+end
 
 end
 

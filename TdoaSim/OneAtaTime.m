@@ -1,9 +1,9 @@
-function [SensitivityLocation, SensitivityTime]=OneAtaTime(GND,SAT,considerTime,considerLocation,folderName,Frame,DebugMode)
+function [SensitivityLocation, SensitivityTime]=OneAtaTime(GND,SAT,considerTime,considerLocation,folderName,Frame,DebugMode,NumSamples)
 %Decide which OneAtaTime analysis to use.
 %folderName dictates the name one level below "plots".
 
 if length(GND)==3
-    [SensitivityLocation, SensitivityTime]=OneAtaTime3(GND,SAT,considerTime,considerLocation,folderName,Frame,DebugMode);
+    [SensitivityLocation, SensitivityTime]=OneAtaTime3(GND,SAT,considerTime,considerLocation,folderName,Frame,DebugMode,NumSamples);
 elseif length(GND)==4
     [SensitivityLocation, SensitivityTime]=OneAtaTime4(GND,SAT,considerTime,considerLocation,folderName);
 else
