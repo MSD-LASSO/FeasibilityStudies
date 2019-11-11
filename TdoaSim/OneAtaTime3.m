@@ -157,8 +157,8 @@ if time==1
 test=cell(m,1);
 AbsErr=cell(m,1);
 AbsTotalErr=cell(m,1);
-AngleSensitivityOut{j,i}=zeros(length(test),2);
-AngleSensitivityIn{j,i}=zeros(length(test),1);
+AngleSensitivityOut=cell(m,1); %azimuth and elevation output
+AngleSensitivityIn=cell(m,1); %whatever parameter we are currently varying. 
 
 for i=1:1 %cycle through nothing. Clock error is 1D.
     for j=1:m %cycle through each station.
@@ -175,7 +175,7 @@ for i=1:1 %cycle through nothing. Clock error is 1D.
             %for that test range, perturbate a clock error.
             GNDt=GNDforTime;
             GNDt(j).clk=test{j,i}(k);
-%             AngleSensitivityIn{j,i}(k)=RT(j,i);
+            AngleSensitivityIn{j,i}(k)=test{j,i}(k);
             [TimeDiffs,TimeDiffErr]=timeDifftoMatrix(GNDt,SAT);
             RT=Receivers;
             ErrStr=num2str(num2str([TimeDiffErr(1,2) TimeDiffErr(1,3) TimeDiffErr(2,3)]));

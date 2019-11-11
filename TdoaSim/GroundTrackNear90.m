@@ -74,7 +74,7 @@ for i=1:n %1:n
 
         SAT = getStruct([satellites{i}(j,1:2) satellites{i}(j,3)],zeros(1,4),[GTframe{i}(1:2)*180/pi GTframe{i}(3)],zeros(1,3),Sphere);
 
-        [SensitivityLocation, SensitivityTime]=OneAtaTime(GND,SAT,1,1,name(1:end-3),0,0);
+        [SensitivityLocation, SensitivityTime]=OneAtaTime(GND,SAT,1,0,name(1:end-3),0,0);
     end
     
 end

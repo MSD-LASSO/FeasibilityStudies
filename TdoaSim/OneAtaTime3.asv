@@ -1,4 +1,4 @@
-function [SensitivityLocation SensitivityTime]=OneAtaTime3(GND,SAT,time,location,folderName,Frame,DebugMode)
+function [SensitivityLocation, SensitivityTime]=OneAtaTime3(GND,SAT,time,location,folderName,Frame,DebugMode)
 %This function will perform a OneAtaTime uncertainty analysis for the Time
 %Difference of Arrival signal. 
 %It takes each parameter with a specified error and varies that parameter
@@ -133,12 +133,12 @@ for i=1:3 %cycle through x,y,z.
         for k=1:2
             subplot(1,2,k)
             plot(AngleSensitivityIn{j,i}/1000,AngleSensitivityOut{j,i}(:,k),'.','MarkerSize',20);
-            [temp tempStruct]=polyfit(AngleSensitivityIn{j,i},AngleSensitivityOut{j,i}(:,k-1),1);
-            SensitivityLocation{j,i}(k-1,1)=temp(1);
-            SensitivityLocation{j,i}(k-1,2)=tempStruct.normr;
-            title([variable{k-1} ' Output w.r.t. Receiver ' num2str(j) ' coord: ' Axis{i}]);
+            [temp tempStruct]=polyfit(AngleSensitivityIn{j,i},AngleSensitivityOut{j,i}(:,k),1);
+            SensitivityLocation{j,i}(k,1)=temp(1);
+            SensitivityLocation{j,i}(k,2)=tempStruct.normr;
+            title([variable{k} ' Output w.r.t. Receiver ' num2str(j) ' coord: ' Axis{i}]);
             xlabel(['R' num2str(j) 'coord ' Axis{i} ' (km)']);
-            ylabel([variable{k-1} ' (rad)']);
+            ylabel([variable{k} ' (rad)']);
         end
 
         if DebugMode==1
@@ -175,7 +175,7 @@ for i=1:1 %cycle through nothing. Clock error is 1D.
             %for that test range, perturbate a clock error.
             GNDt=GNDforTime;
             GNDt(j).clk=test{j,i}(k);
-%             AngleSensitivityIn{j,i}(k)=RT(j,i);
+            AngleSensitivityIn{j,i}(k)=test{j,i}(k);
             [TimeDiffs,TimeDiffErr]=timeDifftoMatrix(GNDt,SAT);
             RT=Receivers;
             ErrStr=num2str(num2str([TimeDiffErr(1,2) TimeDiffErr(1,3) TimeDiffErr(2,3)]));
@@ -230,15 +230,16 @@ for i=1:1 %cycle through nothing. Clock error is 1D.
         end
         
         figure()
+        variable={'Az','El','N/A'};
         for k=1:2
             subplot(1,2,k)
             plot(AngleSensitivityIn{j,i}/1000,AngleSensitivityOut{j,i}(:,k),'.','MarkerSize',20);
-            [temp tempStruct]=polyfit(AngleSensitivityIn{j,i},AngleSensitivityOut{j,i}(:,k-1),1);
-            SensitivityTime{j,i}(k-1,1)=temp(1);
-            SensitivityTime{j,i}(k-1,2)=tempStruct.normr;
-            title([variable{k-1} ' Output w.r.t. Receiver ' num2str(j) ' Clk Error']);
+            [temp tempStruct]=polyfit(AngleSensitivityIn{j,i},AngleSensitivityOut{j,i}(:,k),1);
+            SensitivityTime{j,i}(k,1)=temp(1);
+            SensitivityTime{j,i}(k,2)=tempStruct.normr;
+            title([variable{k} ' Output w.r.t. Receiver ' num2str(j) ' Clk Error']);
             xlabel(['R' num2str(j) 'CLk Error (s)']);
-            ylabel([variable{k-1} ' (rad)']);
+            ylabel([variable{k} ' (rad)']);
         end
         
         
