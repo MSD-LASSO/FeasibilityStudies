@@ -1,4 +1,4 @@
-function [SensitivityLocation SensitivityTime]=OneAtaTime3(GND,SAT,time,location,folderName,mode)
+function [SensitivityLocation, SensitivityTime]=OneAtaTime3(GND,SAT,time,location,folderName,Frame,DebugMode)
 %This function will perform a OneAtaTime uncertainty analysis for the Time
 %Difference of Arrival signal. 
 %It takes each parameter with a specified error and varies that parameter
@@ -6,10 +6,10 @@ function [SensitivityLocation SensitivityTime]=OneAtaTime3(GND,SAT,time,location
 %It then creates plots of perturbation amount vs. absolute error.
 
 if nargin<6
-    mode=1; %use Topo Frame. 
+    Frame=1; %use Topo Frame. 
 end
 
-if mode==1
+if Frame==1
     expected=SAT.Topocoord;
 else
     expected=SAT.ECFcoord;
@@ -25,7 +25,7 @@ for i=1:m
     %gather all locations errors.
     LocationErrs(i,:)=GND(i).ECFcoord_error;
 
-    if mode==1
+    if Frame==1
         Receivers(i,:)=GND(i).Topocoord;
     else
         Receivers(i,:)=GND(i).ECFcoord;
@@ -67,25 +67,27 @@ for i=1:3 %cycle through x,y,z.
             Err(1,i)=test{j,i}(k);
             RT(j,:)=RT(j,:)+Err;
             AngleSensitivityIn{j,i}(k)=RT(j,i);
-            figure()
-%             expected=[1114097.00526875,-5098751.55457051,4881274.05987576];
-            plot3(expected(1),expected(2),expected(3),'.','MarkerSize',100,'color','green');
-            title(['3 Stations Direction Test - ' 'With Receiver ' num2str(j) ' Location Error = ' num2str(Err)])
-            % plot3(
-            grid on
-            hold on
+            if DebugMode==1
+                figure()
+    %             expected=[1114097.00526875,-5098751.55457051,4881274.05987576];
+                plot3(expected(1),expected(2),expected(3),'.','MarkerSize',100,'color','green');
+                title(['3 Stations Direction Test - ' 'With Receiver ' num2str(j) ' Location Error = ' num2str(Err)])
+                % plot3(
+                grid on
+                hold on
+            end
             
             ErrStr=num2str(Err);
 %             ErrStr=strrep(ErrStr,'-','a');
-            if mode==1
+            if Frame==1
                 zPlanes=[0 50e3 100e3 200e3 500e3 2000e3];
             else
                 zPlanes=[4.5e6 4.8e6 5.1e6];
             end
-            locations=TDoA(RT,TimeDiffs*3e8,Reference,10,zPlanes,0,['Run ' num2str(k) ' With Receiver ' num2str(j) ' Location Error = ' ErrStr]);
+            locations=TDoA(RT,TimeDiffs*3e8,Reference,10,zPlanes,DebugMode,['Run ' num2str(k) ' With Receiver ' num2str(j) ' Location Error = ' ErrStr]);
             
             if isempty(locations)==0
-                if mode==1
+                if Frame==1
                     temp=locations([2 4],:);
                     tempGeo=SAT(1).RelativeToGeo;
                     Sphere=referenceSphere('Earth');
@@ -109,34 +111,43 @@ for i=1:3 %cycle through x,y,z.
                 %nan will get ignored in the plot. 
                 AbsErr{j,i}(k,:)=nan;
                 AbsTotalErr{j,i}(k)=nan;
+                AngleSensitivityOut{j,i}(k,:)=nan;
             end
         end
         
         %plot results
         figure()
-        subplot(2,3,1)
+        subplot(2,2,1)
         plot(test{j,i},AbsTotalErr{j,i},'.','MarkerSize',20);
         title(['Total Error based on Error in Receiver: ' num2str(j) ' and Coord: ' num2str(i)])
         SensitivityLocation{j,i}=zeros(2,2); %azimuth and elevation slopes. 
         
         variable={'Az','El','N/A'};
         for k=2:3
-            subplot(2,3,k)
-            plot(AngleSensitivityIn{j,i}/1000,AngleSensitivityOut{j,i}(:,k-1),'.','MarkerSize',20);
-            [temp tempStruct]=polyfit(AngleSensitivityIn{j,i},AngleSensitivityOut{j,i}(:,k-1),1);
-            SensitivityLocation{j,i}(k-1,1)=temp(1);
-            SensitivityLocation{j,i}(k-1,2)=tempStruct.normr;
-            title([variable{k-1} ' Output w.r.t. Receiver ' num2str(j) ' coord: ' Axis{i}]);
-            xlabel(['R' num2str(j) 'coord ' Axis{i} ' (km)']);
-            ylabel([variable{k-1} ' (rad)']);
+            subplot(2,2,k)
+            plot(test{j,i},AbsErr{j,i}(:,k-1),'.','MarkerSize',20);
+            title(['Resulting Sat Error in Coord: ' variable{k-1}]);
         end
-        for k=4:6
-            subplot(2,3,k)
-            plot(test{j,i},AbsErr{j,i}(:,k-3),'.','MarkerSize',20);
-            title(['Resulting Sat Error in Coord: ' variable{k-3}]);
+        
+        figure()
+        for k=1:2
+            subplot(1,2,k)
+            plot(AngleSensitivityIn{j,i}/1000,AngleSensitivityOut{j,i}(:,k),'.','MarkerSize',20);
+            [temp tempStruct]=polyfit(AngleSensitivityIn{j,i},AngleSensitivityOut{j,i}(:,k),1);
+            SensitivityLocation{j,i}(k,1)=temp(1);
+            SensitivityLocation{j,i}(k,2)=tempStruct.normr;
+            title([variable{k} ' Output w.r.t. Receiver ' num2str(j) ' coord: ' Axis{i}]);
+            xlabel(['R' num2str(j) 'coord ' Axis{i} ' (km)']);
+            ylabel([variable{k} ' (rad)']);
         end
 
-        GraphSaver({'png'},['Plots/' folderName '/OneAtaTime3Stations/' Axis{i} 'Receiver' num2str(j)],1);
+        if DebugMode==1
+            %Separate folders.
+            GraphSaver({'png'},['Plots/' folderName '/OneAtaTime3Stations/' Axis{i} 'Receiver' num2str(j)],1);
+        else
+            %same folder.
+            GraphSaver({'png'},['Plots/' folderName '/OneAtaTime3Stations/'],1);
+        end            
     end
 end
 end
@@ -146,6 +157,9 @@ if time==1
 test=cell(m,1);
 AbsErr=cell(m,1);
 AbsTotalErr=cell(m,1);
+AngleSensitivityOut{j,i}=zeros(length(test),2);
+AngleSensitivityIn{j,i}=zeros(length(test),1);
+
 for i=1:1 %cycle through nothing. Clock error is 1D.
     for j=1:m %cycle through each station.
         ErrorMax=timeSyncErrs(j,i); %get the clock error for this test.
@@ -153,21 +167,36 @@ for i=1:1 %cycle through nothing. Clock error is 1D.
         test{j,i}=[0 test{j,i}]; %control. no error case.
         AbsErr{j,i}=zeros(length(test),3);
         AbsTotalErr{j,i}=zeros(length(test),1);
+        AngleSensitivityOut{j,i}=zeros(length(test),2);
+        AngleSensitivityIn{j,i}=zeros(length(test),1);
+
+        
         for k=1:length(test{j,i})
             %for that test range, perturbate a clock error.
             GNDt=GNDforTime;
             GNDt(j).clk=test{j,i}(k);
+%             AngleSensitivityIn{j,i}(k)=RT(j,i);
             [TimeDiffs,TimeDiffErr]=timeDifftoMatrix(GNDt,SAT);
             RT=Receivers;
             ErrStr=num2str(num2str([TimeDiffErr(1,2) TimeDiffErr(1,3) TimeDiffErr(2,3)]));
 %             ErrStr=strrep(ErrStr,'-','a');
 
-            if mode==1
+            if Frame==1
                 zPlanes=[0 50e3 100e3 200e3 500e3 2000e3];
             else
                 zPlanes=[4.5e6 4.8e6 5.1e6];
             end
-            locations=TDoA(RT,(TimeDiffs+TimeDiffErr)*3e8,Reference,100,zPlanes,1,['Run ' num2str(k) ' With Time Error = ' ErrStr]);
+            
+            if DebugMode==1
+                figure()
+                %             expected=[1114097.00526875,-5098751.55457051,4881274.05987576];
+                plot3(expected(1),expected(2),expected(3),'.','MarkerSize',100,'color','green');
+                title(['3 Stations Direction Test - ' 'With Receiver ' num2str(j) ' Time Error = ' ErrStr])
+                grid on
+                hold on
+            end
+            
+            locations=TDoA(RT,(TimeDiffs+TimeDiffErr)*3e8,Reference,100,zPlanes,DebugMode,['Run ' num2str(k) ' With Time Error = ' ErrStr]);
             
             if isempty(locations)==0
                 %Sat in TDoA generated frame location.
@@ -178,10 +207,12 @@ for i=1:1 %cycle through nothing. Clock error is 1D.
 
                 AbsErr{j,i}(k,:)=expectedAzEl-locations(1,:);
                 AbsTotalErr{j,i}(k)=norm(AbsErr{j,i}(k,:));
+                AngleSensitivityOut{j,i}(k,:)=locations(1,1:2);
             else
-                %nan will get ignored in the plot.                 
+                %nan will get ignored in the plot. 
                 AbsErr{j,i}(k,:)=nan;
                 AbsTotalErr{j,i}(k)=nan;
+                AngleSensitivityOut{j,i}(k,:)=nan;
             end
         end
         
@@ -189,15 +220,36 @@ for i=1:1 %cycle through nothing. Clock error is 1D.
         figure()
         subplot(2,2,1)
         plot(test{j,i},AbsTotalErr{j,i},'.','MarkerSize',20);
-        title(['Total Error based on Error in Receiver: ' num2str(j) ' and Coord: ' num2str(i)])
+        title(['Total Error based on Error in Receiver: ' num2str(j) ' and Clock Error: ' num2str(j)])
         
         variable={'x','y','z'};
         for k=2:4
             subplot(2,2,k)
             plot(test{j,i},AbsErr{j,i}(:,k-1),'.','MarkerSize',20);
-            title(['Resulting Sat Error from Clk Coord: ' variable{k-1}]);
+            title(['Resulting Sat Error from Clk Coord: ' num2str(j)]);
         end
-        GraphSaver({'png'},['Plots/' folderName '/OneAtaTime3Stations/' 'ClockErrInReceiver' num2str(j)],1);
+        
+        figure()
+        variable={'Az','El','N/A'};
+        for k=1:2
+            subplot(1,2,k)
+            plot(AngleSensitivityIn{j,i}/1000,AngleSensitivityOut{j,i}(:,k),'.','MarkerSize',20);
+            [temp tempStruct]=polyfit(AngleSensitivityIn{j,i},AngleSensitivityOut{j,i}(:,k),1);
+            SensitivityTime{j,i}(k,1)=temp(1);
+            SensitivityTime{j,i}(k,2)=tempStruct.normr;
+            title([variable{k} ' Output w.r.t. Receiver ' num2str(j) ' Clk Error']);
+            xlabel(['R' num2str(j) 'CLk Error (s)']);
+            ylabel([variable{k} ' (rad)']);
+        end
+        
+        
+        if DebugMode==1
+            %Separate folders.
+            GraphSaver({'png'},['Plots/' folderName '/OneAtaTime3Stations/' 'ClockErrInReceiver' num2str(j)],1);
+        else
+            %same folder.
+            GraphSaver({'png'},['Plots/' folderName '/OneAtaTime3Stations/'],1);
+        end
     end
 end
 end

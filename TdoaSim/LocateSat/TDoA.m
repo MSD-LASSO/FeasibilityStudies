@@ -308,13 +308,15 @@ for u=1:length(zPlanes)
 % AllPts=[1647440.63595431,-4517237.67132255;1855079.49953290,-5007104.42806191;2892441.75243371,-6668082.13052221;7319973.30647300,-12669995.2141345];   
 
 %Debugging Purposes
-    h2=figure();
-%     fimplicit(Hyperboloidtemp,[min(AllPts(:,1)) max(AllPts(:,1)) min(AllPts(:,2)) max(AllPts(:,2))]);
-%     hold on
-    plot(AllPts(:,1),AllPts(:,2),'*');
-    hold on
-    fimplicit(Hyperboloidtemp);
-    title(['ZPlane = ' num2str(zPlanes(u)) ' - ' AdditionalTitleStr]);
+    if isempty(h1)==0
+        h2=figure();
+    %     fimplicit(Hyperboloidtemp,[min(AllPts(:,1)) max(AllPts(:,1)) min(AllPts(:,2)) max(AllPts(:,2))]);
+    %     hold on
+        plot(AllPts(:,1),AllPts(:,2),'*');
+        hold on
+        fimplicit(Hyperboloidtemp);
+        title(['ZPlane = ' num2str(zPlanes(u)) ' - ' AdditionalTitleStr]);
+    end
 
     %continue with code.
     if size(temp,1)==1
