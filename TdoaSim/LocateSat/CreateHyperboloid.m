@@ -27,7 +27,9 @@ else
     b=sqrt((distance/2)^2-a^2);
 
     %body frame hyperboloid
-    HyperboloidBody=xb^2/a^2-yb^2/b^2-zb^2/b^2-1;
+%     HyperboloidBody=xb^2/a^2-yb^2/b^2-zb^2/b^2-1;
+    %body frame 1 sided hyperboloid
+    HyperboloidBody=a*sqrt(1+yb^2/b^2+zb^2/b^2)-xb;
 end
 
 

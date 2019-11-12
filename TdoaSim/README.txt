@@ -21,3 +21,8 @@ This will use the output of Program 2 to determine the satellite's location and 
 Inputs: The ouputs of Calculate Time Difference
 Outputs: Satellite location at the time it transmitted
 	 Error of satellite location calculation
+
+
+Upcoming Features:
+11/11 Add time difference error functionality to one-sided vs. two-sided Hyperbola. If the time difference could be negative, plot the mirror image of that specific hyperbola. 
+

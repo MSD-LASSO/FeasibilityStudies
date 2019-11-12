@@ -7,7 +7,7 @@ syms x y z
 %% 2D. Stations located at (-1,0) and (1,0). Difference in Distance is near 0.
 R1=[-1 0 0];
 R2=[1 0 0];
-delta=0.2;
+delta=0.2; %closer to B over A.
 Hyperboloid=CreateHyperboloid(R1,R2,delta);
 figure()
 plot(R1(1),R1(2),'.','MarkerSize',20);
@@ -15,9 +15,13 @@ hold on
 plot(R2(1),R2(2),'.','MarkerSize',20);
 plot([R1(1) R2(1)],[R1(2) R2(2)],'linewidth',2,'color','black');
 grid on
-fimplicit(Hyperboloid,'linewidth',3);
-expected=100*x^2 - (100*y^2)/99 - 1;
-fimplicit(expected);
+
+
+% expected=100*x^2 - (100*y^2)/99 - 1; %2-sided Hyperbola
+expected=((100*y^2)/99 + 1)^(1/2)/10 - x; %1-sided
+fimplicit(Hyperboloid,'linewidth',5);
+fimplicit(expected,'linewidth',2);
+legend('R1','R2','Connecting Line','Hyperbola','Correct')
 assert(logical(expected==Hyperboloid));
 
 %% 2D. 45 degree angle. Centered around zero still.
@@ -33,9 +37,10 @@ plot(R1(1),R1(2),'.','MarkerSize',10);
 hold on
 plot(R2(1),R2(2),'.','MarkerSize',10);
 grid on
-fimplicit(Hyperboloid,[-2 2 -2 2]);
-expected=(3*x^2)/2 - x*y + (3*y^2)/2 - 1;
-fimplicit(expected);
+fimplicit(Hyperboloid,[-2 2 -2 2],'linewidth',5);
+% expected=(3*x^2)/2 - x*y + (3*y^2)/2 - 1; %2 sided
+expected=(1 - 2*((2^(1/2)*x)/2 - (2^(1/2)*y)/2)^2)^(1/2) - (2^(1/2)*y)/2 - (2^(1/2)*x)/2; %1 sided
+fimplicit(expected,'linewidth',3);
 assert(logical(expected==simplify(expand(Hyperboloid),'steps',10)));
 
 %% 2D. Offset only. No angle.
@@ -48,8 +53,12 @@ plot(R1(1),R1(2),'.','MarkerSize',10);
 hold on
 plot(R2(1),R2(2),'.','MarkerSize',10);
 grid on
-fimplicit(Hyperboloid);
-expected=100*(x-1)^2 - (100*(y-1)^2)/99 - 1;
+
+% expected=100*(x-1)^2 - (100*(y-1)^2)/99 - 1; %2 sided
+expected=((100*(y - 1)^2)/99 + 1)^(1/2)/10 - x + 1; %1 sided
+fimplicit(Hyperboloid,'linewidth',5);
+fimplicit(expected,'linewidth',2);
+legend('R1','R2','Hyperbola','Correct')
 assert(logical(expected==Hyperboloid));
 
 %% 2D. Offset + 60 degree
@@ -68,8 +77,15 @@ plot(R2(1),R2(2),'.','MarkerSize',10,'color','blue');
 plot(R1original(1),R1original(2),'.','MarkerSize',10,'color','black');
 plot(R2original(1),R2original(2),'.','MarkerSize',10,'color','black');
 grid on
-fimplicit(Hyperboloid);
-expected=4*(x/2 + (3^(1/2)*(y - 5589081546040917/1125899906842624))/2 + 1346747901294977/4503599627370496)^2 - (4*((3^(1/2)*(x + 1346747901294977/2251799813685248))/2 - y/2 + 5589081546040917/2251799813685248)^2)/15 - 1;
+%2sided
+% expected=4*(x/2 + (3^(1/2)*(y - 5589081546040917/1125899906842624))/2 + 1346747901294977/4503599627370496)^2 - (4*((3^(1/2)*(x + 1346747901294977/2251799813685248))/2 - y/2 + 5589081546040917/2251799813685248)^2)/15 - 1;
+%1sided
+expected=((4*((3^(1/2)*(x + 1346747901294977/2251799813685248))/2 - y/2 + 5589081546040917/2251799813685248)^2)/15 + 1)^(1/2)/2 - (3^(1/2)*(y - 5589081546040917/1125899906842624))/2 - x/2 - 1346747901294977/4503599627370496;
+
+fimplicit(Hyperboloid,'linewidth',5);
+fimplicit(expected,'linewidth',2);
+legend('R1','R2','R1org','R2org','Hyperbola','Correct')
+
 assert(logical(expected==Hyperboloid));
 
 %% 3D. Offset only
@@ -82,8 +98,12 @@ plot3(R1(1),R1(2),R1(3),'.','MarkerSize',10);
 hold on
 plot3(R2(1),R2(2),R1(3),'.','MarkerSize',10);
 grid on
-fimplicit3(Hyperboloid);
-expected=-100*(z-1)^2/99+100*x^2 - (100*y^2)/99 - 1;
+% expected=-100*(z-1)^2/99+100*x^2 - (100*y^2)/99 - 1; %2 sided
+expected=((100*(z - 1)^2)/99 + (100*y^2)/99 + 1)^(1/2)/10 - x;
+fimplicit3(Hyperboloid,'linewidth',5);
+fimplicit3(expected,'linewidth',2);
+legend('R1','R2','Hyperbola','Correct')
+
 assert(logical(expected==Hyperboloid));
 
 %% 3D. 45 degree angle. With offset in z. 
@@ -99,7 +119,8 @@ hold on
 plot3(R2(1),R2(2),R1(3),'.','MarkerSize',10);
 grid on
 fimplicit3(Hyperboloid);
-expected=(3*x^2)/2 - x*y + (3*y^2)/2 + 2*z^2 - 2*2^(1/2)*z;
+% expected=(3*x^2)/2 - x*y + (3*y^2)/2 + 2*z^2 - 2*2^(1/2)*z; %2 sided
+expected=(1 - 2*(z - 2^(1/2)/2)^2 - 2*((2^(1/2)*x)/2 - (2^(1/2)*y)/2)^2)^(1/2) - (2^(1/2)*y)/2 - (2^(1/2)*x)/2;
 fimplicit3(expected);
 assert(logical(expected==simplify(expand(Hyperboloid))));
 
@@ -134,7 +155,7 @@ assert(logical(expected==simplify(Hyperboloid)));
 %% Part of the equilateral triangle in 2D.
 R1=[0 0 0];
 R3=[5 5*sqrt(3) 0];
-delta=5*(sqrt(3)-1);
+delta=-5*(sqrt(3)-1);
 Hyperboloid=CreateHyperboloid(R1,R3,delta);
 figure()
 plot(R1(1),R1(2),'.','MarkerSize',20);
@@ -142,8 +163,12 @@ hold on
 plot(R3(1),R3(2),'.','MarkerSize',20);
 plot([R1(1) R3(1)],[R1(2) R3(2)],'linewidth',2,'color','black');
 grid on
-fimplicit(Hyperboloid,'linewidth',3);
-expected=sym(4*(1/2*(x-5/2)+sqrt(3)/2*(y-5/2*sqrt(3)))^2/(25*(sqrt(3)-1)^2)-4*(-sqrt(3)/2*(x-5/2)+1/2*(y-5/2*sqrt(3)))^2/(100-25*(sqrt(3)-1)^2)-1);
+fimplicit(Hyperboloid,'linewidth',5);
+%analytically derived solution for 2 sided.
+% expected=sym(4*(1/2*(x-5/2)+sqrt(3)/2*(y-5/2*sqrt(3)))^2/(25*(sqrt(3)-1)^2)-4*(-sqrt(3)/2*(x-5/2)+1/2*(y-5/2*sqrt(3)))^2/(100-25*(sqrt(3)-1)^2)-1);
+%1 sided
+expected=5/4 - (3^(1/2)*(y - (5*3^(1/2))/2))/2 - (8242159360458665*((2*3^(1/2)*((5*3^(1/2))/4 - y/2 + (3^(1/2)*(x - 5/2))/2)^2)/75 + 1)^(1/2))/4503599627370496 - x/2;
+fimplicit(expected,'linewidth',3);
 AssertTolerance(0,double(subs(expected,[x y],[5 0])),0.000001);
 assert(logical(expected==Hyperboloid));
 
@@ -158,7 +183,7 @@ R2=[X,0,0.05];
 R3=[X/2,X/2*sqrt(3),0.1];
 d1=sqrt((R1(1)-x1)^2+(R1(2)-y1)^2+(R1(3)-z1)^2);
 d2=sqrt((R2(1)-x1)^2+(R2(2)-y1)^2+(R2(3)-z1)^2);
-delta=abs(d1-d2);
+delta=d1-d2;
 Hyperboloid=CreateHyperboloid(R1,R2,delta);
 figure()
 fimplicit3(Hyperboloid,[-100 100 -100 100 -100 100])
@@ -172,11 +197,12 @@ L2=(x-10)^2+y^2+(z-0.05)^2;
 D=(sqrt(10000+49+16)-sqrt((100-0.05)^2+9+16));
 %These equations are the same. 
 % Eqn1=L1+L2-D^2-2*sqrt(L1)*sqrt(L2);
-Eqn1=(1125899906842624*(8000*x + 40*z - 40001)^2)/1121331742143099759025 - (281474976710656*(x - 200*z)^2)/281313842550703531413 - (281474976710656*y^2)/7032670247011413 - 1;
+% Eqn1=(1125899906842624*(8000*x + 40*z - 40001)^2)/1121331742143099759025 - (281474976710656*(x - 200*z)^2)/281313842550703531413 - (281474976710656*y^2)/7032670247011413 - 1;
+Eqn1=(17556241531995*((281474976710656*y^2)/7032670247011413 + (281474976710656*((40001^(1/2)*(x - 5))/40001 - (200*40001^(1/2)*(z - 1/40))/40001)^2)/7032670247011413 + 1)^(1/2))/140737488355328 - (200*40001^(1/2)*(x - 5))/40001 - (40001^(1/2)*(z - 1/40))/40001;
 fimplicit3(Eqn1,[-100 100 -100 100 -100 100])
 % fimplicit3(Eqn1,[2 7 -5 10 0 100])
 HyperboloidEqn=string(simplify(Hyperboloid,'steps',10));
-Eqn1="(1125899906842624*(8000*x + 40*z - 40001)^2)/1121331742143099759025 - (281474976710656*(x - 200*z)^2)/281313842550703531413 - (281474976710656*y^2)/7032670247011413 - 1";
+Eqn1="(17556241531995*((281474976710656*y^2)/7032670247011413 + (281474976710656*((40001^(1/2)*(x - 5))/40001 - (200*40001^(1/2)*(z - 1/40))/40001)^2)/7032670247011413 + 1)^(1/2))/140737488355328 - (200*40001^(1/2)*(x - 5))/40001 - (40001^(1/2)*(z - 1/40))/40001";
 
 
 %they are the same. I couldn't get symbolic toolbox to see this. So I used

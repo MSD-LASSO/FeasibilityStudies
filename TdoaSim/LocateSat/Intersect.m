@@ -15,44 +15,32 @@ function Solutions=Intersect(Surf,SymVars)
     %Expect SymbolicEqns length to be the smaller of Eqns or the number of
     %SymVars. Two equations and three unknowns returns 
        
+% 11/11/2019 This function now assumes the input is 2D. 
+
 SymbolicEqns=solve(Surf);
 Solutions=struct2cell(SymbolicEqns); %easier to work with. 
 %each entry in the cell array corresponds to the associated variable in
 %SymVars.
 
+% figure()
+% fimplicit(Surf(1))
+% hold on
+% fimplicit(Surf(2))
+% plot(double(vpa(SymbolicEqns.x)),double(vpa(SymbolicEqns.y)),'*')
+% plot(double(vpa(Solutions{1})),double(vpa(Solutions{2})),'*')
 
-%% for each solution, verify it satisfies the first equation.
-% RemoveList=true(length(Solutions{1}),1);
-% for i=1:length(Solutions{1})
-%     Eqn=Surf(1);
-%     
-%     %make sure soln corresponds with SymVars shape. 
-%     if size(SymVars,1)>size(SymVars,2)
-%         %N rows, 1 column
-%         soln=sym(zeros(length(Solutions),1));
-%     else
-%         %1 row, N columns
-%         soln=sym(zeros(1,length(Solutions)));
-%     end
-% 
-%     %get the ith solution    
-%     for k=1:length(Solutions)
-%         soln(k)=Solutions{k}(i);
-%     end
-%     
-%     %verify the ith solution is identically 0. 
-%     out=simplify(subs(Eqn,SymVars(1:length(Solutions)),soln));
-%     if ~logical(abs(out)<1.0e-10)
-%        %if the answer does not equal to 0. Its not on the hyperbola!
-%        RemoveList(i)=false;
-%     end
-% end
+%% for each solution, verify it satisfies the equations. Needed for 1 sided Hyperbolas. 
+RemoveList=true(length(Solutions{1}),1);
+for i=1:size(Solutions{1},1)
+    Out=double(subs(Surf,SymVars,[Solutions{1}(i) Solutions{2}(i)]));
+    if sum(abs(Out)<1e-10)<2
+        RemoveList(i)=false;
+    end
+end
 
-%Remove false solutions
-% for k=1:length(Solutions)
-%     Solutions{k}=Solutions{k}(RemoveList);
-% end
-
+for i=1:2
+    Solutions{i}=Solutions{i}(RemoveList);
+end
 
 %% plot feature, not implemented.
 % if nargin==3

@@ -22,7 +22,7 @@ if nargin<5
 end
 
 if nargin<6
-    DebugMode=0;
+    DebugMode=1;
 end
 
 if nargin<7
@@ -371,7 +371,7 @@ function [location,potentialPoints]=findSolnsFromIntersects(Intersect2HypersX, I
             end
         end
         potentialPoints=potentialPoints(realPoints,:);
-        
+%         dbscan(potentialPoints,1,3)
         try
             %% Solve. 
             %Sort by X.
@@ -382,8 +382,12 @@ function [location,potentialPoints]=findSolnsFromIntersects(Intersect2HypersX, I
 
             normDiffs=vecnorm(differences,2,2);
             normDiffSorted=sort(normDiffs);
-            vals=normDiffSorted(1:4);
-            Indices=find(normDiffs==vals(1) | normDiffs==vals(2) | normDiffs==vals(3)| normDiffs==vals(4));
+            %2 sided hyperbola
+%             vals=normDiffSorted(1:4);
+%             Indices=find(normDiffs==vals(1) | normDiffs==vals(2) | normDiffs==vals(3)| normDiffs==vals(4));
+            %1 sided hyperbola
+            vals=normDiffSorted(1:2);
+            Indices=find(normDiffs==vals(1) | normDiffs==vals(2));
 
             if isempty(Indices)
                 warning('Tolerance may be set too low. No common solutions were found.')
