@@ -211,10 +211,8 @@ elseif abs(sum(LineFit{1}(2,:)))>0
 
     
     %Let us use the bias term.
-    [azimuth elevation]=geo2AzEl(2.285*LineFit{m}(2,:)+LineFit{m}(1,:),LineFit{m}(1,:));
-%     [azimuth2 elevation2]=geo2AzEl(LineFit{m+1}(2,:)+LineFit{m+1}(1,:),LineFit{m+1}(1,:));
-    azimuth2=0;
-    elevation2=0;
+    [azimuth, elevation]=geo2AzEl(LineFit{m}(2,:)+LineFit{m}(1,:),LineFit{m}(1,:));
+    [azimuth2, elevation2]=geo2AzEl(LineFit{m+1}(2,:)+LineFit{m+1}(1,:),LineFit{m+1}(1,:));
     location=[azimuth, elevation, 0; LineFit{m}(1,:); azimuth2 elevation2 0; LineFit{m+1}(2,:)];
     
     %Debugging Purposes.
@@ -260,7 +258,7 @@ p=length(HyperboloidSet);
 %% Plot of this set of Hyperboloids and Single Hyperboloids.
 if isempty(h1)==0
     figure(h1)
-    h2=h1.Children;
+    h2=gca;
     X1=h2.XLim*2;
     Y1=h2.YLim*2;
     Z1=h2.ZLim;
@@ -294,7 +292,7 @@ for u=1:length(zPlanes)
     %intersect the ith hyperboloid with every hyperboloid after it.
     for i=1:p
         for j=i+1:p
-            Intersect2Hypers=Intersect([Hyperboloidtemp(i),Hyperboloidtemp(j)],SymVars);
+            Intersect2Hypers=Intersect([Hyperboloidtemp(i),Hyperboloidtemp(j)],SymVars(1:2));
             Intersect2HypersX{k}=Intersect2Hypers{1};
             Intersect2HypersY{k}=Intersect2Hypers{2};
             k=k+1;
@@ -314,7 +312,7 @@ for u=1:length(zPlanes)
     %     hold on
         plot(AllPts(:,1),AllPts(:,2),'*');
         hold on
-        fimplicit(Hyperboloidtemp);
+        fimplicit(Hyperboloidtemp,[-6e6 6e6 -6e6 6e6]);
         title(['ZPlane = ' num2str(zPlanes(u)) ' - ' AdditionalTitleStr]);
     end
 
@@ -371,7 +369,13 @@ function [location,potentialPoints]=findSolnsFromIntersects(Intersect2HypersX, I
             end
         end
         potentialPoints=potentialPoints(realPoints,:);
-%         dbscan(potentialPoints,1,3)
+        
+        if size(potentialPoints,1)<=3
+            location=mean(potentialPoints);
+            location(:,3)=z;
+            return
+        end
+        
         try
             %% Solve. 
             %Sort by X.

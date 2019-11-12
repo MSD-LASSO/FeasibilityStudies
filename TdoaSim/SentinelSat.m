@@ -24,13 +24,13 @@ SAT = getStruct(Satellites, SAT_Error, Stations(1,:), GND_Error(1,:));
 timeDifferences = timeDiff(GND, SAT);
 timeDifferences4 = timeDiff(GND4, SAT);
 
-Test1=0;
+Test1=1;
 Test2=0;
-Test3=1;
+Test3=0;
 %% TDoA 3 Stations. A direction.
 if Test1==1
-receivers=[GND(1).coord; GND(2).coord; GND(3).coord];
-Satxyz=SAT.coord;
+receivers=[GND(1).ECFcoord; GND(2).ECFcoord; GND(3).ECFcoord];
+Satxyz=SAT.ECFcoord;
 % A_B=timeDifferences(1,1,1);
 % A_C=timeDifferences(1,1,2);
 % B_C=timeDifferences(1,1,3);
@@ -47,7 +47,7 @@ title('3 Stations Direction Test')
 % plot3(
 grid on
 hold on
-locations=TDoA(receivers,DistanceDiffs,10,[4.5e6 4.8e6 5.1e6 ]);
+locations=TDoA(receivers,DistanceDiffs,[],10,[4.5e6 4.8e6 5.1e6 ]);
 
 syms t
 h1=figure(1);

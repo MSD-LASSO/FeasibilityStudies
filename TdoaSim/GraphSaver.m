@@ -25,7 +25,8 @@ while i<=length(plots)
     if ishandle(plots(i))==1
         figure(plots(i))
         h1=gcf;
-        if length(h1.Children)>=3 %if figure is a subplot, make it big.
+        [~,el]=view;
+        if length(h1.Children)>=3 || el~=90 %if figure is a subplot, make it big.
             set(gcf, 'Position', get(0, 'Screensize'));
         end
         for j=1:length(formats)
@@ -33,7 +34,7 @@ while i<=length(plots)
             Figtitle=strrep(Figtitle,'.','_');
             Figtitle=strrep(Figtitle,':','_');
             try
-                saveas(gcf,[location '\' Figtitle],formats{j});
+                saveas(gcf,[location '/' Figtitle],formats{j});
             catch ME
                 disp(i)
                 rethrow(ME);

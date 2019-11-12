@@ -5,6 +5,8 @@
 %these values are intentionally hardcoded as they are not made to change!
 
 clearvars
+close all
+AddAllPaths
 Sphere=referenceSphere('Earth');
 
 R1=[0.751981147060969	-1.355756142252390	0.000000000000000]*180/pi;
@@ -36,8 +38,8 @@ CorrectLatLong=[CorrectLatLong1;CorrectLatLong2;CorrectLatLong3;CorrectLatLong4]
 [xR, yR, zR]=geodetic2enu(R(:,1),R(:,2),R(:,3),reference(1),reference(2),reference(3),Sphere);
 [xS, yS, zS]=geodetic2enu(CorrectLatLong(:,1),CorrectLatLong(:,2),CorrectLatLong(:,3),reference(1),reference(2),reference(3),Sphere);
 
-%create 9 instances of the same plot. Each test will update 2 plots.
-for i=1:9
+%create 5 instances of the same plot. Each test will update 2 plots.
+for i=1:5
     h(i)=figure()
     plot3(xR,yR,zR,'s','color','red','linewidth',3)
     hold on
@@ -58,20 +60,56 @@ end
 GND=getStruct(R, zeros(3,4), reference,zeros(1,4),Sphere);
 SAT=getStruct(CorrectLatLong, zeros(4,4), reference,zeros(1,4),Sphere);
 
-%% Test 1
-TimeDiffs=timeDiff3toMatrix(GND,SAT(1));
-figure(h(1))
-title('TDoA solution to near 90 degree elevation test case')
-locations=TDoA(R,TimeDiffs*3e8,reference,1e-10,[0 50e3 100e3 200e3 500e3 2000e3],1,'CrudeGroundTrackTest');
-[az, el]=geo2AzEl(expected,locations(2,:));
+%% Tests
+Elevation={'90','60','30','0'};
+Range=-2800000; %I chose this value for the plot. 
+numTests=4;
+for i=1:numTests
+TimeDiffs=timeDiff3toMatrix(GND,SAT(i));
+receivers=[GND(1).Topocoord; GND(2).Topocoord; GND(3).Topocoord];
+figure(h(i))
+locations=TDoA(receivers,TimeDiffs*3e8,reference,1e-10,[0 50e3 100e3 200e3 500e3 2000e3],1,['CrudeGroundTrackTestElevation: ' Elevation{i}]);
+title(['TDoA solution to near ' Elevation{i} ' degree elevation test case'])
+legend('Receiver Locations','Satellite Locations','Receiver Connections','Hab','Hac','Hbc','Planes','L1','L1Bias','L2','L2Bias')
+virtualStation(i,:)=locations(2,:);
+[x, y, z]=sph2cart(locations(1,1),locations(1,2),Range);
+FurtherPoint(i,:)=[x y z];
 
-figure(h(2))
-plot3(locations([2],1),locations([2],2),locations([2],3),'d','color','blue','linewidth',3)
-plot3(locations([4],1),locations([4],2),locations([4],3),'d','color','magenta','linewidth',3)
-legend('Receiver Locations','Satellite Locations','Virtual Station 1','Virtual Station 2')
+expected=SAT(i).Topocoord;
+[az, el]=geo2AzEl(expected,locations(2,:));
 expectedAzEl=[az el 0];
-actualAzEl=locations([1 3],:);
+actualAzEl=locations(1,:);
+
 
 %ignore 2nd solution...momentarily.
-soln1=expectedAzEl-actualAzEl;
+soln1(i,:)=expectedAzEl-actualAzEl;
+end
+
+%% Final Visualization
+figure(h(5))
+plot3(virtualStation(:,1),virtualStation(:,2),virtualStation(:,3),'d','color','blue','linewidth',3)
+% for i=1:numTests
+%     plot3([virtualStation(i,1) virtualStation(i,1)+FurtherPoint(i,1)],...
+%         [virtualStation(i,2) virtualStation(i,2)+FurtherPoint(i,2)],...
+%         [virtualStation(i,3) virtualStation(i,3)+FurtherPoint(i,3)],...
+%         'color','blue','linewidth',3)
+% end
+legend('Receiver Locations','Satellite Locations','Virtual Stations')
+
+figure()
+subplot(1,2,1)
+plot([90 60 30 0],soln1(:,1)*180/pi,'s','linewidth',3);
+xlabel('True Elevation of Satellite (deg)')
+ylabel('Azimuth Error (deg)')
+title('Azimuth Error. No input error')
+grid on
+subplot(1,2,2)
+plot([90 60 30 0],soln1(:,2)*180/pi,'s','linewidth',3);
+xlabel('True Elevation of Satellite (deg)')
+ylabel('Elevation Error (deg)')
+title('Elevation Error. No input error')
+grid on
+
+GraphSaver({'png'},'../Plots/GroundTrackTest',1);
+
 

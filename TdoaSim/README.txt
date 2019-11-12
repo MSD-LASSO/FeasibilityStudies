@@ -24,5 +24,8 @@ Outputs: Satellite location at the time it transmitted
 
 
 Upcoming Features:
-11/11 Add time difference error functionality to one-sided vs. two-sided Hyperbola. If the time difference could be negative, plot the mirror image of that specific hyperbola. 
+11/11 Add time difference error functionality to one-sided vs. two-sided Hyperbola. If the time difference could be negative, plot the mirror image of that specific hyperbola.
+11/11 Decide how to bound the solution. Currently take the 3 closest points -- most of the time. Doesn't always work. 
+Test case:
+TDoA2Dtest last test commented out TimeDiffs. 
 
