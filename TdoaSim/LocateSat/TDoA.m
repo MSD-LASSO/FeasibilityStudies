@@ -1,4 +1,4 @@
-function [location, locationError] = TDoA(receiverLocations,distanceDifferences,Reference,AcceptanceTolerance,zPlanes,DebugMode,AdditionalTitleStr)
+function [location, locationError] = TDoA(receiverLocations,distanceDifferences,Reference,Sphere,AcceptanceTolerance,zPlanes,DebugMode,AdditionalTitleStr)
 %INPUTS: nx3 vector of receiver Locations (x,y,z) pairs, measured from a
         %fixed reference.
         %nxn upper triangular matrix of all combinations of 
@@ -13,19 +13,28 @@ function [location, locationError] = TDoA(receiverLocations,distanceDifferences,
 
 n=size(receiverLocations,1);
 
+if isempty(Reference)==1
+    %then ReceiverLocations are in Earth Centered Frame
+    Reference=[0 0 0];
+end
+
 if nargin<4
-    AcceptanceTolerance=1e-5;
+    Sphere=referenceSphere('Earth');
 end
 
 if nargin<5
-    zPlanes=0;
+    AcceptanceTolerance=1e-5;
 end
 
 if nargin<6
-    DebugMode=1;
+    zPlanes=0;
 end
 
 if nargin<7
+    DebugMode=1;
+end
+
+if nargin<8
     AdditionalTitleStr='';
 end
 
@@ -211,8 +220,8 @@ elseif abs(sum(LineFit{1}(2,:)))>0
 
     
     %Let us use the bias term.
-    [azimuth, elevation]=geo2AzEl(LineFit{m}(2,:)+LineFit{m}(1,:),LineFit{m}(1,:));
-    [azimuth2, elevation2]=geo2AzEl(LineFit{m+1}(2,:)+LineFit{m+1}(1,:),LineFit{m+1}(1,:));
+    [azimuth, elevation]=geo2AzEl(LineFit{m}(2,:)+LineFit{m}(1,:),LineFit{m}(1,:),Reference,Sphere);
+    [azimuth2, elevation2]=geo2AzEl(LineFit{m+1}(2,:)+LineFit{m+1}(1,:),LineFit{m+1}(1,:),Reference,Sphere);
     location=[azimuth, elevation, 0; LineFit{m}(1,:); azimuth2 elevation2 0; LineFit{m+1}(2,:)];
     
     %Debugging Purposes.
@@ -312,7 +321,7 @@ for u=1:length(zPlanes)
     %     hold on
         plot(AllPts(:,1),AllPts(:,2),'*');
         hold on
-        fimplicit(Hyperboloidtemp,[-6e6 6e6 -6e6 6e6]);
+        fimplicit(Hyperboloidtemp);%,[-6e6 6e6 -6e6 6e6]);
         title(['ZPlane = ' num2str(zPlanes(u)) ' - ' AdditionalTitleStr]);
     end
 

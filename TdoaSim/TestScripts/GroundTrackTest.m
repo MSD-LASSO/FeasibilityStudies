@@ -62,23 +62,26 @@ SAT=getStruct(CorrectLatLong, zeros(4,4), reference,zeros(1,4),Sphere);
 
 %% Tests
 Elevation={'90','60','30','0'};
-Range=-2800000; %I chose this value for the plot. 
+Range=2800000; %I chose this value for the plot. 
 numTests=4;
 for i=1:numTests
 TimeDiffs=timeDiff3toMatrix(GND,SAT(i));
 receivers=[GND(1).Topocoord; GND(2).Topocoord; GND(3).Topocoord];
 figure(h(i))
-locations=TDoA(receivers,TimeDiffs*3e8,reference,1e-10,[0 50e3 100e3 200e3 500e3 2000e3],1,['CrudeGroundTrackTestElevation: ' Elevation{i}]);
+locations=TDoA(receivers,TimeDiffs*3e8,reference,Sphere,1e-10,[50e7 100e7 200e7 500e7 2000e7],1,['CrudeGroundTrackTestElevation: ' Elevation{i}]);
 title(['TDoA solution to near ' Elevation{i} ' degree elevation test case'])
 legend('Receiver Locations','Satellite Locations','Receiver Connections','Hab','Hac','Hbc','Planes','L1','L1Bias','L2','L2Bias')
 virtualStation(i,:)=locations(2,:);
-[x, y, z]=sph2cart(locations(1,1),locations(1,2),Range);
+[y, x, z]=sph2cart(locations(1,1),locations(1,2),Range);
 FurtherPoint(i,:)=[x y z];
 
 expected=SAT(i).Topocoord;
-[az, el]=geo2AzEl(expected,locations(2,:));
+[az, el]=geo2AzEl(expected,locations(2,:),reference);
 expectedAzEl=[az el 0];
 actualAzEl=locations(1,:);
+
+[y, x, z]=sph2cart(az,el,Range);
+FurtherPointCorrect(i,:)=[x y z];
 
 
 %ignore 2nd solution...momentarily.
@@ -88,12 +91,16 @@ end
 %% Final Visualization
 figure(h(5))
 plot3(virtualStation(:,1),virtualStation(:,2),virtualStation(:,3),'d','color','blue','linewidth',3)
-% for i=1:numTests
-%     plot3([virtualStation(i,1) virtualStation(i,1)+FurtherPoint(i,1)],...
-%         [virtualStation(i,2) virtualStation(i,2)+FurtherPoint(i,2)],...
-%         [virtualStation(i,3) virtualStation(i,3)+FurtherPoint(i,3)],...
-%         'color','blue','linewidth',3)
-% end
+for i=1:numTests
+    plot3([virtualStation(i,1) virtualStation(i,1)+FurtherPoint(i,1)],...
+        [virtualStation(i,2) virtualStation(i,2)+FurtherPoint(i,2)],...
+        [virtualStation(i,3) virtualStation(i,3)+FurtherPoint(i,3)],...
+        'color','blue','linewidth',3)
+    plot3([virtualStation(i,1) virtualStation(i,1)+FurtherPointCorrect(i,1)],...
+        [virtualStation(i,2) virtualStation(i,2)+FurtherPointCorrect(i,2)],...
+        [virtualStation(i,3) virtualStation(i,3)+FurtherPointCorrect(i,3)],...
+        'color','green','linewidth',3)
+end
 legend('Receiver Locations','Satellite Locations','Virtual Stations')
 
 figure()
@@ -110,6 +117,6 @@ ylabel('Elevation Error (deg)')
 title('Elevation Error. No input error')
 grid on
 
-GraphSaver({'png'},'../Plots/GroundTrackTest',1);
+GraphSaver({'png'},'../Plots/GroundTrackTestAllZPlanes',1);
 
 

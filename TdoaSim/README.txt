@@ -22,6 +22,10 @@ Inputs: The ouputs of Calculate Time Difference
 Outputs: Satellite location at the time it transmitted
 	 Error of satellite location calculation
 
+Important Notes:
+11/12 Its very important which zPlanes we pick. Low zPlanes introduce error for high elevation cases. 0.007 deg -> 0.09 deg
+High zPlanes introduce significant error for low elevation cases. 0.32 deg -> 1.8 deg
+11/12 It appears as the planes approach infinity, we get better results.
 
 Upcoming Features:
 11/11 Add time difference error functionality to one-sided vs. two-sided Hyperbola. If the time difference could be negative, plot the mirror image of that specific hyperbola.

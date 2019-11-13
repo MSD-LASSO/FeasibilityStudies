@@ -10,7 +10,6 @@ function [a] = getStruct(Objects, Error, Reference,Reference_Error,Sphere)
 
 if nargin<5
     Sphere=referenceSphere('Earth');
-    Sphere.Radius=6378137;
 end
 
 n = size(Objects, 1);

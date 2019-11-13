@@ -1,5 +1,5 @@
 %this integration test script will test some simple 2D TDoA cases.
-
+AddAllPaths
 %% Equilateral triangle. Point is at the exact center.
 X=10;
 x=X/2; %receiver location

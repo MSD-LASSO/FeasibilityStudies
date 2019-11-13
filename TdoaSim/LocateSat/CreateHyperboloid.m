@@ -44,14 +44,14 @@ Hyperboloid=subs(Hyperboloid,[x,y,z],[x-Offset(1),y-Offset(2),z-Offset(3)]);
 % d2=(x-Station2Coordinates(1))^2+(y-Station2Coordinates(2))^2+(z-Station2Coordinates(3))^2;
 % Hyperboloid=d1+d2-2*sqrt(d1)*sqrt(d2)-DifferenceInDistance^2;
 
-% %% Make 2D if neccessary.
+%% Make 2D if neccessary.
 SymVars=[x y z];
-% 
-% %remove z if 2D.
-% if(Station1Coordinates(3)==0 && Station2Coordinates(3)==0)
-%     Hyperboloid=subs(Hyperboloid,z,0);
-%     SymVars=[x y];
-% end
+
+%remove z if 2D.
+if(Station1Coordinates(3)==0 && Station2Coordinates(3)==0)
+    Hyperboloid=subs(Hyperboloid,z,0);
+    SymVars=[x y];
+end
 
 
 end

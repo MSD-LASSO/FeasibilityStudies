@@ -6,7 +6,6 @@ function LocationsInTopocentricFrame = measureInTopocentricFrame(geodeticData,ge
 
 if nargin<3
     Sphere=referenceSphere('Earth');
-    Sphere.Radius=6378137;
 end
 
 [xEast, yNorth, zUp]=geodetic2enu(geodeticData(:,1),geodeticData(:,2),geodeticData(:,3),...
