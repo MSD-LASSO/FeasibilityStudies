@@ -305,6 +305,10 @@ for u=1:length(zPlanes)
             Intersect2HypersX{k}=Intersect2Hypers{1};
             Intersect2HypersY{k}=Intersect2Hypers{2};
             k=k+1;
+            
+            %Idea: could we derive the equation of a hyperbola from the
+            %intersection of 2 hyperboloids?
+%             Intersect2Hyperboloid=Intersect([HyperboloidSet(i),HyperboloidSet(j)],SymVars);
         end
     end 
     [temp,AllPts]=findSolnsFromIntersects(Intersect2HypersX,Intersect2HypersY,zPlanes(u),3,AcceptanceTolerance);

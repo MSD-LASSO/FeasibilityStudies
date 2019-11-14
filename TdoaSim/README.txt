@@ -27,6 +27,14 @@ Important Notes:
 High zPlanes introduce significant error for low elevation cases. 0.32 deg -> 1.8 deg
 11/12 It appears as the planes approach infinity, we get better results.
 
+11/13 The intersection of 2 hyperboloids is a hyperbola. If we can find the equation of that hyperbola, we can approximate the line with the hyperbola's asympotote.
+Okay. Well fitting a hyperbola to a cloud of points is difficult because it requires a parametric variable, t, which is unknown before solving for the hyperbola.
+
+Choices moving forward:
+1) figure out how to vary the parametric value variables as well so the parametric fit converges
+2) Consider intersecting 2 Hyperboloids together. The result should be 4 solutions, each a quarter of a hyperbola. If we can translate the symbolic toolbox
+output to a hyperbola of the form x^2/a+y^2/b we can get the asymptote line. 
+
 Upcoming Features:
 11/11 Add time difference error functionality to one-sided vs. two-sided Hyperbola. If the time difference could be negative, plot the mirror image of that specific hyperbola.
 11/11 Decide how to bound the solution. Currently take the 3 closest points -- most of the time. Doesn't always work. 
