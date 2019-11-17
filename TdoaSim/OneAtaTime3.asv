@@ -36,8 +36,8 @@ for i=1:m
     GNDforTime(i).ECFcoord_error=[0,0,0];
 end
 
-SensitivityLocation=cell(2,1);
-SensitivityTime=cell(2,1);
+SensitivityLocation=cell(m,3);
+SensitivityTime=cell(m,1);
 
 if(location==1)
 %% iterate through location errors.
@@ -120,47 +120,29 @@ for i=1:3 %cycle through x,y,z.
         end
         
         %plot results
-        if DebugMode>=0
-            figure()
-            subplot(2,2,1)
-            plot(test{j,i},AbsTotalErr{j,i},'.','MarkerSize',20);
-            title(['Total Error based on Error in Receiver: ' num2str(j) ' and Coord: ' num2str(i)]) 
-
-            variable={'Az','El','N/A'};
-            for k=2:3
-                subplot(2,2,k)
-                plot(test{j,i},AbsErr{j,i}(:,k-1),'.','MarkerSize',20);
-                title(['Resulting Sat Error in Coord: ' variable{k-1}]);
-            end
-
-            figure()
+        figure()
+        subplot(2,2,1)
+        plot(test{j,i},AbsTotalErr{j,i},'.','MarkerSize',20);
+        title(['Total Error based on Error in Receiver: ' num2str(j) ' and Coord: ' num2str(i)])
+        SensitivityLocation{j,i}=zeros(2,2); %azimuth and elevation slopes. 
+        
+        variable={'Az','El','N/A'};
+        for k=2:3
+            subplot(2,2,k)
+            plot(test{j,i},AbsErr{j,i}(:,k-1),'.','MarkerSize',20);
+            title(['Resulting Sat Error in Coord: ' variable{k-1}]);
         end
         
-        for k=1:2   
-            %fit half the points to a line.
-            M=[AngleSensitivityIn{j,i},AngleSensitivityOut{j,i}(:,k)];
-            [~,idx] = sort(M(:,1)-mean(M(:,1))); % sort just the first column
-            sortedMat = M(idx,:);
-            halfway=ceil(size(sortedMat,1)/2);
-            [temp, tempStruct]=polyfit(sortedMat(1:halfway,1),sortedMat(1:halfway,k),1);
-            SensitivityLocation{1,k}(j,i)=temp(1);
-            SensitivityLocation{2,k}(j,i)=tempStruct.normr;
-            %fit the other half
-            [temp, tempStruct]=polyfit(sortedMat(halfway:end,1),sortedMat(halfway:end,k),1);
-            %choose the line with the steeper slope.
-            if abs(temp(1))>abs(SensitivityLocation{j,i}(k,1))
-                SensitivityLocation{1,k}(j,i)=temp(1);
-                SensitivityLocation{2,k}(j,i)=tempStruct.normr;
-            end
-            
-            if DebugMode>=0
-                subplot(1,2,k)
-                plot(AngleSensitivityIn{j,i}/1000,AngleSensitivityOut{j,i}(:,k),'.','MarkerSize',20);
-                
-                title([variable{k} ' Output w.r.t. Receiver ' num2str(j) ' coord: ' Axis{i}]);
-                xlabel(['R' num2str(j) 'coord ' Axis{i} ' (km)']);
-                ylabel([variable{k} ' (rad)']);
-            end
+        figure()
+        for k=1:2
+            subplot(1,2,k)
+            plot(AngleSensitivityIn{j,i}/1000,AngleSensitivityOut{j,i}(:,k),'.','MarkerSize',20);
+            [temp tempStruct]=polyfit(AngleSensitivityIn{j,i},AngleSensitivityOut{j,i}(:,k),1);
+            SensitivityLocation{j,i}(k,1)=temp(1);
+            SensitivityLocation{j,i}(k,2)=tempStruct.normr;
+            title([variable{k} ' Output w.r.t. Receiver ' num2str(j) ' coord: ' Axis{i}]);
+            xlabel(['R' num2str(j) 'coord ' Axis{i} ' (km)']);
+            ylabel([variable{k} ' (rad)']);
         end
 
         if DebugMode==1
@@ -239,47 +221,43 @@ for i=1:1 %cycle through nothing. Clock error is 1D.
             end
         end
         
-        if DebugMode>=0
-            %plot results
-            figure()
-            subplot(2,2,1)
-            plot(test{j,i},AbsTotalErr{j,i},'.','MarkerSize',20);
-            title(['Total Error based on Error in Receiver: ' num2str(j) ' and Clock Error: ' num2str(j)])
-            
-            variable={'x','y','z'};
-            for k=2:4
-                subplot(2,2,k)
-                plot(test{j,i},AbsErr{j,i}(:,k-1),'.','MarkerSize',20);
-                title(['Resulting Sat Error from Clk Coord: ' num2str(j)]);
-            end
-            
-            figure()
+        %plot results
+        figure()
+        subplot(2,2,1)
+        plot(test{j,i},AbsTotalErr{j,i},'.','MarkerSize',20);
+        title(['Total Error based on Error in Receiver: ' num2str(j) ' and Clock Error: ' num2str(j)])
+        
+        variable={'x','y','z'};
+        for k=2:4
+            subplot(2,2,k)
+            plot(test{j,i},AbsErr{j,i}(:,k-1),'.','MarkerSize',20);
+            title(['Resulting Sat Error from Clk Coord: ' num2str(j)]);
         end
+        
+        figure()
         variable={'Az','El','N/A'};
         for k=1:2
+            subplot(1,2,k)
+            plot(AngleSensitivityIn{j,i}/1000,AngleSensitivityOut{j,i}(:,k),'.','MarkerSize',20);
+            
             %fit half the points to a line.
             M=[AngleSensitivityIn{j,i},AngleSensitivityOut{j,i}(:,k)];
             [~,idx] = sort(M(:,1)); % sort just the first column
             sortedMat = M(idx,:);
             halfway=ceil(size(sortedMat,1)/2);
-            [temp, tempStruct]=polyfit(sortedMat(1:halfway,1),sortedMat(1:halfway,k),1);
-            SensitivityTime{1,k}(j,i)=temp(1);
-            SensitivityTime{2,k}(j,i)=tempStruct.normr;
+            [temp tempStruct]=polyfit(sortedMat(1:halfway,1),sortedMat(1:halfway,k),1);
+            SensitivityTime{j,i}(k,1)=temp(1);
+            SensitivityTime{j,i}(k,2)=tempStruct.normr;
             %fit the other half
-            [temp, tempStruct]=polyfit(sortedMat(halfway:end,1),sortedMat(halfway:end,k),1);
-            %choose the line with the steeper slope.
-            if abs(temp(1))>abs(SensitivityTime{j,i}(k,1))
-                SensitivityTime{1,k}(j,i)=temp(1);
-                SensitivityTime{2,k}(j,i)=tempStruct.normr;
+            [temp tempStruct]=polyfit(sortedMat(halfway:end,1),sortedMat(halfway:end,k),1);
+            %choose the larger one. 
+            if(abs(temp(1))>SensitivityTime{j,i}(k,1)
+                SensitivityTime{j,i}(k,1)=temp(1);
+                SensitivityTime{j,i}(k,2)=tempStruct.normr;
             end
-            
-            if DebugMode>=0
-                subplot(1,2,k)
-                plot(AngleSensitivityIn{j,i}/1000,AngleSensitivityOut{j,i}(:,k),'.','MarkerSize',20);
-                title([variable{k} ' Output w.r.t. Receiver ' num2str(j) ' Clk Error']);
-                xlabel(['R' num2str(j) 'CLk Error (s)']);
-                ylabel([variable{k} ' (rad)']);
-            end
+            title([variable{k} ' Output w.r.t. Receiver ' num2str(j) ' Clk Error']);
+            xlabel(['R' num2str(j) 'CLk Error (s)']);
+            ylabel([variable{k} ' (rad)']);
         end
         
         

@@ -28,10 +28,9 @@ TimeSyncErrRoof=.12e-10;
 TimeSyncErrFar=20e-9;
 
 %% Dictate Parameters for One At A Time
-numSamples=4;
+numSamples=6;
 Frame=1; %1 is Topo, 0 ECEF
-DebugMode=-1; %set to 1 to save intermediate plots. 0 to save final plots
-%-1 to plot nothing and save nothing.
+DebugMode=0; %set to 1 to save intermediate plots.
 
 if Frame==1
     FrameStr='Topo';
@@ -42,10 +41,10 @@ end
 
 %% Cycle through the ground cycles one at a time.
 n=length(names);
-AssociatedAzimuth=cell(n,1);
-AssociatedElevation=cell(n,1);
-UncertaintyAzimuth=cell(n,1);
-UncertaintyElevation=cell(n,1);
+AssociatedAzimuth=zeros(n,z);
+AssociatedElevation=zeros(n,z);
+UncertaintyAzimuth=zeros(n,z);
+UncertaintyElevation=zeros(n,z);
 
 for i=1:n %1:n
     %% Prepare the error.
@@ -73,10 +72,6 @@ for i=1:n %1:n
     
     %% For each satellite position, solve for the sensitivity.
     z=size(satellites{i},1);
-    AssociatedAzimuth{i}=zeros(z,1);
-    AssociatedElevation{i}=zeros(z,1);
-    UncertaintyAzimuth{i}=zeros(z,1);
-    UncertaintyElevation{i}=zeros(z,1);
     for j=23:10:z %2:z
         %THis could is here because the Lat and Long are incorrect on the text
         %files.
@@ -106,28 +101,15 @@ for i=1:n %1:n
         CE=GND_error(:,4);
         
         
-        AssociatedAzimuth{i}(j)=satellitesGT{i}(j,2)*180/pi;
-        AssociatedElevation{i}(j)=satellitesGT{i}(j,1)*180/pi;
-        UncertaintyAzimuth{i}(j)=sqrt(sum(sum((LE.*SensitivityLocation{1}).^2))+sum((CE.*SensitivityTime{1}).^2));
-        UncertaintyElevation{i}(j)=sqrt(sum(sum((LE.*SensitivityLocation{1}).^2))+sum((CE.*SensitivityTime{1}).^2));
+        AssociatedAzimuth(i,j)=satellitesGT{i}(j,2)*180/pi;
+        AssociatedElevation(i,j)=satellitesGT{i}(j,1)*180/pi;
+        UncertaintyAzimuth(i,j)=sqrt(sum(sum((LE.*SensitivityLocation{1}).^2))+sum((CE.*SensitivityTime{1}).^2));
+        UncertaintyElevation(i,j)=sqrt(sum(sum((LE.*SensitivityLocation{1}).^2))+sum((CE.*SensitivityTime{1}).^2));
         
     end
     %% Plot the Uncertainties.
     figure()
     subplot(2,2,1)
-    plot(AssociatedAzimuth{i},UncertaintyAzimuth{i},'*');
-    title('Input Azimuth vs. uncertainty in Azimuth')
-    subplot(2,2,2)
-    plot(AssociatedAzimuth{i},UncertaintyElevation{i},'*');
-    title('Input Azimuth vs. uncertainty in Elevation')
-    subplot(2,2,3)
-    plot(AssociatedElevation{i},UncertaintyAzimuth{i},'*');
-    title('Input Elevation vs. uncertainty in Azimuth')
-    subplot(2,2,4)
-    plot(AssociatedElevation{i},UncertaintyElevation{i},'*');
-    title('Input Elevation vs. uncertainty in Elevation')
+    plot(AssociatedAzimuth(i,:),UncertaintyAzimuth(i,
 end
-
-GraphSaver({'fig','png'},['Plots/' 'Uncertainties'],0);
-
 
