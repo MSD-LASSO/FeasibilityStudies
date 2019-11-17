@@ -148,7 +148,7 @@ for i=1:3 %cycle through x,y,z.
             %fit the other half
             [temp, tempStruct]=polyfit(sortedMat(halfway:end,1),sortedMat(halfway:end,k),1);
             %choose the line with the steeper slope.
-            if abs(temp(1))>abs(SensitivityLocation{j,i}(k,1))
+            if abs(temp(1))>abs(SensitivityLocation{1,k}(j,i))
                 SensitivityLocation{1,k}(j,i)=temp(1);
                 SensitivityLocation{2,k}(j,i)=tempStruct.normr;
             end
@@ -268,7 +268,7 @@ for i=1:1 %cycle through nothing. Clock error is 1D.
             %fit the other half
             [temp, tempStruct]=polyfit(sortedMat(halfway:end,1),sortedMat(halfway:end,k),1);
             %choose the line with the steeper slope.
-            if abs(temp(1))>abs(SensitivityTime{j,i}(k,1))
+            if abs(temp(1))>abs(SensitivityTime{1,k}(j,i))
                 SensitivityTime{1,k}(j,i)=temp(1);
                 SensitivityTime{2,k}(j,i)=tempStruct.normr;
             end
