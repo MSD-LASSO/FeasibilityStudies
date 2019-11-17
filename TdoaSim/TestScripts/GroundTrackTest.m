@@ -63,6 +63,7 @@ SAT=getStruct(CorrectLatLong, zeros(4,4), reference,zeros(1,4),Sphere);
 %% Tests
 Elevation={'90','60','30','0'};
 Range=2800000; %I chose this value for the plot. 
+% Range=1951354.31734960;
 numTests=4;
 for i=1:numTests
 TimeDiffs=timeDiff3toMatrix(GND,SAT(i));
@@ -73,7 +74,12 @@ title(['TDoA solution to near ' Elevation{i} ' degree elevation test case'])
 legend('Receiver Locations','Satellite Locations','Receiver Connections','Hab','Hac','Hbc','Planes','L1','L1Bias','L2','L2Bias')
 virtualStation(i,:)=locations(2,:);
 [y, x, z]=sph2cart(locations(1,1),locations(1,2),Range);
-FurtherPoint(i,:)=[x y z];
+[lat0, long0, h0]=enu2geodetic(virtualStation(i,1),virtualStation(i,2),virtualStation(i,3),reference(1),reference(2),reference(3),Sphere);
+[x,y,z]=enu2ecef(x,y,z,lat0,long0,h0,Sphere);
+[x,y,z]=ecef2enu(x,y,z,reference(1),reference(2),reference(3),Sphere);
+
+FurtherPoint(i,:)=[x y z]-virtualStation(i,:); %in a enu virtual station frame.
+
 
 expected=SAT(i).Topocoord;
 [az, el]=geo2AzEl(expected,locations(2,:),reference);
@@ -81,7 +87,9 @@ expectedAzEl=[az el 0];
 actualAzEl=locations(1,:);
 
 [y, x, z]=sph2cart(az,el,Range);
-FurtherPointCorrect(i,:)=[x y z];
+[x,y,z]=enu2ecef(x,y,z,lat0,long0,h0,Sphere);
+[x,y,z]=ecef2enu(x,y,z,reference(1),reference(2),reference(3),Sphere);
+FurtherPointCorrect(i,:)=[x y z]-virtualStation(i,:);
 
 
 %ignore 2nd solution...momentarily.

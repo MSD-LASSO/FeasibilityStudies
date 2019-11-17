@@ -101,7 +101,7 @@ for i=1:1%3 %cycle through x,y,z.
                 %Sat in TDoA generated frame location.
     %             expectedShifted=expected-locations(2,:);
     %             [az, el]=getAzEl(expectedShifted);
-                [az, el]=geo2AzEl(expected,locations(2,:));
+                [az, el]=geo2AzEl(expected,locations(2,:),Reference);
                 expectedAzEl=[az el 0];
                 actualAzEl=locations(1,:);
                 
@@ -207,7 +207,7 @@ for i=1:1 %cycle through nothing. Clock error is 1D.
                 %Sat in TDoA generated frame location.
     %             expectedShifted=expected-locations(2,:);
     %             [az, el]=getAzEl(expectedShifted);
-                [az, el]=geo2AzEl(expected,locations(2,:));
+                [az, el]=geo2AzEl(expected,locations(2,:),Reference);
                 expectedAzEl=[az el 0];
 
                 AbsErr{j,i}(k,:)=expectedAzEl-locations(1,:);
