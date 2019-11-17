@@ -26,8 +26,25 @@ while i<=length(plots)
         figure(plots(i))
         h1=gcf;
         [~,el]=view;
-        if length(h1.Children)>=3 || el~=90 %if figure is a subplot, make it big.
-            set(gcf, 'Position', get(0, 'Screensize'));
+        n=length(h1.Children);
+        success=0;
+        failure=0;
+        if n>=3 || el~=90 %if figure is a subplot, make it big.
+            for i=1:n
+                try
+                    success=success+1;
+                    h2=h1(i).Children;
+                    set(h2,'FontSize',18);
+                    title=h2.Title;
+                    title.FontSize=20;
+                catch
+                    failure=failure+1;
+                end
+            end
+            if success>=2 %then we found 2 Axes.
+                set(gcf, 'Position', get(0, 'Screensize'));
+            end
+
         end
         for j=1:length(formats)
             Figtitle=h1.Children(end).Title.String; %take first title for name

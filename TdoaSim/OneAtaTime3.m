@@ -1,4 +1,4 @@
-function [SensitivityLocation, SensitivityTime]=OneAtaTime3(GND,SAT,time,location,folderName,Frame,DebugMode,numSamples)
+function [SensitivityLocation, SensitivityTime]=OneAtaTime3(GND,SAT,time,location,folderName,Frame,DebugMode,numSamples,Sphere)
 %This function will perform a OneAtaTime uncertainty analysis for the Time
 %Difference of Arrival signal. 
 %It takes each parameter with a specified error and varies that parameter
@@ -49,7 +49,7 @@ AngleSensitivityOut=cell(m,3); %azimuth and elevation output
 AngleSensitivityIn=cell(m,3); %whatever parameter we are currently varying. 
 
 Axis={'x','y','z'};
-for i=1:1%3 %cycle through x,y,z.
+for i=1:3 %cycle through x,y,z.
     for j=1:m %cycle through each station.
         ErrorMax=LocationErrs(j,i); %get the location error for this test
         test{j,i}=linspace(-ErrorMax,ErrorMax,numSamples); %set up a range.
@@ -84,7 +84,7 @@ for i=1:1%3 %cycle through x,y,z.
             else
                 zPlanes=[4.5e6 4.8e6 5.1e6];
             end
-            locations=TDoA(RT,TimeDiffs*3e8,Reference,10,zPlanes,DebugMode,['Run ' num2str(k) ' With Receiver ' num2str(j) ' Location Error = ' ErrStr]);
+            locations=TDoA(RT,TimeDiffs*3e8,Reference,Sphere,10,zPlanes,DebugMode,['Run ' num2str(k) ' With Receiver ' num2str(j) ' Location Error = ' ErrStr]);
             
             if isempty(locations)==0 && size(locations,1)==4
                 %if we don't have lineFits, then we don't have a solution.
@@ -201,7 +201,7 @@ for i=1:1 %cycle through nothing. Clock error is 1D.
                 hold on
             end
             
-            locations=TDoA(RT,(TimeDiffs+TimeDiffErr)*3e8,Reference,100,zPlanes,DebugMode,['Run ' num2str(k) ' With Time Error = ' ErrStr]);
+            locations=TDoA(RT,(TimeDiffs+TimeDiffErr)*3e8,Reference,Sphere,100,zPlanes,DebugMode,['Run ' num2str(k) ' With Time Error = ' ErrStr]);
             
             if isempty(locations)==0
                 %Sat in TDoA generated frame location.
