@@ -30,7 +30,7 @@ TimeSyncErrFar=20e-9;
 %% Dictate Parameters for One At A Time
 numSamples=4;
 Frame=1; %1 is Topo, 0 ECEF
-DebugMode=0; %set to 1 to save intermediate plots. 0 to save final plots
+DebugMode=-1; %set to 1 to save intermediate plots. 0 to save final plots
 %-1 to plot nothing and save nothing.
 
 if Frame==1
@@ -108,24 +108,32 @@ for i=1:n %1:n
         
         AssociatedAzimuth{i}(j)=satellitesGT{i}(j,2)*180/pi;
         AssociatedElevation{i}(j)=satellitesGT{i}(j,1)*180/pi;
-        UncertaintyAzimuth{i}(j)=sqrt(sum(sum((LE.*SensitivityLocation{1,1}).^2))+sum((CE.*SensitivityTime{1,1}).^2));
-        UncertaintyElevation{i}(j)=sqrt(sum(sum((LE.*SensitivityLocation{1,2}).^2))+sum((CE.*SensitivityTime{1,2}).^2));
+        UncertaintyAzimuth{i}(j)=sqrt(sum(sum((LE.*SensitivityLocation{1,1}).^2))+sum((CE.*SensitivityTime{1,1}).^2))*180/pi;
+        UncertaintyElevation{i}(j)=sqrt(sum(sum((LE.*SensitivityLocation{1,2}).^2))+sum((CE.*SensitivityTime{1,2}).^2))*180/pi;
         
     end
     %% Plot the Uncertainties.
     figure()
     subplot(2,2,1)
-    plot(AssociatedAzimuth{i},UncertaintyAzimuth{i},'*');
+    plot(AssociatedAzimuth{i},UncertaintyAzimuth{i},'*','linewidth',3);
     title('Input Azimuth vs. uncertainty in Azimuth')
+    xlabel('Input Azimuth (deg)')
+    ylabel('TDoA Estimated Error Azimuth (deg)')
     subplot(2,2,2)
-    plot(AssociatedAzimuth{i},UncertaintyElevation{i},'*');
+    plot(AssociatedAzimuth{i},UncertaintyElevation{i},'*','linewidth',3);
     title('Input Azimuth vs. uncertainty in Elevation')
+    xlabel('Input Azimuth (deg)')
+    ylabel('TDoA Estimated Error Elevation (deg)')
     subplot(2,2,3)
-    plot(AssociatedElevation{i},UncertaintyAzimuth{i},'*');
+    plot(AssociatedElevation{i},UncertaintyAzimuth{i},'*','linewidth',3);
     title('Input Elevation vs. uncertainty in Azimuth')
+    xlabel('Input Elevation (deg)')
+    ylabel('TDoA Estimated Error Azimuth (deg)')
     subplot(2,2,4)
-    plot(AssociatedElevation{i},UncertaintyElevation{i},'*');
+    plot(AssociatedElevation{i},UncertaintyElevation{i},'*','linewidth',3);
     title('Input Elevation vs. uncertainty in Elevation')
+    xlabel('Input Elevation (deg)')
+    ylabel('TDoA Estimated Error Elevation (deg)')
 end
 
 GraphSaver({'fig','png'},['Plots/' 'Uncertainties'],0);
