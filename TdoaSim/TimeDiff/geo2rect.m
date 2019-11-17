@@ -36,9 +36,11 @@ end
 if sum(sum(GEO_Error))>0
     [x_max, y_max, z_max] = geodetic2ecef(Sphere,GEO_POS(:,1)+GEO_Error(:,1),GEO_POS(:,2)+GEO_Error(:,2),GEO_POS(:,3)+GEO_Error(:,3));
     [x_min, y_min, z_min] = geodetic2ecef(Sphere,GEO_POS(:,1)-GEO_Error(:,1),GEO_POS(:,2)-GEO_Error(:,2),GEO_POS(:,3)-GEO_Error(:,3));
+    Error = [abs(x_max-x_min)./2 abs(y_max-y_min)./2 abs(z_max-z_min)./2];
+else
+    Error=zeros(length(GEO_POS),3);
 end
 
-Error = [abs(x_max-x_min)./2 abs(y_max-y_min)./2 abs(z_max-z_min)./2];
 POS = [x_out y_out z_out];
 end
 
