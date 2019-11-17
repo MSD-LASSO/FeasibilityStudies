@@ -30,7 +30,7 @@ TimeSyncErrFar=20e-9;
 %% Dictate Parameters for One At A Time
 numSamples=4;
 Frame=1; %1 is Topo, 0 ECEF
-DebugMode=-1; %set to 1 to save intermediate plots. 0 to save final plots
+DebugMode=0; %set to 1 to save intermediate plots. 0 to save final plots
 %-1 to plot nothing and save nothing.
 
 if Frame==1
@@ -108,8 +108,8 @@ for i=1:n %1:n
         
         AssociatedAzimuth{i}(j)=satellitesGT{i}(j,2)*180/pi;
         AssociatedElevation{i}(j)=satellitesGT{i}(j,1)*180/pi;
-        UncertaintyAzimuth{i}(j)=sqrt(sum(sum((LE.*SensitivityLocation{1}).^2))+sum((CE.*SensitivityTime{1}).^2));
-        UncertaintyElevation{i}(j)=sqrt(sum(sum((LE.*SensitivityLocation{1}).^2))+sum((CE.*SensitivityTime{1}).^2));
+        UncertaintyAzimuth{i}(j)=sqrt(sum(sum((LE.*SensitivityLocation{1,1}).^2))+sum((CE.*SensitivityTime{1,1}).^2));
+        UncertaintyElevation{i}(j)=sqrt(sum(sum((LE.*SensitivityLocation{1,2}).^2))+sum((CE.*SensitivityTime{1,2}).^2));
         
     end
     %% Plot the Uncertainties.
