@@ -1,6 +1,6 @@
 %This script tests the creation of a hyperboloid, given general station
 %coordinates.
-
+AddAllPaths
 %it is believed that CreateHyperboloid works as intended. Its hard to make
 %tests that I know the right answer to though. 
 syms x y z
@@ -94,14 +94,14 @@ R2=[1 0 1];
 delta=0.2;
 Hyperboloid=CreateHyperboloid(R1,R2,delta);
 figure()
-plot3(R1(1),R1(2),R1(3),'.','MarkerSize',10);
+plot3(R1(1),R1(2),R1(3),'.','MarkerSize',20);
 hold on
-plot3(R2(1),R2(2),R1(3),'.','MarkerSize',10);
+plot3(R2(1),R2(2),R1(3),'.','MarkerSize',20);
 grid on
 % expected=-100*(z-1)^2/99+100*x^2 - (100*y^2)/99 - 1; %2 sided
 expected=((100*(z - 1)^2)/99 + (100*y^2)/99 + 1)^(1/2)/10 - x;
-fimplicit3(Hyperboloid,'linewidth',5);
-fimplicit3(expected,'linewidth',2);
+fimplicit3(Hyperboloid);
+% fimplicit3(expected,'linewidth',2);
 legend('R1','R2','Hyperbola','Correct')
 
 assert(logical(expected==Hyperboloid));

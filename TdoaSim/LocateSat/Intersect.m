@@ -23,11 +23,11 @@ Solutions=struct2cell(SymbolicEqns); %easier to work with.
 %SymVars.
 
 % figure()
-% fimplicit(Surf(1))
+% fimplicit(Surf(1),'linewidth',3,'color','c')
 % hold on
-% fimplicit(Surf(2))
-% plot(double(vpa(SymbolicEqns.x)),double(vpa(SymbolicEqns.y)),'*')
-% plot(double(vpa(Solutions{1})),double(vpa(Solutions{2})),'*')
+% fimplicit(Surf(2),'linewidth',3,'color','c')
+% plot(double(vpa(SymbolicEqns.x)),double(vpa(SymbolicEqns.y)),'.','MarkerSize',20,'color','black')
+% plot(double(vpa(Solutions{1})),double(vpa(Solutions{2})),'.','MarkerSize',20,'color','black')
 
 %% for each solution, verify it satisfies the equations. Needed for 1 sided Hyperbolas. 
 RemoveList=true(length(Solutions{1}),1);
