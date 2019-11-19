@@ -18,7 +18,7 @@ syms xb yb zb x y z
 [RM,Offset,distance]=getRMandOffsets(Station1Coordinates,Station2Coordinates);
 
  
-if abs(DifferenceInDistance)<1.0e-14
+if isnumeric(DifferenceInDistance)==1 && abs(DifferenceInDistance)<1.0e-14
     %vertical plane in the body frame
     HyperboloidBody=xb;
 else
@@ -48,7 +48,7 @@ Hyperboloid=subs(Hyperboloid,[x,y,z],[x-Offset(1),y-Offset(2),z-Offset(3)]);
 SymVars=[x y z];
 
 %remove z if 2D.
-if(Station1Coordinates(3)==0 && Station2Coordinates(3)==0)
+if isnumeric(Station1Coordinates)==1 && (Station1Coordinates(3)==0 && Station2Coordinates(3)==0)
     Hyperboloid=subs(Hyperboloid,z,0);
     SymVars=[x y];
 end
