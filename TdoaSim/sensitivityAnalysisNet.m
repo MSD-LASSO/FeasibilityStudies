@@ -29,10 +29,10 @@ GND(2).ECFcoord_error=RL_err(2,:);
 GND(3).ECFcoord_error=RL_err(3,:);
 
 %% Input Ranges
-AzimuthRange=0:45:359; %ALWAYS wrt to the first receiver. 
-ElevationRange=15:15:75;
-% AzimuthRange=[0 90];
-% ElevationRange=[15 30 45];
+% AzimuthRange=0:45:359; %ALWAYS wrt to the first receiver. 
+% ElevationRange=15:15:75;
+AzimuthRange=[0 90];
+ElevationRange=[15 30 45];
 SatelliteRangeRange=1000e3; %range of satellite range values.
 
 
