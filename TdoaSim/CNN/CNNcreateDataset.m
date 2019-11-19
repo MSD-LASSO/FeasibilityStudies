@@ -70,7 +70,7 @@ try
         %This is ALWAYS measured from Receiver 1. XY position.
         GT(i,:)=[zPlane*cos(El)*sin(Az) zPlane*cos(El)*cos(Az)];
 
-        [lat, long, h]=enu2ecef(Rng*cos(El)*sin(Az),Rng*cos(El)*cos(Az),Rng*sin(El),...
+        [lat, long, h]=enu2geodetic(Rng*cosd(El)*sind(Az),Rng*cosd(El)*cosd(Az),Rng*sind(El),...
             ReceiverLocations(1,1),ReceiverLocations(1,2),ReceiverLocations(1,3),Sphere);
         SAT=getStruct([lat long h],zeros(1,4),ReceiverLocations(1,:),zeros(1,4),Sphere);
 

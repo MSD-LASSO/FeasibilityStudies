@@ -5,10 +5,6 @@ function [SensitivityLocation, SensitivityTime]=OneAtaTime3(GND,SAT,time,locatio
 %when it calls TDoA. 
 %It then creates plots of perturbation amount vs. absolute error.
 
-load turnOffSpuriousSolns.mat
-id = w.identifier;
-warning('off',id)
-
 if nargin<6
     Frame=1; %use Topo Frame. 
 end
@@ -60,10 +56,10 @@ for i=1:3 %cycle through x,y,z.
         if DebugMode>=0
             test{j,i}=[0 test{j,i}]; %control. no error case.
         end
-        AbsErr{j,i}=zeros(length(test{j,i}),3);
-        AbsTotalErr{j,i}=zeros(length(test{j,i}),1);
-        AngleSensitivityOut{j,i}=zeros(length(test{j,i}),2);
-        AngleSensitivityIn{j,i}=zeros(length(test{j,i}),1);
+        AbsErr{j,i}=zeros(length(test),3);
+        AbsTotalErr{j,i}=zeros(length(test),1);
+        AngleSensitivityOut{j,i}=zeros(length(test),2);
+        AngleSensitivityIn{j,i}=zeros(length(test),1);
 
         for k=1:length(test{j,i})
             %for that test range, perturbate a GND coordinate, but don't
@@ -204,10 +200,10 @@ for i=1:1 %cycle through nothing. Clock error is 1D.
         if DebugMode>=0 || numSamples==2
             test{j,i}=[0 test{j,i}]; %control. no error case.
         end
-        AbsErr{j,i}=zeros(length(test{j,i}),3);
-        AbsTotalErr{j,i}=zeros(length(test{j,i}),1);
-        AngleSensitivityOut{j,i}=zeros(length(test{j,i}),2);
-        AngleSensitivityIn{j,i}=zeros(length(test{j,i}),1);
+        AbsErr{j,i}=zeros(length(test),3);
+        AbsTotalErr{j,i}=zeros(length(test),1);
+        AngleSensitivityOut{j,i}=zeros(length(test),2);
+        AngleSensitivityIn{j,i}=zeros(length(test),1);
 
         
         for k=1:length(test{j,i})
@@ -221,8 +217,7 @@ for i=1:1 %cycle through nothing. Clock error is 1D.
 %             ErrStr=strrep(ErrStr,'-','a');
 
             if Frame==1
-%                 zPlanes=[0 50e3 100e3 200e3 500e3 2000e3];
-                zPlanes=[50e3 400e3 1200e3];
+                zPlanes=[0 50e3 100e3 200e3 500e3 2000e3];
             else
                 zPlanes=[4.5e6 4.8e6 5.1e6];
             end
