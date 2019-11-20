@@ -35,8 +35,8 @@ RL_err=ones(3,3)*9;
 % ReceiverError=[]; %same size as ReceiverLocations
 ClkError=ones(3,1)*TimeSyncErrFar; %3x1
 ReceiverLocations=[R1;R2;R3];
-numImages=500;
-outputFolder='Test2properSize';
+numImages=20;
+outputFolder='Test3Validation';
 mkdir(['Images/' outputFolder]);
 Sphere=wgs84Ellipsoid;
 
@@ -59,6 +59,8 @@ YLimits=[-SatelliteRangeRange(2) SatelliteRangeRange(2)];
 %% Create numImages
 try
     GT=zeros(numImages,2);
+    name=cell(numImages,1);
+    timeDiffs=zeros(numImages,3);
     figure('Position', [100 100 floor(224^3/171/226) floor(224^3/174/227)])
     for i=1:numImages
         %% Set up problem and get ground truth.
@@ -79,6 +81,7 @@ try
         %% Get the plots
         %Apply the Noise
         distanceDiff=normrnd(TimeDiff,TimeDiffErr)*3e8; %model error as a Gaussian.
+        timeDiffs(i,:)=[distanceDiff(1,2), distanceDiff(1,3), distanceDiff(2,3)];
     %     [RL, RL_err]=geo2rect(ReceiverLocations,ReceiverError,Sphere);
         [X Y Z]=geodetic2enu(ReceiverLocations(:,1),ReceiverLocations(:,2),ReceiverLocations(:,3),...
             ReceiverLocations(1,1),ReceiverLocations(1,2),ReceiverLocations(1,3),Sphere);
@@ -105,14 +108,15 @@ try
         fimplicit(Hyperbola,[XLimits YLimits],'linewidth',3);
 
         %% Save Image
+        name{i}=['Images/' outputFolder '/' num2str(i) '.png'];
         F = getframe;
         [X, map]=frame2im(F); %can alternatively collect colormap as well.
-        imwrite(255-X,['Images/' outputFolder '/' num2str(i) '.png']);
+        imwrite(255-X,name{i});
     %     imshow(imread(['Images/' num2str(i) '.png'])); %debugging purposes.
     end
 catch ME
     warning([ME.message ' first instance at ' num2str(ME.stack(1).line)])
     save([outputFolder 'Error'],ME);
 end
-save(outputFolder,'GT')
+save(outputFolder,'GT','timeDiffs','ReceiverLocations','name')
 
