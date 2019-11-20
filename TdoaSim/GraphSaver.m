@@ -1,5 +1,5 @@
 %Author Anthony Iannuzzi, email awi7573@rit.edu
-function []=GraphSaver(formats,location,closing,plots)
+function []=GraphSaver(formats,location,closing,MaximizeAll,plots)
 %INPUTS: formats is a cell array of all requested formats. Location is
 %where these plots will be saved. plots is an optional input specifying
 %what figures to save. 
@@ -10,6 +10,9 @@ function []=GraphSaver(formats,location,closing,plots)
 
 defaultSize=get(0,'defaultfigureposition');
 if nargin<4
+    MaximizeAll=0;
+end
+if nargin<5
     plots=1;
 end
 if exist(location,'dir')==0
@@ -19,7 +22,7 @@ end
 i=1;
 persistance=0; %if there is a gap of 5 figures that don't exist and no figure array was given, stop saving
 while i<=length(plots)
-    if nargin<4
+    if nargin<5
         plots(i+1)=i+1;
     end
     if ishandle(plots(i))==1
@@ -29,11 +32,11 @@ while i<=length(plots)
         n=length(h1.Children);
         success=0;
         failure=0;
-        if n>=3 || el~=90 %if figure is a subplot, make it big.
-            for i=1:n
+        if n>=3 || el~=90 || MaximizeAll==1 %if figure is a subplot, make it big.
+            for j=1:n
                 try
                     success=success+1;
-                    h2=h1(i).Children;
+                    h2=h1(j).Children;
                     set(h2,'FontSize',18);
                     title=h2.Title;
                     title.FontSize=20;
@@ -41,7 +44,7 @@ while i<=length(plots)
                     failure=failure+1;
                 end
             end
-            if success>=2 %then we found 2 Axes.
+            if success>=2 || MaximizeAll==1 %then we found 2 Axes.
                 set(gcf, 'Position', get(0, 'Screensize'));
             end
 
