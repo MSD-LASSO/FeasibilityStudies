@@ -35,8 +35,8 @@ RL_err=ones(3,3)*9;
 % ReceiverError=[]; %same size as ReceiverLocations
 ClkError=ones(3,1)*TimeSyncErrFar; %3x1
 ReceiverLocations=[R1;R2;R3];
-numImages=20;
-outputFolder='Test3Validation';
+numImages=300;
+outputFolder='Test5ExtraStrip';
 mkdir(['Images/' outputFolder]);
 Sphere=wgs84Ellipsoid;
 
@@ -60,7 +60,8 @@ YLimits=[-SatelliteRangeRange(2) SatelliteRangeRange(2)];
 try
     GT=zeros(numImages,2);
     name=cell(numImages,1);
-    timeDiffs=zeros(numImages,3);
+    timeDiffs=zeros(numImages,4);
+%     zPlanes=zeros(numImages,1);
     figure('Position', [100 100 floor(224^3/171/226) floor(224^3/174/227)])
     for i=1:numImages
         %% Set up problem and get ground truth.
@@ -68,9 +69,10 @@ try
         El=rand(1)*diff(ElevationRange)+ElevationRange(1);
         Rng=rand(1)*diff(SatelliteRangeRange)+SatelliteRangeRange(1);
         zPlane=rand(1)*diff(zPlaneRange)+zPlaneRange(1);
-
+%         zPlanes(i)=zPlane;
+        
         %This is ALWAYS measured from Receiver 1. XY position.
-        GT(i,:)=[zPlane*cos(El)*sin(Az) zPlane*cos(El)*cos(Az)];
+        GT(i,:)=[zPlane*cos(El)*sin(Az) zPlane*cos(El)*cos(Az)]/zPlane;
 
         [lat, long, h]=enu2geodetic(Rng*cosd(El)*sind(Az),Rng*cosd(El)*cosd(Az),Rng*sind(El),...
             ReceiverLocations(1,1),ReceiverLocations(1,2),ReceiverLocations(1,3),Sphere);
@@ -81,7 +83,7 @@ try
         %% Get the plots
         %Apply the Noise
         distanceDiff=normrnd(TimeDiff,TimeDiffErr)*3e8; %model error as a Gaussian.
-        timeDiffs(i,:)=[distanceDiff(1,2), distanceDiff(1,3), distanceDiff(2,3)];
+        timeDiffs(i,:)=[distanceDiff(1,2), distanceDiff(1,3), distanceDiff(2,3) zPlane];
     %     [RL, RL_err]=geo2rect(ReceiverLocations,ReceiverError,Sphere);
         [X Y Z]=geodetic2enu(ReceiverLocations(:,1),ReceiverLocations(:,2),ReceiverLocations(:,3),...
             ReceiverLocations(1,1),ReceiverLocations(1,2),ReceiverLocations(1,3),Sphere);
@@ -107,12 +109,49 @@ try
         figure(1)
         fimplicit(Hyperbola,[XLimits YLimits],'linewidth',3);
 
+        %% Convert the numerical data to image.
+        %structure of this:
+        %every 2 elements in TimeDiffs an zPlane will be saved as pixel
+        %value of 2.5x greater. 
+        %if the value is negative, set px to 255, otherwise px=0.
+        
+        pp=0;
+        pixel=zeros(1,224);
+        for jj=1:size(timeDiffs,2)
+            pp=pp+1;
+            floating=timeDiffs(i,jj);
+            if floating>0
+                positive=255;
+            else
+                positive=0;
+            end
+            str=num2str(floating,'%15.15f');
+            
+            pixel(pp)=positive;
+            ppPreLoop=pp;
+            kk=1;
+            while kk<length(str)-1 && pp<ppPreLoop+15
+                pp=pp+1;
+                pixel(pp)=str2double(str(kk:kk+1))*2.5;
+                kk=kk+2;
+            end
+            if pp<ppPreLoop+15
+                pp=ppPreLoop+15;
+            end
+        end
+        
+        
+        
         %% Save Image
         name{i}=['Images/' outputFolder '/' num2str(i) '.png'];
         F = getframe;
         [X, map]=frame2im(F); %can alternatively collect colormap as well.
+        X(end-5:end,:,1)=repmat(pixel,6,1);
+        X(end-5:end,:,2)=repmat(pixel,6,1);
+        X(end-5:end,:,3)=repmat(pixel,6,1);
+        
         imwrite(255-X,name{i});
-    %     imshow(imread(['Images/' num2str(i) '.png'])); %debugging purposes.
+    %     imshow(imread(name{i})); %debugging purposes.
     end
 catch ME
     warning([ME.message ' first instance at ' num2str(ME.stack(1).line)])
