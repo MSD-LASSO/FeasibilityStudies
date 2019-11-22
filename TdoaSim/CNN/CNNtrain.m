@@ -1,7 +1,7 @@
-digitDatasetPath='Images/Test6ThickerStrip';
+digitDatasetPath='Images/Test7manyImages';
 imds = imageDatastore(digitDatasetPath, ...
     'IncludeSubfolders',true,'LabelSource','none');
-load Test6ThickerStrip.mat
+load Test7manyImages.mat
 
 name=cell(length(GT),1);
 for i=1:length(GT)
@@ -63,7 +63,8 @@ options = trainingOptions('sgdm', ...
     'ValidationData',Valtable,...
     'ValidationFrequency',10, ...
     'Shuffle','every-epoch',...
-    'Plots','training-progress');
+    'Plots','training-progress',...
+    'CheckpointPath','Epochs');
 
 %     'ExecutionEnvironment','gpu'
 % 'GradientDecayFactor',0.9, %default is 0.9
@@ -79,3 +80,5 @@ options = trainingOptions('sgdm', ...
 
 % net = trainNetwork(GTtable,layers,options);
 net=trainNetwork(GTtable,lgraph_1,options); 
+
+ypredict=predict(net,Valtable(:,1))
