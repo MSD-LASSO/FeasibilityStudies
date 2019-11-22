@@ -35,8 +35,8 @@ RL_err=ones(3,3)*9;
 % ReceiverError=[]; %same size as ReceiverLocations
 ClkError=ones(3,1)*TimeSyncErrFar; %3x1
 ReceiverLocations=[R1;R2;R3];
-numImages=10000;
-outputFolder='Test7manyImages';
+numImages=2500;
+outputFolder='Test7ValidationmanyImages';
 mkdir(['Images/' outputFolder]);
 Sphere=wgs84Ellipsoid;
 

@@ -43,10 +43,10 @@ layers = [
 %     'MaxEpochs',20, ...
 %     'MiniBatchSize',64, ...
 %     'Plots','training-progress');
-load Test6ValThickerStrip.mat
+load Test7ValidationmanyImages.mat
 Valtable=table(name,GT(:,1),GT(:,2));
 
-epochs = 10; %number of epochs
+epochs = 20; %number of epochs
 miniBatch = 64; % number of images per minibatch
 lR = 5e-6; % learning rate
 % GPUDevice = 1; % which gpu device?
@@ -77,8 +77,8 @@ options = trainingOptions('sgdm', ...
 %     'ValidationData',Valtable,...
 %     'Plots','training-progress');
         
-
+load BasedOnResnet
 % net = trainNetwork(GTtable,layers,options);
 net=trainNetwork(GTtable,lgraph_1,options); 
 
-ypredict=predict(net,Valtable(:,1))
+% ypredict=predict(net,Valtable(:,1));
