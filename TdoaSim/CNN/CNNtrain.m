@@ -1,7 +1,7 @@
-digitDatasetPath='Images/Test5ExtraStrip';
+digitDatasetPath='Images/Test6ThickerStrip';
 imds = imageDatastore(digitDatasetPath, ...
     'IncludeSubfolders',true,'LabelSource','none');
-load Test5ExtraStrip.mat
+load Test6ThickerStrip.mat
 
 name=cell(length(GT),1);
 for i=1:length(GT)
@@ -43,7 +43,7 @@ layers = [
 %     'MaxEpochs',20, ...
 %     'MiniBatchSize',64, ...
 %     'Plots','training-progress');
-load Test5ValidationExtraStrip.mat
+load Test6ValThickerStrip.mat
 Valtable=table(name,GT(:,1),GT(:,2));
 
 epochs = 10; %number of epochs
@@ -75,8 +75,7 @@ options = trainingOptions('sgdm', ...
 %     'Shuffle','every-epoch',...
 %     'ValidationData',Valtable,...
 %     'Plots','training-progress');
-    
-
         
 
-net = trainNetwork(GTtable,layers,options);
+% net = trainNetwork(GTtable,layers,options);
+net=trainNetwork(GTtable,lgraph_1,options); 

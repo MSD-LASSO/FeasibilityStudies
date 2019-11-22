@@ -35,8 +35,8 @@ RL_err=ones(3,3)*9;
 % ReceiverError=[]; %same size as ReceiverLocations
 ClkError=ones(3,1)*TimeSyncErrFar; %3x1
 ReceiverLocations=[R1;R2;R3];
-numImages=300;
-outputFolder='Test5ExtraStrip';
+numImages=250;
+outputFolder='Test6ValThickerStrip';
 mkdir(['Images/' outputFolder]);
 Sphere=wgs84Ellipsoid;
 
@@ -47,7 +47,7 @@ GND=getStruct(ReceiverLocations,ReceiverError,ReceiverLocations(1,:),ReceiverErr
 %% Input Ranges
 AzimuthRange=[45 55]; %ALWAYS wrt to the first receiver. 
 ElevationRange=[40 45];
-SatelliteRangeRange=[500e3 1000e3]; %range of satellite range values.
+SatelliteRangeRange=[500e3 5000e3]; %range of satellite range values.
 zPlaneRange=[0 200e3];
 
 %% Canonical Form of Image
@@ -127,16 +127,16 @@ try
             end
             str=num2str(floating,'%15.15f');
             
-            pixel(pp)=positive;
+            pixel(pp:pp+2)=positive;
             ppPreLoop=pp;
             kk=1;
-            while kk<length(str)-1 && pp<ppPreLoop+15
-                pp=pp+1;
-                pixel(pp)=str2double(str(kk:kk+1))*2.5;
+            while kk<length(str)-1 && pp<ppPreLoop+45
+                pp=pp+3;
+                pixel(pp:pp+2)=str2double(str(kk:kk+1))*2.5;
                 kk=kk+2;
             end
-            if pp<ppPreLoop+15
-                pp=ppPreLoop+15;
+            if pp<ppPreLoop+45
+                pp=ppPreLoop+45;
             end
         end
         
