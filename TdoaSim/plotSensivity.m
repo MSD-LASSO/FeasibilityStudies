@@ -1,7 +1,7 @@
 %This script reads output files from a sensivity analysis and plots it.
 clearvars
 close all
-load OutputBrockportMeesWebster.mat
+load OutputBrockportMeesWebsterWithTimeDiffs.mat
 
 %some variable names
 Azimuths;
@@ -70,6 +70,35 @@ for i=1:2 %azimuth then elevation
     end
 end
 
+timeDiffs(:,4)=mean(timeDiffs,2);
+Titles={'R1 to R2','R1 to R3','R2 to R3','Average'};
+for i=1:4
+    figure()
+    z=reshape(timeDiffs(:,i),17,36);
+    [M,c]=contour(x,y,z,'ShowText','on');
+    c.LineWidth = 3;
+    hold on
+    plot(R2R1az*180/pi,R2R1el*180/pi,'o','LineWidth',3);
+    plot(R3R1az*180/pi,R3R1el*180/pi,'o','LineWidth',3);
+    title([Titles{i} ' Time Difference across the Horizon.'])
+    legend('Time Difference (s)','R2 wrt R1','R3 wrt R1')
+    xlabel('Input Azimuth wrt Brockport (deg)')
+    ylabel('Input Elevation wrt Brockport (deg)')
+    grid on
+end
+
+figure()
+plot3(Azimuths,Elevations,timeDiffs(:,4),'*');
+title('Time Differences across the Horizon.')
+xlabel('Input Azimuth wrt Brockport (deg)')
+ylabel('Input Elevation wrt Brockport (deg)')
+zlabel('Azimuth and Elevation Uncertainty (deg)')
+hold on
+grid on
+plot3(Azimuths,Elevations,timeDiffs(:,1),'*')
+plot3(Azimuths,Elevations,timeDiffs(:,2),'*')
+plot3(Azimuths,Elevations,timeDiffs(:,3),'*')
+legend(Titles)
 % z1=reshape(TotalUncertainty(:,1),17,36);
 % 
 % 

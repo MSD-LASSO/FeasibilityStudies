@@ -17,7 +17,7 @@ RL_err=ones(3,3)*9; %9m location error.
 %% Invariants
 ClkError=ones(3,1)*TimeSyncErrFar; %3x1
 ReceiverLocations=[R1;R2;R3];
-outputFolder='BrockportMeesWebster';
+outputFolder='ErroredTestCase';
 Sphere=wgs84Ellipsoid;
 numSamples=2;
 DebugMode=-1;
@@ -33,6 +33,7 @@ GND(3).ECFcoord_error=RL_err(3,:);
 % ElevationRange=15:15:75;
 % AzimuthRange=0:10:359; %ALWAYS wrt to the first receiver. 
 % ElevationRange=5:5:85;
+%this set of inputs causes an error!
 AzimuthRange=0:2.5:359;
 ElevationRange=1:1:4;
 SatelliteRangeRange=1000e3; %range of satellite range values.
@@ -56,7 +57,9 @@ Refy=ReceiverLocations(1,2);
 Refz=ReceiverLocations(1,3);
 % try
 SensitivityTest=cell(p,1);
-    parfor i=1:p
+timeDiffs=zeros(p,3);
+%   parfor i=1:p
+    for i=1:p
 %     for i=1:length(AzimuthRange)
 %         for j=1:length(ElevationRange)
             %% Set up problem and get ground truth.
@@ -72,6 +75,9 @@ SensitivityTest=cell(p,1);
             [lat, long, h]=enu2geodetic(Rng*cosd(El)*sind(Az),Rng*cosd(El)*cosd(Az),Rng*sind(El),...
                 Refx,Refy,Refz,Sphere);
             SAT=getStruct([lat long h],zeros(1,4),[Refx Refy Refz],zeros(1,4),Sphere);
+            
+            [TimeDiffs,TimeDiffErr]=timeDiff3toMatrix(GND,SAT);
+            timeDiffs(i,:)=[TimeDiffs(1,2), TimeDiffs(1,3), TimeDiffs(2,3)];
             
             [SensitivityLocation, SensitivityTime]=OneAtaTime(GND,SAT,1,1,outputFolder,1,DebugMode,numSamples,Sphere);
             %sensitivityLocation is a 2x1 cell and SensitivityTime a 2x1 cell.
