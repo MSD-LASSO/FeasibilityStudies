@@ -1,7 +1,7 @@
-digitDatasetPath='Images/Test9zPlane400';
+digitDatasetPath='Images/Test10zPlane400';
 imds = imageDatastore(digitDatasetPath, ...
     'IncludeSubfolders',true,'LabelSource','none');
-load Test9zPlane400.mat
+load Test10zPlane400.mat
 
 name=cell(length(GT),1);
 for i=1:length(GT)
@@ -43,13 +43,13 @@ GTtable=table(name,GT(:,1),GT(:,2));
 %     'MaxEpochs',20, ...
 %     'MiniBatchSize',64, ...
 %     'Plots','training-progress');
-load Test8zPlane400val.mat
+load Test10zPlane400val.mat
 Valtable=table(name,GT(:,1),GT(:,2));
 
 epochs = 2; %number of epochs
 miniBatch = 24; % number of images per minibatch
 lR = 1e-4; % learning rate
-GPUDevice = 0; % which gpu device?
+GPUDevice = 1; % which gpu device?
 L2Reg = 0; % L2 regularization factor
 
 if GPUDevice==0
@@ -81,8 +81,8 @@ else
         'ValidationFrequency',25, ...
         'Shuffle','every-epoch',...
         'Plots','training-progress',...
-        'CheckpointPath','TestEpochs',...
-        'ExecutionEnvironment','C:\Users\awian\Desktop\MachineIntelligence\Epochs');
+        'CheckpointPath','C:\Users\awian\Desktop\MachineIntelligence\Epochs',...
+        'ExecutionEnvironment','gpu');
 end
 
 %     

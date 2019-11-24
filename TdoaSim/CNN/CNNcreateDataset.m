@@ -35,8 +35,8 @@ RL_err=ones(3,3)*9;
 % ReceiverError=[]; %same size as ReceiverLocations
 ClkError=ones(3,1)*TimeSyncErrFar; %3x1
 ReceiverLocations=[R1;R2;R3];
-numImages=250;
-outputFolder='Test9zPlane400val';
+numImages=2500;
+outputFolder='Test10zPlane400val';
 mkdir(['Images/' outputFolder]);
 Sphere=wgs84Ellipsoid;
 
