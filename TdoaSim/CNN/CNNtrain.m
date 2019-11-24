@@ -1,7 +1,7 @@
-digitDatasetPath='Images/Test7manyImages';
+digitDatasetPath='Images/Test8zPlane400';
 imds = imageDatastore(digitDatasetPath, ...
     'IncludeSubfolders',true,'LabelSource','none');
-load Test7manyImages.mat
+load Test8zPlane400.mat
 
 name=cell(length(GT),1);
 for i=1:length(GT)
@@ -43,10 +43,10 @@ GTtable=table(name,GT(:,1),GT(:,2));
 %     'MaxEpochs',20, ...
 %     'MiniBatchSize',64, ...
 %     'Plots','training-progress');
-load Test7ValidationmanyImages.mat
+load Test8zPlane400val.mat
 Valtable=table(name,GT(:,1),GT(:,2));
 
-epochs = 20; %number of epochs
+epochs = 2; %number of epochs
 miniBatch = 64; % number of images per minibatch
 lR = 5e-6; % learning rate
 GPUDevice = 0; % which gpu device?
@@ -96,7 +96,7 @@ end
 %     'ValidationData',Valtable,...
 %     'Plots','training-progress');
         
-load C:/Users/awian/Desktop/MachineIntelligence/Resnet101Modified.mat
+load Resnet101Modified.mat
 % net = trainNetwork(GTtable,layers,options);
 net=trainNetwork(GTtable,lgraph_2,options); 
 

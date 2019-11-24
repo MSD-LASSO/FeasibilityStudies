@@ -35,8 +35,8 @@ RL_err=ones(3,3)*9;
 % ReceiverError=[]; %same size as ReceiverLocations
 ClkError=ones(3,1)*TimeSyncErrFar; %3x1
 ReceiverLocations=[R1;R2;R3];
-numImages=2500;
-outputFolder='Test7ValidationmanyImages';
+numImages=250;
+outputFolder='Test8zPlane400val';
 mkdir(['Images/' outputFolder]);
 Sphere=wgs84Ellipsoid;
 
@@ -45,22 +45,25 @@ ReceiverError=[zeros(3,3) ClkError];
 GND=getStruct(ReceiverLocations,ReceiverError,ReceiverLocations(1,:),ReceiverError(1,:),Sphere);
 
 %% Input Ranges
-AzimuthRange=[40 60]; %ALWAYS wrt to the first receiver. 
-ElevationRange=[40 60];
+AzimuthRange=[0 90]; %ALWAYS wrt to the first receiver. 
+ElevationRange=[15 85];
 SatelliteRangeRange=[500e3 5000e3]; %range of satellite range values.
-zPlaneRange=[0 200e3];
+% zPlaneRange=[0 200e3];
+zPlaneRange=[400e3 400e3];
 
 %% Canonical Form of Image
 %largest X or Y value is if the Range is entirely in that direction.
-XLimits=[-SatelliteRangeRange(2) SatelliteRangeRange(2)];
-YLimits=[-SatelliteRangeRange(2) SatelliteRangeRange(2)];
+% XLimits=[-SatelliteRangeRange(2) SatelliteRangeRange(2)];
+% YLimits=[-SatelliteRangeRange(2) SatelliteRangeRange(2)];
+XLimits=[-zPlaneRange(2) zPlaneRange(2)];
+YLimits=[-zPlaneRange(2) zPlaneRange(2)];
 
 
 %% Create numImages
 try
     GT=zeros(numImages,2);
     name=cell(numImages,1);
-    timeDiffs=zeros(numImages,4);
+    timeDiffs=zeros(numImages,3);
 %     zPlanes=zeros(numImages,1);
     figure('Position', [100 100 floor(224^3/171/226) floor(224^3/174/227)])
     for i=1:numImages
@@ -72,7 +75,8 @@ try
 %         zPlanes(i)=zPlane;
         
         %This is ALWAYS measured from Receiver 1. XY position.
-        GT(i,:)=[zPlane*cos(El)*sin(Az) zPlane*cos(El)*cos(Az)]/zPlane;
+        GT(i,:)=[zPlane*cosd(El)*sind(Az) zPlane*cosd(El)*cosd(Az)]/zPlane;
+%         GT(i,:)=[zPlane*cos(El)*sin(Az) zPlane*cos(El)*cos(Az)];
 
         [lat, long, h]=enu2geodetic(Rng*cosd(El)*sind(Az),Rng*cosd(El)*cosd(Az),Rng*sind(El),...
             ReceiverLocations(1,1),ReceiverLocations(1,2),ReceiverLocations(1,3),Sphere);
@@ -83,7 +87,8 @@ try
         %% Get the plots
         %Apply the Noise
         distanceDiff=normrnd(TimeDiff,TimeDiffErr)*3e8; %model error as a Gaussian.
-        timeDiffs(i,:)=[distanceDiff(1,2), distanceDiff(1,3), distanceDiff(2,3) zPlane];
+%         timeDiffs(i,:)=[distanceDiff(1,2), distanceDiff(1,3), distanceDiff(2,3) zPlane];
+        timeDiffs(i,:)=[distanceDiff(1,2), distanceDiff(1,3), distanceDiff(2,3)];
     %     [RL, RL_err]=geo2rect(ReceiverLocations,ReceiverError,Sphere);
         [X Y Z]=geodetic2enu(ReceiverLocations(:,1),ReceiverLocations(:,2),ReceiverLocations(:,3),...
             ReceiverLocations(1,1),ReceiverLocations(1,2),ReceiverLocations(1,3),Sphere);
