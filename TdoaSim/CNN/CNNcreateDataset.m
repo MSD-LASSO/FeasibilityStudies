@@ -36,7 +36,7 @@ RL_err=ones(3,3)*9;
 ClkError=ones(3,1)*TimeSyncErrFar; %3x1
 ReceiverLocations=[R1;R2;R3];
 numImages=250;
-outputFolder='Test8zPlane400val';
+outputFolder='Test9zPlane400val';
 mkdir(['Images/' outputFolder]);
 Sphere=wgs84Ellipsoid;
 
@@ -45,7 +45,7 @@ ReceiverError=[zeros(3,3) ClkError];
 GND=getStruct(ReceiverLocations,ReceiverError,ReceiverLocations(1,:),ReceiverError(1,:),Sphere);
 
 %% Input Ranges
-AzimuthRange=[0 90]; %ALWAYS wrt to the first receiver. 
+AzimuthRange=[0 360]; %ALWAYS wrt to the first receiver. 
 ElevationRange=[15 85];
 SatelliteRangeRange=[500e3 5000e3]; %range of satellite range values.
 % zPlaneRange=[0 200e3];
@@ -55,8 +55,10 @@ zPlaneRange=[400e3 400e3];
 %largest X or Y value is if the Range is entirely in that direction.
 % XLimits=[-SatelliteRangeRange(2) SatelliteRangeRange(2)];
 % YLimits=[-SatelliteRangeRange(2) SatelliteRangeRange(2)];
-XLimits=[-zPlaneRange(2) zPlaneRange(2)];
-YLimits=[-zPlaneRange(2) zPlaneRange(2)];
+maxR=zPlaneRange(2)/sind(ElevationRange(1)); %minimum elevation
+maxXY=maxR*cosd(ElevationRange(1));
+XLimits=[-maxXY maxXY];
+YLimits=[-maxXY maxXY];
 
 
 %% Create numImages

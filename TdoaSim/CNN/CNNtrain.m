@@ -1,7 +1,7 @@
-digitDatasetPath='Images/Test8zPlane400';
+digitDatasetPath='Images/Test9zPlane400';
 imds = imageDatastore(digitDatasetPath, ...
     'IncludeSubfolders',true,'LabelSource','none');
-load Test8zPlane400.mat
+load Test9zPlane400.mat
 
 name=cell(length(GT),1);
 for i=1:length(GT)
@@ -47,8 +47,8 @@ load Test8zPlane400val.mat
 Valtable=table(name,GT(:,1),GT(:,2));
 
 epochs = 2; %number of epochs
-miniBatch = 64; % number of images per minibatch
-lR = 5e-6; % learning rate
+miniBatch = 24; % number of images per minibatch
+lR = 1e-4; % learning rate
 GPUDevice = 0; % which gpu device?
 L2Reg = 0; % L2 regularization factor
 
@@ -63,10 +63,10 @@ if GPUDevice==0
         'LearnRateDropFactor',0.25,...
         'LearnRateDropPeriod',4, ...
         'ValidationData',Valtable,...
-        'ValidationFrequency',10, ...
+        'ValidationFrequency',25, ...
         'Shuffle','every-epoch',...
         'Plots','training-progress',...
-        'CheckpointPath','Epochs');
+        'CheckpointPath','C:\Users\awian\Desktop\MachineIntelligence\Epochs');
 else
     options = trainingOptions('sgdm', ...
         'Momentum',0.95,...
@@ -78,11 +78,11 @@ else
         'LearnRateDropFactor',0.25,...
         'LearnRateDropPeriod',4, ...
         'ValidationData',Valtable,...
-        'ValidationFrequency',10, ...
+        'ValidationFrequency',25, ...
         'Shuffle','every-epoch',...
         'Plots','training-progress',...
         'CheckpointPath','TestEpochs',...
-        'ExecutionEnvironment','gpu');
+        'ExecutionEnvironment','C:\Users\awian\Desktop\MachineIntelligence\Epochs');
 end
 
 %     
@@ -96,8 +96,14 @@ end
 %     'ValidationData',Valtable,...
 %     'Plots','training-progress');
         
-load Resnet101Modified.mat
+load C:\Users\awian\Desktop\MachineIntelligence\Resnet101Modified.mat
 % net = trainNetwork(GTtable,layers,options);
 net=trainNetwork(GTtable,lgraph_2,options); 
 
-% ypredict=predict(net,Valtable(:,1));
+ypredict=predict(net,Valtable(:,1));
+error=ypredict-GT;
+figure()
+plot(error(:,1),error(:,2),'.')
+title('Residuals')
+xlabel('X error')
+ylabel('Y error')
