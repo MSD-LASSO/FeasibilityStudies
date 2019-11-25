@@ -43,8 +43,8 @@ Limits=getCanonicalForm(zPlanes,ElevationRange(1));
 z1=length(zPlanes);
 GT=zeros(numPrimary,2,z1);
 GTendgoal=zeros(numPrimary,2);
-nameBC=cell(numPrimary);
-nameNBC=cell(numPrimary);
+nameBC=cell(numPrimary,z1);
+nameNBC=cell(numPrimary,z1);
 cols=3;
 timeDiffs=zeros(numPrimary,cols);
 %here to optimize parfor.
@@ -121,7 +121,7 @@ parfor i=1:numPrimary
     
     [GTtemp,bctemp,Nbctemp]=createImage(zPlanes,Az,El,Hyperboloid,SymVars,Limits,i,zNames,pixel,numSecondary,outputFolder);
     GT(i,:,:)=GTtemp;
-    nameBC{i}=bctemp;
+    nameBC{i,1}=bctemp;
     nameNBC{i}=Nbctemp;
     
     
