@@ -9,13 +9,14 @@ if nargin==0
     addpath('../LocateSat')
     addpath('../TimeDiff')
     addpath('..');
-    numImages=[2500 2500/10]; %first number is for primary, second for other planes. 
+    numImages=250;
+    numImages=[numImages numImages/10]; %first number is for primary, second for other planes. 
     %% Input Ranges
     AzimuthRange=[0 360]; %ALWAYS wrt to the first receiver. 
     ElevationRange=[15 85];
     SatelliteRangeRange=[500e3 5000e3]; %range of satellite range values.
     zPlanes=[400e3 50e3 1200e3]; %primary must be listed first.
-    outputFolder='Test10zPlane400val';
+    outputFolder='Test11val';
     
 end
     
@@ -41,12 +42,12 @@ Limits=getCanonicalForm(zPlanes,ElevationRange(1));
 
 %% Create numImages
 z1=length(zPlanes);
-GT=zeros(numImages,2,z1);
-GTendgoal=zeros(numImages,2);
-nameBC=cell(numImages,z1);
-nameNBC=cell(numImages,z1);
+GT=zeros(numPrimary,2,z1);
+GTendgoal=zeros(numPrimary,2);
+nameBC=cell(numPrimary,z1);
+nameNBC=cell(numPrimary,z1);
 cols=3;
-timeDiffs=zeros(numImages,cols,z1);
+timeDiffs=zeros(numPrimary,cols,z1);
 %here to optimize parfor.
 Rx=ReceiverLocations(1,1);
 Ry=ReceiverLocations(1,2);
@@ -58,14 +59,8 @@ parfor i=1:numPrimary
     %% Set up problem and get ground truth.
     [Az,El,Rng]=getRandSat(AzimuthRange,ElevationRange,SatelliteRangeRange);
     GTendgoal(i,:)=[Az El];
-
-    if i>numSecondary
-        zTemp=1;
-    else
-        zTemp=z1;
-    end
     
-    for zz=1:zTemp
+    for zz=1:z1
         zPlane=zPlanes(zz);
     
         %This is ALWAYS measured from Receiver 1. XY position.
@@ -84,7 +79,7 @@ parfor i=1:numPrimary
         timeDiffs(i,:,zz)=[distanceDiff(1,2), distanceDiff(1,3), distanceDiff(2,3)];
         %     [RL, RL_err]=geo2rect(ReceiverLocations,ReceiverError,Sphere);
         [X, Y, Z]=geodetic2enu(R1,R2,R3,Rx,Ry,Rz,Sphere);
-        RL=normrnd([X Y Z],RL_err);
+        RL=normrnd([X; Y; Z],RL_err);
 
         Hyperboloid=sym(zeros(3,1));
         p=1;
@@ -153,6 +148,10 @@ parfor i=1:numPrimary
         imwrite(255-X,nameBC{i,zz});
         imwrite(255-Xoriginal,nameNBC{i,zz});
         %     imshow(imread(name{i})); %debugging purposes.
+        
+        if i>numSecondary
+            break
+        end
     end
 end
 

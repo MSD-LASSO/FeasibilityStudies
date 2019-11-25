@@ -42,10 +42,10 @@ Limits=getCanonicalForm(zPlanes,ElevationRange(1));
 
 %% Create numImages
 z1=length(zPlanes);
+GT=zeros(numImages,2,z1);
 GTendgoal=zeros(numImages,2);
 nameBC=cell(numImages,z1);
 nameNBC=cell(numImages,z1);
-GT=cell(z1,1);
 cols=3;
 timeDiffs=zeros(numImages,cols,z1);
 %here to optimize parfor.
@@ -60,8 +60,7 @@ parfor i=1:numPrimary
     [Az,El,Rng]=getRandSat(AzimuthRange,ElevationRange,SatelliteRangeRange);
     GTendgoal(i,:)=[Az El];
     
-    for zz=1:z1
-        GT{zz}=zeros(numImages,2)
+    for zz=1:zTemp
         zPlane=zPlanes(zz);
     
         %This is ALWAYS measured from Receiver 1. XY position.
