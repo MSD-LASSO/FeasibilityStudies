@@ -43,8 +43,8 @@ Limits=getCanonicalForm(zPlanes,ElevationRange(1));
 z1=length(zPlanes);
 GT=zeros(numPrimary,2,z1);
 GTendgoal=zeros(numPrimary,2);
-nameBC=cell(numPrimary,z1);
-nameNBC=cell(numPrimary,z1);
+nameBC=cell(numPrimary,1);
+nameNBC=cell(numPrimary,1);
 cols=3;
 timeDiffs=zeros(numPrimary,cols);
 %here to optimize parfor.
@@ -53,7 +53,7 @@ Ry=ReceiverLocations(1,2);
 Rz=ReceiverLocations(1,3);
 Reference=[Rx,Ry,Rz];
 %     zPlanes=zeros(numImages,1);
-parfor i=1:numPrimary
+for i=1:numPrimary
     %% Set up problem and get ground truth.
     [Az,El,Rng]=getRandSat(AzimuthRange,ElevationRange,SatelliteRangeRange);
     GTendgoal(i,:)=[Az El];
@@ -121,7 +121,7 @@ parfor i=1:numPrimary
     
     [GTtemp,bctemp,Nbctemp]=createImage(zPlanes,Az,El,Hyperboloid,SymVars,Limits,i,zNames,pixel,numSecondary,outputFolder);
     GT(i,:,:)=GTtemp;
-    nameBC{i,1}=bctemp;
+    nameBC{i}=bctemp;
     nameNBC{i}=Nbctemp;
     
     

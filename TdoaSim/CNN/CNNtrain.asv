@@ -1,6 +1,6 @@
-% ImageFolder='50'; zz=2; names=0; netPath='C:\Users\awian\Desktop\MachineIntelligence\Resnet101trained400.mat';
+ImageFolder='50'; zz=2; names=0; netPath='C:\Users\awian\Desktop\MachineIntelligence\Resnet101trained400.mat';
 % ImageFolder='50NBC'; zz=2; names=1; netPath='C:\Users\awian\Desktop\MachineIntelligence\Resnet101trained400.mat';
-ImageFolder='400'; zz=1; names=0; netPath='C:\Users\awian\Desktop\MachineIntelligence\Resnet101Modified.mat';
+% ImageFolder='400'; zz=1; names=0; netPath='C:\Users\awian\Desktop\MachineIntelligence\Resnet101Modified.mat';
 % ImageFolder='400NBC'; zz=1; names=1; netPath='C:\Users\awian\Desktop\MachineIntelligence\Resnet101Modified.mat';
 % ImageFolder='1200'; zz=3; names=0; netPath='C:\Users\awian\Desktop\MachineIntelligence\Resnet101trained400.mat';
 % ImageFolder='1200NBC'; zz=3; names=1; netPath='C:\Users\awian\Desktop\MachineIntelligence\Resnet101trained400.mat';
@@ -75,7 +75,7 @@ Valtable=table(name,GT(:,1,zz),GT(:,2,zz));
 
 epochs = 10; %number of epochs
 miniBatch = 24; % number of images per minibatch
-lR = 1e-4; % learning rate
+lR = 1e-3; % learning rate
 GPUDevice = 1; % which gpu device?
 L2Reg = 0; % L2 regularization factor
 Freq=25;
