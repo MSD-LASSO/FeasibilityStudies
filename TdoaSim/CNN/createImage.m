@@ -4,7 +4,7 @@ function [GT,nameBC,nameNBC]=createImage(zPlanes,Az,El,Hyperboloid,Symvars,Limit
     nameBC=cell(1,z1);
     nameNBC=cell(1,z1);
     
-    h1=figure('Position', [100 100 floor(224^3/171/226) floor(224^3/174/227)]);
+    h1=figure('Position', [100 100 floor(224^3/171/226) ceil(224^4/174/227^2)]);
     for zz=1:z1
         zPlane=zPlanes(zz);
     
