@@ -1,14 +1,25 @@
-digitDatasetPath='Images/Test10zPlane400';
+% ImageFolder='50'; zz=2; names=0; netPath='C:\Users\awian\Desktop\MachineIntelligence\Resnet101trained400.mat';
+% ImageFolder='50NBC'; zz=2; names=1; netPath='C:\Users\awian\Desktop\MachineIntelligence\Resnet101trained400.mat';
+ImageFolder='400'; zz=1; names=0; netPath='C:\Users\awian\Desktop\MachineIntelligence\Resnet101Modified.mat';
+% ImageFolder='400NBC'; zz=1; names=1; netPath='C:\Users\awian\Desktop\MachineIntelligence\Resnet101Modified.mat';
+% ImageFolder='1200'; zz=3; names=0; netPath='C:\Users\awian\Desktop\MachineIntelligence\Resnet101trained400.mat';
+% ImageFolder='1200NBC'; zz=3; names=1; netPath='C:\Users\awian\Desktop\MachineIntelligence\Resnet101trained400.mat';
+
+digitDatasetPath=['Images/Test11/' ImageFolder];
 imds = imageDatastore(digitDatasetPath, ...
     'IncludeSubfolders',true,'LabelSource','none');
-load Test10zPlane400.mat
+load Test11.mat
 
-name=cell(length(GT),1);
-for i=1:length(GT)
-    name{i}=[digitDatasetPath '/' num2str(i) '.png'];
+% name=cell(length(GT),1);
+% for i=1:length(GT)
+%     name{i}=[digitDatasetPath '/' num2str(i) '.png'];
+% end
+if names==0
+    name=nameBC;
+else
+    name=nameNBC;
 end
-
-GTtable=table(name,GT(:,1),GT(:,2));
+GTtable=table(name,GT(:,1,zz),GT(:,2,zz));
 
 % layers = [
 %     imageInputLayer([224 224 3])
@@ -43,15 +54,20 @@ GTtable=table(name,GT(:,1),GT(:,2));
 %     'MaxEpochs',20, ...
 %     'MiniBatchSize',64, ...
 %     'Plots','training-progress');
-load Test10zPlane400val.mat
-Valtable=table(name,GT(:,1),GT(:,2));
+load Test10val.mat
+if names==0
+    name=nameBC;
+else
+    name=nameNBC;
+end
+Valtable=table(name,GT(:,1,zz),GT(:,2,zz));
 
 epochs = 10; %number of epochs
 miniBatch = 24; % number of images per minibatch
 lR = 1e-4; % learning rate
 GPUDevice = 1; % which gpu device?
 L2Reg = 0; % L2 regularization factor
-Freq=208;
+Freq=25;
 
 if GPUDevice==0
     options = trainingOptions('sgdm', ...
@@ -97,7 +113,7 @@ end
 %     'ValidationData',Valtable,...
 %     'Plots','training-progress');
         
-load C:\Users\awian\Desktop\MachineIntelligence\Resnet101Modified.mat
+load(netFilePath);
 % net = trainNetwork(GTtable,layers,options);
 net=trainNetwork(GTtable,lgraph_2,options); 
 

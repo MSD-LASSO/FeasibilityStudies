@@ -9,14 +9,14 @@ if nargin==0
     addpath('../LocateSat')
     addpath('../TimeDiff')
     addpath('..');
-    numImages=20;
+    numImages=1000;
     numImages=[numImages numImages/10]; %first number is for primary, second for other planes. 
     %% Input Ranges
     AzimuthRange=[0 360]; %ALWAYS wrt to the first receiver. 
     ElevationRange=[15 85];
     SatelliteRangeRange=[500e3 5000e3]; %range of satellite range values.
     zPlanes=[400e3 50e3 1200e3]; %primary must be listed first.
-    outputFolder='Test11val';
+    outputFolder='Test11';
     
 end
     
