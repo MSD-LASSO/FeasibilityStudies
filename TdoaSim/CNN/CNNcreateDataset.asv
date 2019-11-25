@@ -36,8 +36,9 @@ numSecondary=numImages(2);
 
 %% Canonical Form of Image
 %not vectorized because of parfor.
-Limits=getCanonicalForm(zPlanes,ElevationRange(1));
-
+Limits1=getCanonicalForm(zPlanes(1),ElevationRange(1));
+Limits2=getCanonicalForm(zPlanes(2),ElevationRange(1));
+Limits3=getCanonicalForm(zPlanes(3),ElevationRange(1));
 
 %% Create numImages
 z1=length(zPlanes);
@@ -94,7 +95,7 @@ parfor i=1:numPrimary
                     R1a=RL(ii,:);
                     R2a=RL(j,:);
                     %assume SymVars is the same for all cases.
-                    [temp,~]=CreateHyperboloid(R1a,R2a,distanceDiff(ii,j));
+                    [temp,SymVars]=CreateHyperboloid(R1a,R2a,distanceDiff(ii,j));
                     Hyperboloid(p)=temp;
                     p=p+1;
                 end
@@ -104,7 +105,7 @@ parfor i=1:numPrimary
         Hyperbola=subs(Hyperboloid,z,zPlane);
 
         figure(1)
-        fimplicit(Hyperbola,[Limits(zz,:) Limits(zz,:)],'linewidth',3);
+        fimplicit(Hyperbola,[XLimits YLimits],'linewidth',3);
 
         %% Convert the numerical data to image.
         %structure of this:
