@@ -1,6 +1,0 @@
-function Limits=getCanonicalForm(zPlanes,minElevation)
-
-maxR=zPlanes/sind(minElevation); %minimum elevation
-maxXY=maxR*cosd(minElevation);
-Limits=[-maxXY maxXY];
-end
