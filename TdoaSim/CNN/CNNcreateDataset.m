@@ -9,7 +9,7 @@ if nargin==0
     addpath('../LocateSat')
     addpath('../TimeDiff')
     addpath('..');
-    numImages=250;
+    numImages=20;
     numImages=[numImages numImages/10]; %first number is for primary, second for other planes. 
     %% Input Ranges
     AzimuthRange=[0 360]; %ALWAYS wrt to the first receiver. 
@@ -53,7 +53,7 @@ Ry=ReceiverLocations(1,2);
 Rz=ReceiverLocations(1,3);
 Reference=[Rx,Ry,Rz];
 %     zPlanes=zeros(numImages,1);
-for i=1:numPrimary
+parfor i=1:numPrimary
     %% Set up problem and get ground truth.
     [Az,El,Rng]=getRandSat(AzimuthRange,ElevationRange,SatelliteRangeRange);
     GTendgoal(i,:)=[Az El];
@@ -69,8 +69,8 @@ for i=1:numPrimary
     %         timeDiffs(i,:)=[distanceDiff(1,2), distanceDiff(1,3), distanceDiff(2,3) zPlane];
     timeDiffs(i,:)=[distanceDiff(1,2), distanceDiff(1,3), distanceDiff(2,3)];
     %     [RL, RL_err]=geo2rect(ReceiverLocations,ReceiverError,Sphere);
-    [X, Y, Z]=geodetic2enu(R1,R2,R3,Rx,Ry,Rz,Sphere);
-    RL=normrnd([X; Y; Z],RL_err);
+    [X, Y, Z]=geodetic2enu(ReceiverLocations(:,1),ReceiverLocations(:,2),ReceiverLocations(:,3),Rx,Ry,Rz,Sphere);
+    RL=normrnd([X Y Z],RL_err);
     
     Hyperboloid=sym(zeros(3,1));
     p=1;
@@ -94,15 +94,15 @@ for i=1:numPrimary
     %if the value is negative, set px to 255, otherwise px=0.
     
     pp=0;
-    pixel=zeros(1,224);
+    pixel=ones(1,224)*255;
     temp=timeDiffs(i,:);
     for jj=1:cols
         pp=pp+1;
         floating=temp(jj);
         if floating>0
-            positive=0;
-        else
             positive=255;
+        else
+            positive=0;
         end
         str=num2str(floating,'%15.15f');
         

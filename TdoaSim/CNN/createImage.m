@@ -4,7 +4,7 @@ function [GT,nameBC,nameNBC]=createImage(zPlanes,Az,El,Hyperboloid,Symvars,Limit
     nameBC=cell(1,z1);
     nameNBC=cell(1,z1);
     
-    figure('Position', [100 100 floor(224^3/171/226) floor(224^3/174/227)])
+    h1=figure('Position', [100 100 floor(224^3/171/226) floor(224^3/174/227)]);
     for zz=1:z1
         zPlane=zPlanes(zz);
     
@@ -14,8 +14,8 @@ function [GT,nameBC,nameNBC]=createImage(zPlanes,Az,El,Hyperboloid,Symvars,Limit
 
         Hyperbola=subs(Hyperboloid,Symvars(3),zPlane);
 
-        figure(1)
-        fimplicit(Hyperbola,[Limits(zz,:)*1e6 Limits(zz,:)*1e6],'linewidth',3);
+        figure(h1)
+        fimplicit(Hyperbola,[Limits(zz,:) Limits(zz,:)],'linewidth',3);
 
 
         %% Save Image
@@ -28,12 +28,13 @@ function [GT,nameBC,nameNBC]=createImage(zPlanes,Az,El,Hyperboloid,Symvars,Limit
         X(end-5:end,:,2)=repmat(pixel,6,1);
         X(end-5:end,:,3)=repmat(pixel,6,1);
 
-        imwrite(255-X,nameBC{i,zz});
-        imwrite(255-Xoriginal,nameNBC{i,zz});
+        imwrite(255-X,nameBC{zz});
+        imwrite(255-Xoriginal,nameNBC{zz});
         %     imshow(imread(name{i})); %debugging purposes.
         
         if i>numSecondary
             break
         end
     end
+    close(h1);
 end
