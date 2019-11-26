@@ -1,7 +1,7 @@
-ImageFolder='50'; zz=2; names=0; netPath='C:\Users\awian\Desktop\MachineIntelligence\Resnet101trained400.mat';
+% ImageFolder='50'; zz=2; names=0; netPath='C:\Users\awian\Desktop\MachineIntelligence\Resnet101trained400.mat';
 % ImageFolder='50NBC'; zz=2; names=1; netPath='C:\Users\awian\Desktop\MachineIntelligence\Resnet101trained400NBC.mat';
 % ImageFolder='400'; zz=1; names=0; netPath='C:\Users\awian\Desktop\MachineIntelligence\Resnet101Modified.mat';
-% ImageFolder='400NBC'; zz=1; names=1; netPath='C:\Users\awian\Desktop\MachineIntelligence\Resnet101Modified.mat';
+ImageFolder='400NBC'; zz=1; names=1; netPath='C:\Users\awian\Desktop\MachineIntelligence\Resnet101Modified.mat';
 % ImageFolder='1200'; zz=3; names=0; netPath='C:\Users\awian\Desktop\MachineIntelligence\Resnet101trained400.mat';
 % ImageFolder='1200NBC'; zz=3; names=1; netPath='C:\Users\awian\Desktop\MachineIntelligence\Resnet101trained400NBC.mat';
 
