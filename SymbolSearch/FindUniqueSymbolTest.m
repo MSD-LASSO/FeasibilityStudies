@@ -10,3 +10,6 @@ if (idx ~= 16)
 elseif (uniqueSymbol ~= '1')
     warning('Unique symbol search test failed to find correct symbol');
 end
+
+uniqueSymbol = hexToBinaryVector(uniqueSymbol, symLength);
+FindUniqueSymbolIndex(binaryArray, uniqueSymbol);

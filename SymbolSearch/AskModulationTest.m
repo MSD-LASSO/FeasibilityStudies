@@ -2,7 +2,7 @@ clearvars;
 close all;
 hold off;
 
-dataSize = 2000;
+dataSize = 5000;
 
 % create province input signal
 [data_pv, fs_pv] = audioread('Loc2_97900000Hz_IQ(Province).wav'); % sample frequency and data
@@ -29,7 +29,7 @@ sample = 1:length(digitalData_pv);
 
 plot(sample, digitalData_pv, '.');
 title('Digital Signal - Province');
-ylim([0.5, 3.5]);
+ylim([-0.5, 3.5]);
 xlabel('sample');
 
 % read mission control input signal
@@ -57,6 +57,6 @@ sample = 1:length(digitalData_ms);
 
 plot(sample, digitalData_ms, '.');
 title('Digital Signal - Mission Control');
-ylim([0.5, 3.5]);
+ylim([-0.5, 3.5]);
 xlabel('sample');
 
