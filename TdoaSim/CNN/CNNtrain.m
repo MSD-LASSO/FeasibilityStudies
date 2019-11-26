@@ -22,10 +22,18 @@ end
 
 name=cell(size(nameCell,1),1);
 for i=1:size(nameCell,1)
-    name{i}=nameCell{i,1}{zz};
+    if isempty(nameCell{i,1}{zz})==0
+        name{i}=nameCell{i,1}{zz};
+    else
+        name(i:end)=[];
+        break;
+    end
+end
+if size(name,1)<size(nameCell,1)
+    i=i-1;
 end
 
-GTtable=table(name,GT(:,1,zz),GT(:,2,zz));
+GTtable=table(name,GT(1:i,1,zz),GT(1:i,2,zz));
 
 % layers = [
 %     imageInputLayer([224 224 3])
@@ -69,9 +77,17 @@ end
 
 name=cell(size(nameCell,1),1);
 for i=1:size(nameCell,1)
-    name{i}=nameCell{i,1}{zz};
+    if isempty(nameCell{i,1}{zz})==0
+        name{i}=nameCell{i,1}{zz};
+    else
+        name(i:end)=[];
+        break;
+    end
 end
-Valtable=table(name,GT(:,1,zz),GT(:,2,zz));
+if size(name,1)<size(nameCell,1)
+    i=i-1;
+end
+Valtable=table(name,GT(1:i,1,zz),GT(1:i,2,zz));
 
 epochs = 10; %number of epochs
 miniBatch = 24; % number of images per minibatch
@@ -125,6 +141,9 @@ end
 %     'Plots','training-progress');
         
 load(netPath);
+if zz~=1
+    lgraph_2=layerGraph(net);
+end
 % net = trainNetwork(GTtable,layers,options);
 net=trainNetwork(GTtable,lgraph_2,options); 
 
