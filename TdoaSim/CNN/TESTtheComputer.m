@@ -6,7 +6,7 @@ addpath('../TimeDiff')
 addpath('..');
 
 %% Inputs
-numPrimary=25000;
+numPrimary=200;
 numTests=[numPrimary numPrimary/10]; %number of tests done for both NO error and WITH error. so total number is twice this.
 numVal=numTests*0.25;
 
@@ -22,7 +22,7 @@ receivers=[GND(1).Topocoord; GND(2).Topocoord; GND(3).Topocoord];
 inputFolderWithBarcode='C:\Users\awian\Desktop\MachineIntelligence\netsBC';
 inputFolderWithoutBarcode='C:\Users\awian\Desktop\MachineIntelligence\netsNBC';
 
-outputFolder='Test13';
+outputFolder='TestingTheComputer';
 
 AzimuthRange=[0 360]; %ALWAYS wrt to the first receiver. 
 ElevationRange=[15 85];
@@ -40,7 +40,7 @@ end
 
 %% Train
 % RelativePath='C:\Users\awian\Desktop\MachineIntelligence';
-RelativePath='trainedNetworks';
+RelativePath='MiniTest';
 mkdir([RelativePath '\netsBC'])
 mkdir([RelativePath '\netsNBC'])
 mkdir([RelativePath '\plots'])
