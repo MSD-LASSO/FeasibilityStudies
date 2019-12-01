@@ -11,6 +11,7 @@ function [location, locationError] = TDoA(receiverLocations,distanceDifferences,
         %code will only solve for the plane z=0. 
 %OUTPUTS: Location of the transmitter.
 
+
 n=size(receiverLocations,1);
 
 if isempty(Reference)==1

@@ -1,4 +1,4 @@
-function CNNcreateDataset(numImages,outputFolder,AzimuthRange,ElevationRange,SatelliteRangeRange,zPlanes)
+function CNNcreateDataset(numImages,outputFolder,AzimuthRange,ElevationRange,SatelliteRangeRange,zPlanes,RL_err,ClkError)
 %This function will create samples over a range.
 %change getReceiverLocations and getErrors functions to modify those
 %parameters.
@@ -16,13 +16,12 @@ if nargin==0
     ElevationRange=[15 85];
     SatelliteRangeRange=[500e3 5000e3]; %range of satellite range values.
     zPlanes=[400e3 50e3 1200e3]; %primary must be listed first.
-    outputFolder='Test11';
-    
+    outputFolder='Test11val';
+    [ClkError, RL_err]=getErrors;
 end
     
 %% Invariants    
 [R1,R2,R3,Sphere]=getReceiverLocations;
-[ClkError, RL_err]=getErrors;
 ReceiverLocations=[R1;R2;R3];
 mkdir(['Images/' outputFolder]);
 ReceiverError=[zeros(3,3) ClkError];
@@ -43,6 +42,7 @@ Limits=getCanonicalForm(zPlanes,ElevationRange(1));
 z1=length(zPlanes);
 GT=zeros(numPrimary,2,z1);
 GTendgoal=zeros(numPrimary,2);
+GTrng=zeros(numPrimary,1);
 nameBC=cell(numPrimary,1);
 nameNBC=cell(numPrimary,1);
 cols=3;
@@ -53,10 +53,11 @@ Ry=ReceiverLocations(1,2);
 Rz=ReceiverLocations(1,3);
 Reference=[Rx,Ry,Rz];
 %     zPlanes=zeros(numImages,1);
-for i=1:numPrimary
+parfor i=1:numPrimary
     %% Set up problem and get ground truth.
     [Az,El,Rng]=getRandSat(AzimuthRange,ElevationRange,SatelliteRangeRange);
     GTendgoal(i,:)=[Az El];
+    GTrng(i)=Rng;
     [lat, long, h]=enu2geodetic(Rng*cosd(El)*sind(Az),Rng*cosd(El)*cosd(Az),Rng*sind(El),...
         Rx,Ry,Rz,Sphere);
     SAT=getStruct([lat long h],zeros(1,4),Reference,zeros(1,4),Sphere);
@@ -207,5 +208,5 @@ for i=1:numPrimary
 %     end
 end
 
-save(outputFolder,'GT','timeDiffs','ReceiverLocations','nameBC','nameNBC')
+save(outputFolder,'GT','timeDiffs','ReceiverLocations','nameBC','nameNBC','GTendgoal','GTrng')
 

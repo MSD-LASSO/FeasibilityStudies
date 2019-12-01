@@ -16,6 +16,8 @@ function Solutions=Intersect(Surf,SymVars)
     %SymVars. Two equations and three unknowns returns 
        
 % 11/11/2019 This function now assumes the input is 2D. 
+id='symbolic:solve:PossiblySpuriousSolutions';
+warning('off',id)
 
 SymbolicEqns=solve(Surf);
 Solutions=struct2cell(SymbolicEqns); %easier to work with. 
