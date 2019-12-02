@@ -43,31 +43,6 @@ end
 SensitivityLocation=cell(2,1);
 SensitivityTime=cell(2,1);
 
-if Frame==1
-    %zPlanes=[0 50e3 100e3 200e3 500e3 2000e3];
-    zPlanes=[50e3 400e3 1200e3];
-else
-    zPlanes=[4.5e6 4.8e6 5.1e6];
-end
-
-if numSamples==1
-    %then we are only doing a forward difference.
-    [TimeDiffs,TimeDiffErr]=timeDifftoMatrix(GND,SAT);
-    locations=TDoA(Receivers,TimeDiffs*3e8,Reference,Sphere,10,zPlanes,DebugMode,'No error nominal run');
-    [az, el]=geo2AzEl(expected,locations(2,:),Reference);
-    expectedAzEl=[az el 0];
-    actualAzEl=locations(1,:);
-    
-    %ignore 2nd solution...momentarily.
-    soln1=expectedAzEl-actualAzEl;
-    %             soln2=expectedAzEl-locations(3,:);
-    AbsErrControl=soln1;
-    AbsTotalErrControl=norm(AbsErrControl);
-    AngleSensitivityOutControl=locations(1,1:2);
-end
-
-
-
 if(location==1)
 %% iterate through location errors.
 [TimeDiffs,TimeDiffErr]=timeDifftoMatrix(GND,SAT);
@@ -82,7 +57,7 @@ for i=1:3 %cycle through x,y,z.
     for j=1:m %cycle through each station.
         ErrorMax=LocationErrs(j,i); %get the location error for this test
         test{j,i}=linspace(-ErrorMax,ErrorMax,numSamples); %set up a range.
-        if DebugMode>=0 && numSamples~=1
+        if DebugMode>=0
             test{j,i}=[0 test{j,i}]; %control. no error case.
         end
         AbsErr{j,i}=zeros(length(test{j,i}),3);
@@ -110,6 +85,12 @@ for i=1:3 %cycle through x,y,z.
             
             ErrStr=num2str(Err);
 %             ErrStr=strrep(ErrStr,'-','a');
+            if Frame==1
+%                 zPlanes=[0 50e3 100e3 200e3 500e3 2000e3];
+                zPlanes=[50e3 400e3 1200e3];
+            else
+                zPlanes=[4.5e6 4.8e6 5.1e6];
+            end
             locations=TDoA(RT,TimeDiffs*3e8,Reference,Sphere,10,zPlanes,DebugMode,['Run ' num2str(k) ' With Receiver ' num2str(j) ' Location Error = ' ErrStr]);
             
             if isempty(locations)==0 && size(locations,1)==4
@@ -179,13 +160,10 @@ for i=1:3 %cycle through x,y,z.
                     SensitivityLocation{1,k}(j,i)=temp(1);
                     SensitivityLocation{2,k}(j,i)=tempStruct.normr;
                 end
-            elseif numSamples==2
+            else
                 %equivalent to dfdx=(f(x+h)-f(x-h))/(2h)
                 SensitivityLocation{1,k}(j,i)=(AngleSensitivityOut{j,i}(end-1,k)-AngleSensitivityOut{j,i}(end,k))/...
                     (AngleSensitivityIn{j,i}(end-1)-AngleSensitivityIn{j,i}(end));
-            else
-                SensitivityLocation{1,k}(j,i)=(AngleSensitivityOutControl(k)-AngleSensitivityOut{j,i}(end,k))/...
-                    (-AngleSensitivityIn{j,i}(end));
             end
             
             
@@ -222,13 +200,9 @@ AngleSensitivityIn=cell(m,1); %whatever parameter we are currently varying.
 for i=1:1 %cycle through nothing. Clock error is 1D.
     for j=1:m %cycle through each station.
         ErrorMax=timeSyncErrs(j,i); %get the clock error for this test.
-        if numSamples~=1
-            test{j,i}=linspace(-ErrorMax,ErrorMax,numSamples-1); %set up a range.
-            if  DebugMode>=0 || numSamples==2
-                test{j,i}=[0 test{j,i}]; %control. no error case.
-            end
-        else
-            test{j,i}=ErrorMax;
+        test{j,i}=linspace(-ErrorMax,ErrorMax,numSamples-1); %set up a range.
+        if DebugMode>=0 || numSamples==2
+            test{j,i}=[0 test{j,i}]; %control. no error case.
         end
         AbsErr{j,i}=zeros(length(test{j,i}),3);
         AbsTotalErr{j,i}=zeros(length(test{j,i}),1);
@@ -246,6 +220,12 @@ for i=1:1 %cycle through nothing. Clock error is 1D.
             ErrStr=num2str(num2str([TimeDiffErr(1,2) TimeDiffErr(1,3) TimeDiffErr(2,3)]));
 %             ErrStr=strrep(ErrStr,'-','a');
 
+            if Frame==1
+%                 zPlanes=[0 50e3 100e3 200e3 500e3 2000e3];
+                zPlanes=[50e3 400e3 1200e3];
+            else
+                zPlanes=[4.5e6 4.8e6 5.1e6];
+            end
             
             if DebugMode==1
                 figure()
@@ -311,13 +291,10 @@ for i=1:1 %cycle through nothing. Clock error is 1D.
                     SensitivityTime{2,k}(j,i)=tempStruct.normr;
                 end
             
-            elseif numSamples==2
+            else
                 %equivalent to dfdx=(f(x+h)-f(x-h))/(2h)
                 SensitivityTime{1,k}(j,i)=(AngleSensitivityOut{j,i}(end-1,k)-AngleSensitivityOut{j,i}(end,k))/...
                     (AngleSensitivityIn{j,i}(end-1)-AngleSensitivityIn{j,i}(end));
-            else
-                SensitivityTime{1,k}(j,i)=(AngleSensitivityOutControl(k)-AngleSensitivityOut{j,i}(end,k))/...
-                    (-AngleSensitivityIn{j,i}(end));
             end
             
             if DebugMode>=0

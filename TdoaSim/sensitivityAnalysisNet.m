@@ -19,7 +19,7 @@ ClkError=ones(3,1)*TimeSyncErrFar; %3x1
 ReceiverLocations=[R1;R2;R3];
 outputFolder='ErroredTestCase';
 Sphere=wgs84Ellipsoid;
-numSamples=2;
+numSamples=1;
 DebugMode=-1;
 
 ReceiverError=[zeros(3,3) ClkError];
@@ -31,11 +31,13 @@ GND(3).ECFcoord_error=RL_err(3,:);
 %% Input Ranges
 % AzimuthRange=0:45:359; %ALWAYS wrt to the first receiver. 
 % ElevationRange=15:15:75;
-% AzimuthRange=0:10:359; %ALWAYS wrt to the first receiver. 
-% ElevationRange=5:5:85;
+AzimuthRange=0:10:359; %ALWAYS wrt to the first receiver. 
+ElevationRange=5:5:90;
+
 %this set of inputs causes an error!
-AzimuthRange=0:2.5:359;
-ElevationRange=1:1:4;
+% AzimuthRange=0:2.5:359; ElevationRange=1:1:4;
+
+
 SatelliteRangeRange=1000e3; %range of satellite range values.
 
 
@@ -58,8 +60,8 @@ Refz=ReceiverLocations(1,3);
 % try
 SensitivityTest=cell(p,1);
 timeDiffs=zeros(p,3);
-%   parfor i=1:p
-    for i=1:p
+    parfor i=1:p
+%     for i=1:p
 %     for i=1:length(AzimuthRange)
 %         for j=1:length(ElevationRange)
             %% Set up problem and get ground truth.
