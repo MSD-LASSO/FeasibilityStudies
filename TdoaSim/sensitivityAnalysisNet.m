@@ -2,46 +2,79 @@
 clearvars
 close all
 
+load RangePolynomial.mat;
+P;
+
 h1=gcp;
 % h1=parpool;
 
 addpath('LocateSat')
 addpath('TimeDiff')
 
-R1=[43.209037000000000	-77.950921000000010	0.000000000000000]; %brockport
-R2=[42.700192000000000	-77.408628000000010	0.000000000000000]; %mees
-R3=[43.204291000000000	-77.469981000000000	0.000000000000000]; %webster
+R1=[43.209037000000000	-77.950921000000010	175.000000000000000]; %brockport
+R2=[42.700192000000000	-77.408628000000010	701.000000000000000]; %mees
+R3=[43.204291000000000	-77.469981000000000	147.000000000000000]; %webster
+R4=[42.871390000000000	-78.018577000000000	323.000000000000000]; %pavilion
+R5=[43.0853460000000 -77.6791050000000 170+4*4]; %Institute Hall
+R6=[43.0483000000000 -77.6586630000000 176+5*4]; %RIT inn
+R7=[43.0862850000000 -77.6680150000000 163.4+12*4]; %ellingson
+R8=[43.213809 -77.190456 140+2*4]; %williamson high school
+R9=[43.0162 -78.1380 272+3*4]; %GCC library
+
+
+TR{1}=[R2;R1;R3]; OF{1}='MeesBrockportWebster';
+TR{2}=[R2;R3;R4]; OF{2}='MeesWebsterPavilion';
+TR{3}=[R6;R5;R7]; OF{3}='InnInstituteEllingson';
+TR{4}=[R2;R4;R6]; OF{4}='MeesPavilionInn';
+TR{5}=[R6;R1;R3]; OF{5}='InnBrockportWebster';
+TR{6}=[R2;R8;R1]; OF{6}='MeesWilliamsonBrockport';
+TR{7}=[R6;R9;R1]; OF{7}='InnGCCBrockport';
+TR{8}=[R2;R9;R8]; OF{8}='MeesGCCWilliamson';
+TR{9}=[R2;R3;R9]; OF{9}='MeesWebsterGCC';
+TR{10}=[R2;R6;R8]; OF{10}='MeesInnWilliamson';
+
 TimeSyncErrFar=100e-9; %100ns time sync error.
 RL_err=ones(3,3)*9; %9m location error.
 
 %% Invariants
 ClkError=ones(3,1)*TimeSyncErrFar; %3x1
-ReceiverLocations=[R1;R2;R3];
-outputFolder='ErroredTestCase';
 Sphere=wgs84Ellipsoid;
 numSamples=1;
 DebugMode=-1;
 
 ReceiverError=[zeros(3,3) ClkError];
-GND=getStruct(ReceiverLocations,ReceiverError,ReceiverLocations(1,:),ReceiverError(1,:),Sphere);
-GND(1).ECFcoord_error=RL_err(1,:);
-GND(2).ECFcoord_error=RL_err(2,:);
-GND(3).ECFcoord_error=RL_err(3,:);
 
 %% Input Ranges
 % AzimuthRange=0:45:359; %ALWAYS wrt to the first receiver. 
 % ElevationRange=15:15:75;
-AzimuthRange=0:10:359; %ALWAYS wrt to the first receiver. 
-ElevationRange=5:5:90;
+
+%For nominal tests.
+% AzimuthRange=0:10:359; %ALWAYS wrt to the first receiver. 
+% ElevationRange=5:5:90;
+
+%for quick testing
+% AzimuthRange=0:45:360;
+% ElevationRange=5:15:80;
+
+%for really quick testing
+AzimuthRange=45;
+ElevationRange=45;
 
 %this set of inputs causes an error!
 % AzimuthRange=0:2.5:359; ElevationRange=1:1:4;
 
 
-SatelliteRangeRange=1000e3; %range of satellite range values.
+SatelliteAltitudeRange=500e3; %range of satellite range values.
 
-
+Tests=[1 2 9 10];
+for TestNum=1:length(Tests)
+T=TR{Tests(TestNum)};
+OutputFolder=OF{Tests(TestNum)};
 %% Create satellite test case, run sensitivity.
+GND=getStruct(T,ReceiverError,T(1,:),ReceiverError(1,:),Sphere);
+GND(1).ECFcoord_error=RL_err(1,:);
+GND(2).ECFcoord_error=RL_err(2,:);
+GND(3).ECFcoord_error=RL_err(3,:);
 
 Test=zeros(length(AzimuthRange)*length(ElevationRange),2);
 p=0;
@@ -54,9 +87,10 @@ end
 
 Azimuths=Test(:,1);
 Elevations=Test(:,2);
-Refx=ReceiverLocations(1,1);
-Refy=ReceiverLocations(1,2);
-Refz=ReceiverLocations(1,3);
+Ranges=RangeApproximate(Elevations,SatelliteAltitudeRange,P);
+Refx=T(1,1);
+Refy=T(1,2);
+Refz=T(1,3);
 % try
 SensitivityTest=cell(p,1);
 timeDiffs=zeros(p,3);
@@ -69,7 +103,7 @@ timeDiffs=zeros(p,3);
 %             El=ElevationRange(j);
             Az=Azimuths(i);
             El=Elevations(i);
-            Rng=SatelliteRangeRange;
+            Rng=Ranges(i);
 
             %This is ALWAYS measured from Receiver 1. XY position.
 %             GT(i,:)=[zPlane*cos(El)*sin(Az) zPlane*cos(El)*cos(Az)];
@@ -81,7 +115,7 @@ timeDiffs=zeros(p,3);
             [TimeDiffs,TimeDiffErr]=timeDiff3toMatrix(GND,SAT);
             timeDiffs(i,:)=[TimeDiffs(1,2), TimeDiffs(1,3), TimeDiffs(2,3)];
             
-            [SensitivityLocation, SensitivityTime]=OneAtaTime(GND,SAT,1,1,outputFolder,1,DebugMode,numSamples,Sphere);
+            [SensitivityLocation, SensitivityTime]=OneAtaTime(GND,SAT,1,1,OutputFolder,1,DebugMode,numSamples,Sphere);
             %sensitivityLocation is a 2x1 cell and SensitivityTime a 2x1 cell.
             %The cell entries are Azimuth and Elevation. Inside are mx3 and mx1
             %slopes.
@@ -92,7 +126,8 @@ timeDiffs=zeros(p,3);
     end
 % catch ME
 %     warning([ME.message ' first instance at ' num2str(ME.stack(1).line)])
-%     save([outputFolder '/Error'],ME);
+%     save([OutputFolder '/Error'],ME);
 % end
 % save([outputFolder '/Data'])
-save(['Output' outputFolder])
+save(['Output' OutputFolder])
+end

@@ -45,21 +45,66 @@ mkdir([RelativePath '\netsBC'])
 mkdir([RelativePath '\netsNBC'])
 mkdir([RelativePath '\plots'])
 
-ImageFolder='400'; zz=1; names=0; netPath=[RelativePath '\Resnet101Modified.mat']; textT='netz400';
-CNNtrain(ImageFolder,zz,names,netPath,textT,outputFolder,RelativePath);
+Error=cell(6,1);
+try 
+    ImageFolder='400'; zz=1; names=0; netPath=[RelativePath '\Resnet101Modified.mat']; textT='netz400';
+    CNNtrain(ImageFolder,zz,names,netPath,textT,outputFolder,RelativePath);
+savePlots(RelativePath);
+catch ME
+    Error{1}=ME;
+    disp('400 Failed')
+end
+
+try
 ImageFolder='400NBC'; zz=1; names=1; netPath=[RelativePath '\Resnet101Modified.mat']; textT='netz400';
 CNNtrain(ImageFolder,zz,names,netPath,textT,outputFolder,RelativePath);
+savePlots(RelativePath);
+catch ME
+    Error{2}=ME;    
+    disp('400NBC Failed')
+end
 
+
+try
 ImageFolder='50'; zz=2; names=0; netPath=[RelativePath '\netsBC\netz400.mat']; textT='netz50';
 CNNtrain(ImageFolder,zz,names,netPath,textT,outputFolder,RelativePath);
+savePlots(RelativePath);
+catch ME
+    Error{3}=ME;
+    disp('50 Failed')
+end
+
+try
 ImageFolder='50NBC'; zz=2; names=1; netPath=[RelativePath '\netsNBC\netz400.mat']; textT='netz50';
 CNNtrain(ImageFolder,zz,names,netPath,textT,outputFolder,RelativePath);
+savePlots(RelativePath);
+catch ME
+    Error{4}=ME;
+    disp('50NBC Failed')
+end
 
+
+try
 ImageFolder='1200'; zz=3; names=0; netPath=[RelativePath '\netsBC\netz400.mat']; textT='netz1200';
 CNNtrain(ImageFolder,zz,names,netPath,textT,outputFolder,RelativePath);
+savePlots(RelativePath);
+catch ME
+    Error{5}=ME;
+    disp('1200 Failed')
+end
+
+try
 ImageFolder='1200NBC'; zz=3; names=1; netPath=[RelativePath '\netsNBC\netz400.mat']; textT='netz1200';
 CNNtrain(ImageFolder,zz,names,netPath,textT,outputFolder,RelativePath);
+savePlots(RelativePath);
+catch ME
+    Error{6}=ME;
+    disp('1200NBC Failed')
+end
 
+save('Errors','Error')
+
+function savePlots(RelativePath)
 Plots=findall(groot, 'Type', 'Figure');
 textT={'netz400','netz400NBC','netz50','netz50NBC','netz1200','netz1200NBC'};
 formats={'png'};
@@ -67,4 +112,5 @@ for i=1:length(Plots)
     for j=1:length(formats)
         saveas(Plots(i),[RelativePath '\plots\' textT{i}],formats{j});
     end
+end
 end

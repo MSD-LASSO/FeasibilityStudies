@@ -1,8 +1,12 @@
 %This script reads output files from a sensivity analysis and plots it.
 clearvars
 close all
-load OutputBrockportMeesWebsterWithTimeDiffs.mat
-
+% load OutputBrockportMeesWebsterWithTimeDiffs.mat
+% load OutputSensitivityForwardDiff.mat
+load OutputMBW500Altitude.mat
+PlotOutputFolder='500Altitude';
+numRows=17; numRows=18; numRows=6;
+numCols=36; numCols=9;
 %some variable names
 Azimuths;
 Elevations;
@@ -51,12 +55,12 @@ Subtitles={'Uncertainty','Sensitivity Receiver 1 X', 'Sensitivity Receiver 1 Y',
     'Sensitivity Receiver 3 X', 'Sensitivity Receiver 3 Y', 'Sensitivity Receiver 3 Z'...
     ,'Sensitivity Receiver 1 Clk','Sensitivity Receiver 2 Clk','Sensitivity Receiver 3 Clk'};
 
-x=reshape(Azimuths,17,36);
-y=reshape(Elevations,17,36);
+x=reshape(Azimuths,numRows,numCols);
+y=reshape(Elevations,numRows,numCols);
 for i=1:2 %azimuth then elevation
     for j=1:size(Data{i},2)
        figure()
-       z=reshape(Data{i}(:,j),17,36);
+       z=reshape(Data{i}(:,j),numRows,numCols);
        [M,c]=contour(x,y,z,'ShowText','on');
        c.LineWidth = 3;
        hold on
@@ -74,7 +78,7 @@ timeDiffs(:,4)=mean(timeDiffs,2);
 Titles={'R1 to R2','R1 to R3','R2 to R3','Average'};
 for i=1:4
     figure()
-    z=reshape(timeDiffs(:,i),17,36);
+    z=reshape(timeDiffs(:,i),numRows,numCols);
     [M,c]=contour(x,y,z,'ShowText','on');
     c.LineWidth = 3;
     hold on
@@ -151,4 +155,4 @@ legend('Azimuth Uncertainty','Elevation Uncertainty')
 % colormap('hot');
 % colorbar;
 
-GraphSaver({'png','fig'},'Plots/Sensitivity',1,1);
+GraphSaver({'png','fig'},['Plots/' PlotOutputFolder],1,1);
