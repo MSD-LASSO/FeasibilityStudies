@@ -1,17 +1,16 @@
-function [ digitalData ] = AskModulation( data )
+function [ digitalData ] = AskModulation4Levels( data )
 
-lengthData = 2000;
+lengthData = length(data);
 shortData = data(1:lengthData);
-clear data;
 
-% need to filter the signal
-% [peaks, peakIdx] = findpeaks(data);
-% period = mean(diff(peakIdx)); % approximate period
+%need to filter the signal
+[peaks, peakIdx] = findpeaks(data);
+period = mean(diff(peakIdx)); % approximate period
 
 ampMax = max(shortData);
 ampMin = min(shortData);
 
-% 4 amplitude levels
+%4 amplitude levels
 threshold1 = ampMin + (ampMax - ampMin)*1/4;
 threshold2 = ampMin + (ampMax - ampMin)*2/4;
 threshold3 = ampMin + (ampMax - ampMin)*3/4;

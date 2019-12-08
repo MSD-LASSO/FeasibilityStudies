@@ -1,16 +1,19 @@
-function [ uniqueSymbol, idx ] = FindUniqueSymbol( digitalArray, symLength )
+function [ uniqueSymbol, idx, temp ] = FindUniqueSymbol( digitalArray, symLength )
 % Searches for a unique symbol of size symLength in binaryArray
 % Outputs idx - the index of the symbol's start
-%             - unique Symb, a number of the unique symbol
+%             - uniqueSymbol, an array containing the unique symbol
 
 arrLength = length(digitalArray);
+if (arrLength >= power(2, 31))
+    error('Digital array too large for value type. Increase size of type.')
+end
+
 map = containers.Map('KeyType', 'char', 'ValueType', 'int8');
-uniqueGroup = containers.Map('KeyType', 'char', 'ValueType', 'int8');
+uniqueGroup = containers.Map('KeyType', 'char', 'ValueType', 'int32');
 
 % create two maps: (1) symbol->number occurrences (2) unique symbol->index
 for i = 1: (arrLength - symLength + 1)
-    key_array = digitalArray(i: i+symLength-1 );
-    key_char = binaryVectorToHex(key_array);
+    key_char = char(digitalArray(i: i+symLength-1 ));
     if (map.isKey(key_char))
         map(key_char) = map(key_char) + 1;
         if (uniqueGroup.isKey(key_char))
@@ -34,7 +37,8 @@ if (uniqueGroup.Count > 0)
     idx = min( abs(uniqueIdxsVector-midIdx)) + midIdx;
     
     % get unique symbol
-    uniqueSymbol = binaryVectorToHex(digitalArray(idx: idx+symLength-1 ));
+    uniqueSymbol = digitalArray(idx: idx+symLength-1 );
+    temp = uniqueGroup;
 else
     warning('No unique sequence found.');
 end
