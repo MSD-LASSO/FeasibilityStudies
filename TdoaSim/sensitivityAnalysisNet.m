@@ -33,13 +33,15 @@ TR{8}=[R2;R9;R8]; OF{8}='MeesGCCWilliamson';
 TR{9}=[R2;R3;R9]; OF{9}='MeesWebsterGCC';
 TR{10}=[R2;R6;R8]; OF{10}='MeesInnWilliamson';
 
-TimeSyncErrFar=100e-9; %100ns time sync error.
+% TimeSyncErrFar=100e-9; %100ns time sync error.
+TimeSyncErrFar=5e-6;
 RL_err=ones(3,3)*9; %9m location error.
 
 %% Invariants
 ClkError=ones(3,1)*TimeSyncErrFar; %3x1
 Sphere=wgs84Ellipsoid;
-numSamples=1;
+numSamples=nan; %for OneAtATime
+numTests=30; %for MonteCarlo. 
 DebugMode=-1;
 
 ReceiverError=[zeros(3,3) ClkError];
@@ -49,16 +51,16 @@ ReceiverError=[zeros(3,3) ClkError];
 % ElevationRange=15:15:75;
 
 %For nominal tests.
-% AzimuthRange=0:10:359; %ALWAYS wrt to the first receiver. 
-% ElevationRange=5:5:90;
+AzimuthRange=0:10:359; %ALWAYS wrt to the first receiver. 
+ElevationRange=5:5:90;
 
 %for quick testing
 % AzimuthRange=0:45:360;
 % ElevationRange=5:15:80;
 
 %for really quick testing
-AzimuthRange=45;
-ElevationRange=45;
+% AzimuthRange=45;
+% ElevationRange=45;
 
 %this set of inputs causes an error!
 % AzimuthRange=0:2.5:359; ElevationRange=1:1:4;
@@ -66,7 +68,7 @@ ElevationRange=45;
 
 SatelliteAltitudeRange=500e3; %range of satellite range values.
 
-Tests=[1 2 9 10];
+Tests=[2];
 for TestNum=1:length(Tests)
 T=TR{Tests(TestNum)};
 OutputFolder=OF{Tests(TestNum)};
@@ -94,10 +96,22 @@ Refz=T(1,3);
 % try
 SensitivityTest=cell(p,1);
 timeDiffs=zeros(p,3);
-    parfor i=1:p
-%     for i=1:p
-%     for i=1:length(AzimuthRange)
-%         for j=1:length(ElevationRange)
+
+
+% load('Results/ErrorTest8.mat')
+% % start=37;
+% load('Results/ErrorTest10.mat')
+% start=509;
+% ending=500;
+% load('Results/ErrorTest3.mat')
+% start=37;
+% ending=start+3;
+start=1;
+if ~isnan(numSamples)
+    parfor i=start:p
+
+
+%     for i=start:p
             %% Set up problem and get ground truth.
 %             Az=AzimuthRange(i);
 %             El=ElevationRange(j);
@@ -115,19 +129,66 @@ timeDiffs=zeros(p,3);
             [TimeDiffs,TimeDiffErr]=timeDiff3toMatrix(GND,SAT);
             timeDiffs(i,:)=[TimeDiffs(1,2), TimeDiffs(1,3), TimeDiffs(2,3)];
             
-            [SensitivityLocation, SensitivityTime]=OneAtaTime(GND,SAT,1,1,OutputFolder,1,DebugMode,numSamples,Sphere);
-            %sensitivityLocation is a 2x1 cell and SensitivityTime a 2x1 cell.
-            %The cell entries are Azimuth and Elevation. Inside are mx3 and mx1
-            %slopes.
-            SensitivityTest{i}={SensitivityLocation, SensitivityTime};
+            try
+                [SensitivityLocation, SensitivityTime]=OneAtaTime(GND,SAT,1,1,OutputFolder,1,DebugMode,numSamples,Sphere);
+                %sensitivityLocation is a 2x1 cell and SensitivityTime a 2x1 cell.
+                %The cell entries are Azimuth and Elevation. Inside are mx3 and mx1
+                %slopes.
+                SensitivityTest{i}={SensitivityLocation, SensitivityTime};
+            catch ME
+                fprintf('\n')
+                fprintf(['Test ' num2str(i) ' failed due to ' ME.message ' on line ' num2str(ME.stack(end).line)]);
+                fprintf('\n')
+            end
 
 %         end
 %     end
     end
+    
+    save(['Output' OutputFolder])
+end
+
+if ~isnan(numTests)
+%    parfor i=start:p
+    AllMeans=zeros(p,2);
+    AllstdDevs=zeros(p,2);
+    AllMeanErrors=zeros(p,2);
+    AllstdDevError=zeros(p,2);
+    AllRawData=cell(p,1);
+    
+    parfor i=start:p
+        Az=Azimuths(i);
+        El=Elevations(i);
+        Rng=Ranges(i);
+        try
+            [means,stdDev,meanError,stdDevError, Data]=MonteCarlo(numTests,Az,El,Rng,T,RL_err,ClkError,DebugMode);
+            AllMeans(i,:)=means;
+            AllstdDevs(i,:)=stdDev;
+            AllMeanErrors(i,:)=meanError;
+            AllstdDevError(i,:)=stdDevError;
+            AllRawData{i}=Data;
+        catch ME
+                fprintf('\n')
+                fprintf(['Test ' num2str(i) ' failed due to ' ME.message ' on line ' num2str(ME.stack(end).line)]);
+                fprintf('\n')
+        end
+   end
+ 
+    save(['OutputMonteCarlo' OutputFolder])
+    
+    for i=1:p
+        plotHistograms(AllRawData{i},[Azimuths(i) Elevations(i)],['Plots/MonteCarloHistograms/' OutputFolder]);
+    end
+    
+%     plotHistograms(AllRawData{i})
+end
 % catch ME
 %     warning([ME.message ' first instance at ' num2str(ME.stack(1).line)])
 %     save([OutputFolder '/Error'],ME);
 % end
 % save([outputFolder '/Data'])
-save(['Output' OutputFolder])
+
+
+
+
 end

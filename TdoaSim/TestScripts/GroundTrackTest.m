@@ -69,7 +69,8 @@ for i=1:numTests
 TimeDiffs=timeDiff3toMatrix(GND,SAT(i));
 receivers=[GND(1).Topocoord; GND(2).Topocoord; GND(3).Topocoord];
 figure(h(i))
-locations=TDoA(receivers,TimeDiffs*3e8,reference,Sphere,1e-10,[0 50e3 100e3 200e3 500e3 2000e3],1,['CrudeGroundTrackTestElevation: ' Elevation{i}]);
+% locations=TDoA(receivers,TimeDiffs*3e8,reference,Sphere,1e-10,[0 50e3 100e3 200e3 500e3 2000e3],1,['CrudeGroundTrackTestElevation: ' Elevation{i}]);
+locations=TDoA(receivers,TimeDiffs*3e8,reference,Sphere,1e-10,[50e7 400e7 1200e7],1,['CrudeGroundTrackTestElevation: ' Elevation{i}]);
 title(['TDoA solution to near ' Elevation{i} ' degree elevation test case'])
 legend('Receiver Locations','Satellite Locations','Receiver Connections','Hab','Hac','Hbc','Planes','L1','L1Bias','L2','L2Bias')
 virtualStation(i,:)=locations(2,:);
@@ -125,6 +126,6 @@ ylabel('Elevation Error (deg)')
 title('Elevation Error. No input error')
 grid on
 
-GraphSaver({'fig', 'png'},'../Plots/GroundTrackTestAfterCorrectingGeo2RectNormalSlices',1);
+GraphSaver({'fig', 'png'},'../Plots/GroundTrackTestGigameter',1);
 
 

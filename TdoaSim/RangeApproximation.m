@@ -21,7 +21,7 @@ M=[Data(:,1).^6 Data(:,1).^5 Data(:,1).^4 Data(:,1).^3 Data(:,1).^2 Data(:,1) on
 Y=M*P';
 
 figure()
-plot(Data(:,1),Data(:,2),'.');
+plot(Data(:,1),Data(:,2),'o');
 hold on
 plot(Data(:,1),Y,'linewidth',3);
 grid on
@@ -32,7 +32,7 @@ ylabel('Range (m)')
 
 Residuals=(Data(:,2)-Y).^2;
 figure()
-plot(Data(:,1),Residuals,'.');
+plot(Data(:,1),500e3*Residuals,'.');
 grid on
 title(['RSME ' num2str(500e3*sqrt(sum(Residuals))/1000) ' km for 500km altitude Satellite'])
 xlabel('Elevation (deg)')
@@ -46,4 +46,5 @@ title(['Average Percent Error: ' num2str(mean(PercentError)) '%'])
 xlabel('Elevation (deg)')
 ylabel('Percent Error (%)')
 
+GraphSaver({'fig','png'},'Plots/RangeApproximation',1);
 save('RangePolynomial','P');

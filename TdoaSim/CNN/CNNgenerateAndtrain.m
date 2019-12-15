@@ -39,8 +39,8 @@ if exist([outputFolder '.mat'],'file')==0
 end
 
 %% Train
-% RelativePath='C:\Users\awian\Desktop\MachineIntelligence';
-RelativePath='trainedNetworks';
+RelativePath='C:\Users\awian\Desktop\MachineIntelligence\100kImages';
+% RelativePath='trainedNetworks';
 mkdir([RelativePath '\netsBC'])
 mkdir([RelativePath '\netsNBC'])
 mkdir([RelativePath '\plots'])
@@ -55,52 +55,52 @@ catch ME
     disp('400 Failed')
 end
 
-try
-ImageFolder='400NBC'; zz=1; names=1; netPath=[RelativePath '\Resnet101Modified.mat']; textT='netz400';
-CNNtrain(ImageFolder,zz,names,netPath,textT,outputFolder,RelativePath);
-savePlots(RelativePath);
-catch ME
-    Error{2}=ME;    
-    disp('400NBC Failed')
-end
-
-
-try
-ImageFolder='50'; zz=2; names=0; netPath=[RelativePath '\netsBC\netz400.mat']; textT='netz50';
-CNNtrain(ImageFolder,zz,names,netPath,textT,outputFolder,RelativePath);
-savePlots(RelativePath);
-catch ME
-    Error{3}=ME;
-    disp('50 Failed')
-end
-
-try
-ImageFolder='50NBC'; zz=2; names=1; netPath=[RelativePath '\netsNBC\netz400.mat']; textT='netz50';
-CNNtrain(ImageFolder,zz,names,netPath,textT,outputFolder,RelativePath);
-savePlots(RelativePath);
-catch ME
-    Error{4}=ME;
-    disp('50NBC Failed')
-end
-
-
-try
-ImageFolder='1200'; zz=3; names=0; netPath=[RelativePath '\netsBC\netz400.mat']; textT='netz1200';
-CNNtrain(ImageFolder,zz,names,netPath,textT,outputFolder,RelativePath);
-savePlots(RelativePath);
-catch ME
-    Error{5}=ME;
-    disp('1200 Failed')
-end
-
-try
-ImageFolder='1200NBC'; zz=3; names=1; netPath=[RelativePath '\netsNBC\netz400.mat']; textT='netz1200';
-CNNtrain(ImageFolder,zz,names,netPath,textT,outputFolder,RelativePath);
-savePlots(RelativePath);
-catch ME
-    Error{6}=ME;
-    disp('1200NBC Failed')
-end
+% try
+% ImageFolder='400NBC'; zz=1; names=1; netPath=[RelativePath '\Resnet101Modified.mat']; textT='netz400';
+% CNNtrain(ImageFolder,zz,names,netPath,textT,outputFolder,RelativePath);
+% savePlots(RelativePath);
+% catch ME
+%     Error{2}=ME;    
+%     disp('400NBC Failed')
+% end
+% 
+% 
+% try
+% ImageFolder='50'; zz=2; names=0; netPath=[RelativePath '\netsBC\netz400.mat']; textT='netz50';
+% CNNtrain(ImageFolder,zz,names,netPath,textT,outputFolder,RelativePath);
+% savePlots(RelativePath);
+% catch ME
+%     Error{3}=ME;
+%     disp('50 Failed')
+% end
+% 
+% try
+% ImageFolder='50NBC'; zz=2; names=1; netPath=[RelativePath '\netsNBC\netz400.mat']; textT='netz50';
+% CNNtrain(ImageFolder,zz,names,netPath,textT,outputFolder,RelativePath);
+% savePlots(RelativePath);
+% catch ME
+%     Error{4}=ME;
+%     disp('50NBC Failed')
+% end
+% 
+% 
+% try
+% ImageFolder='1200'; zz=3; names=0; netPath=[RelativePath '\netsBC\netz400.mat']; textT='netz1200';
+% CNNtrain(ImageFolder,zz,names,netPath,textT,outputFolder,RelativePath);
+% savePlots(RelativePath);
+% catch ME
+%     Error{5}=ME;
+%     disp('1200 Failed')
+% end
+% 
+% try
+% ImageFolder='1200NBC'; zz=3; names=1; netPath=[RelativePath '\netsNBC\netz400.mat']; textT='netz1200';
+% CNNtrain(ImageFolder,zz,names,netPath,textT,outputFolder,RelativePath);
+% savePlots(RelativePath);
+% catch ME
+%     Error{6}=ME;
+%     disp('1200NBC Failed')
+% end
 
 save('Errors','Error')
 

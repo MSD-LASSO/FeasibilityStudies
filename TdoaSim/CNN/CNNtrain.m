@@ -10,6 +10,11 @@ ImageFolder='400'; zz=1; names=0; netPath='C:\Users\awian\Desktop\MachineIntelli
 
 ImageFolderParent='Test11';
 
+RelativePath='trainedNetworks';
+mkdir([RelativePath '/netsBC'])
+mkdir([RelativePath '/netsNBC'])
+mkdir([RelativePath '/plots'])
+
 end
 
 digitDatasetPath=['Images/' ImageFolderParent '/' ImageFolder];
@@ -84,7 +89,7 @@ miniBatch = 32; % number of images per minibatch
 
 GPUDevice = 1; % which gpu device?
 L2Reg = 0; % L2 regularization factor
-Freq=25;
+Freq=1875; %625;
 
 if GPUDevice==0
     options = trainingOptions('sgdm', ...
@@ -114,17 +119,18 @@ else
         'ValidationFrequency',Freq, ...
         'Shuffle','every-epoch',...
         'Plots','training-progress',...
+        'CheckpointPath','C:\Users\awian\Desktop\MachineIntelligence\Epochs',... 
         'ExecutionEnvironment','gpu');
 end
 % 
-% 'CheckpointPath','C:\Users\awian\Desktop\MachineIntelligence\Epochs',... 
+% 
 % 'GradientDecayFactor',0.9, %default is 0.9
 %    'SquaredGradientDecayFactor' ,0.999,
 %     
    
 
 % net = trainNetwork(GTtable,layers,options);
-net=trainNetwork(GTtable,lgraph_2,options); 
+net=trainNetwork(GTtable(1,:),lgraph_2,options); 
 
 % ypredict=predict(net,Valtable(:,1));
 % error=ypredict-GT(1:i,:,zz);
