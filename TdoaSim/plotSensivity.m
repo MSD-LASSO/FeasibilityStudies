@@ -36,8 +36,8 @@ UncertaintyCriteria=1; %index of Vals to use.
 % RL_err;
 % SensitivityTest;
 
-TestsToRun=[1 2 3 4 5 6 7 8 9 10];
-% TestsToRun=[1 2 4 5 6 7 9];
+% TestsToRun=[1 2 3 4 5 6 7 8 9 10];
+TestsToRun=[1];
 plotIntermediates=0;
 
 n=length(TestsToRun);
@@ -217,7 +217,7 @@ if plotIntermediates==1
     % plot3(Azimuths,Elevations,TotalUncertainty(:,2),'*')
     legend('Azimuth Uncertainty','Elevation Uncertainty')
     zlim([0 0.5])
-    GraphSaver({'png','fig'},['Plots/' PlotOutputFolder '/' matName],1,1);
+%     GraphSaver({'png','fig'},['Plots/' PlotOutputFolder '/' matName],1,1);
 end
 
 %Metrics for each triangle

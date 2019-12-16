@@ -297,6 +297,21 @@ for u=1:length(zPlanes)
         %2D case. z already taken care of. 
         Hyperboloidtemp=HyperboloidSet;
     end
+    
+    
+    %% Experimental -- Least Squares
+    HyperCostFunc=sqrt((Hyperboloidtemp(1)-Hyperboloidtemp(2))^2+(Hyperboloidtemp(3)-Hyperboloidtemp(2))^2+(Hyperboloidtemp(1)-Hyperboloidtemp(3))^2);
+    HyperCost=@(x) (double(subs(HyperCostFunc,SymVars(1:2),x)));
+    XY0=[0,0];
+    tic
+    XY=fminsearch(HyperCost,XY0);
+    toc
+    tic
+    XY2=fminunc(HyperCost,XY0);
+    toc
+    %% Back to normal solution process
+    
+    tic
     Intersect2HypersX=cell(p*(p-1)/2,1);
     Intersect2HypersY=cell(p*(p-1)/2,1);
     %intersect the ith hyperboloid with every hyperboloid after it.
@@ -313,7 +328,7 @@ for u=1:length(zPlanes)
         end
     end 
     [temp,AllPts]=findSolnsFromIntersects(Intersect2HypersX,Intersect2HypersY,zPlanes(u),3,AcceptanceTolerance);
-    
+    toc
     %debugging around RIT. 
     %1e6.
 %     AllPts=[2609336.27447559,-4465985.03031150;3123096.09255623,-5678570.99208825;5691569.43165977,-9791094.78373877;16652500.7721629,-24649300.3029585]
@@ -326,8 +341,15 @@ for u=1:length(zPlanes)
     %     hold on
         plot(AllPts(:,1),AllPts(:,2),'*');
         hold on
-        fimplicit(Hyperboloidtemp,[-6e6 6e6 -6e6 6e6]);
+        fimplicit(Hyperboloidtemp);
         title(['ZPlane = ' num2str(zPlanes(u)) ' - ' AdditionalTitleStr]);
+        
+        figure()
+        fimplicit(Hyperboloidtemp,[-6e7 6e7 -6e7 6e7])
+        hold on
+        fimplicit(abs(Hyperboloidtemp(1)-Hyperboloidtemp(2))+abs(Hyperboloidtemp(3)-Hyperboloidtemp(2))+abs(Hyperboloidtemp(1)-Hyperboloidtemp(3)))
+        
+        
     end
 
     %continue with code.

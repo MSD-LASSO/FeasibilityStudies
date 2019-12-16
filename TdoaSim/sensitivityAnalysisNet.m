@@ -68,7 +68,7 @@ ElevationRange=5:5:90;
 
 SatelliteAltitudeRange=500e3; %range of satellite range values.
 
-Tests=[2];
+Tests=[1];
 for TestNum=1:length(Tests)
 T=TR{Tests(TestNum)};
 OutputFolder=OF{Tests(TestNum)};
@@ -156,7 +156,7 @@ if ~isnan(numTests)
     AllstdDevError=zeros(p,2);
     AllRawData=cell(p,1);
     
-    parfor i=start:p
+    for i=start:p
         Az=Azimuths(i);
         El=Elevations(i);
         Rng=Ranges(i);

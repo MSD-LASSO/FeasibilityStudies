@@ -84,6 +84,7 @@ end
 
 function [actualAzEl,err,locations]=doTest(RL,distanceDiff,Reference,Sphere,zPlanes,DebugMode,i,Az,El,expected)
 
+% locations=TDoA(RL,distanceDiff,Reference,Sphere,10,zPlanes,DebugMode,['Iteration: ' num2str(i) ' for Azimuth/Elevation ' num2str(Az) ' and ' num2str(El)]);
 locations=TDoA(RL,distanceDiff,Reference,Sphere,10,zPlanes,DebugMode,['Iteration: ' num2str(i) ' for Azimuth/Elevation ' num2str(Az) ' and ' num2str(El)]);
     
     if isempty(locations)==0 && size(locations,1)==4
