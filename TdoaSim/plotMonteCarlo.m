@@ -17,7 +17,7 @@ OF{8}='MeesGCCWilliamson';
 OF{9}='MeesWebsterGCC';
 OF{10}='MeesInnWilliamson';
 InputFolder='MonteCarloResults';
-PlotOutputFolder='MonteCarlo10Triangles';
+PlotOutputFolder='MonteCarlo10TrianglesLeastSquares';
 
 numRows=18; %numRows=6;
 numCols=36; %numCols=9;
@@ -31,8 +31,8 @@ UncertaintyCriteria=5; %index of Vals to use.
 % RL_err;
 % SensitivityTest;
 
-% TestsToRun=[1 2 3 4 5 6 7 8 9 10];
-TestsToRun=[8];
+TestsToRun=[1 2 3 4 5 6 7 8 9 10];
+% TestsToRun=[8];
 plotIntermediates=1;
 
 n=length(TestsToRun);
@@ -91,7 +91,9 @@ if plotIntermediates==1
 %     plot3(Azimuths,Elevations,TotalUncertainty(:,2),'*')
     legend('Azimuth Uncertainty','Elevation Uncertainty')
     zlim([0 Vals(UncertaintyCriteria)*2])
-    GraphSaver({'png','fig'},['Plots/' PlotOutputFolder '/' matName],1,1);
+    if length(TestsToRun)>1
+        GraphSaver({'png','fig'},['Plots/' PlotOutputFolder '/' matName],1,1);
+    end
 end
 
 %Metrics for each triangle

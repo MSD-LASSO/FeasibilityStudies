@@ -29,14 +29,37 @@ if isnumeric(DifferenceInDistance)==1 && abs(DifferenceInDistance)<1.0e-14
 else
     %hyperboloid.
     a=DifferenceInDistance/2;
-    b=sqrt((distance/2)^2-a^2);
+    
+    if  ((distance/2)^2-a^2)>0
+        %if the distance difference is less than the greatest distance
+        %between the stations, then we can draw a hyperbola.
+    
+        b=sqrt((distance/2)^2-a^2);
 
-    %body frame hyperboloid
-%     HyperboloidBody=xb^2/a^2-yb^2/b^2-zb^2/b^2-1;
-    %body frame 1 sided hyperboloid
-    Hyperboloid=a*sqrt(1+yb^2/b^2+zb^2/b^2)-xb;
-    %1 sided Cone
-%     Hyperboloid=a*sqrt(yb^2/b^2+zb^2/b^2)-xb;
+        %body frame hyperboloid
+    %     HyperboloidBody=xb^2/a^2-yb^2/b^2-zb^2/b^2-1;
+        %body frame 1 sided hyperboloid
+        Hyperboloid=a*sqrt(1+yb^2/b^2+zb^2/b^2)-xb;
+        %1 sided Cone
+    %     Hyperboloid=a*sqrt(yb^2/b^2+zb^2/b^2)-xb;
+
+    else
+        %if the distance difference is greater, we cap it at the greatest
+        %distance and draw a horizontal line.
+        
+        Hyperboloid=0-yb;
+        if abs(xb)<abs(a)
+            %then xb is in the forbidden zone.
+            Hyperboloid=1/xb^2-1/a^2;
+        end
+        
+%         Hyperboloid=0*sqrt(sign(a)*xb-abs(a))-yb;
+%         %The sign of a dictates the side of the hyperbola we are on. For
+%         %this equation, the sign of xb dictates the side of the y axis,
+%         %which is why we multiply by the sign(a). abs(a) dictates how far
+%         %from the y-axis to start. All of this limits the domain! The 0
+%         %keeps everything on the x-axis. 
+    end
 end
 
 end

@@ -1,4 +1,4 @@
-function [SensitivityLocation, SensitivityTime]=OneAtaTime3(GND,SAT,time,location,folderName,Frame,DebugMode,numSamples,Sphere)
+function [SensitivityLocation, SensitivityTime]=OneAtaTime3(GND,SAT,time,location,folderName,Frame,DebugMode,numSamples,Sphere,solver)
 %This function will perform a OneAtaTime uncertainty analysis for the Time
 %Difference of Arrival signal. 
 %It takes each parameter with a specified error and varies that parameter
@@ -53,7 +53,7 @@ end
 if numSamples==1
     %then we are only doing a forward difference.
     [TimeDiffs,TimeDiffErr]=timeDifftoMatrix(GND,SAT);
-    locations=TDoA(Receivers,TimeDiffs*3e8,Reference,Sphere,10,zPlanes,DebugMode,'No error nominal run');
+    locations=TDoA(Receivers,TimeDiffs*3e8,Reference,Sphere,10,zPlanes,DebugMode,'No error nominal run',solver);
     [az, el]=geo2AzEl(expected,locations(2,:),Reference);
     expectedAzEl=[az el 0];
     actualAzEl=locations(1,:);
@@ -110,7 +110,7 @@ for i=1:3 %cycle through x,y,z.
             
             ErrStr=num2str(Err);
 %             ErrStr=strrep(ErrStr,'-','a');
-            locations=TDoA(RT,TimeDiffs*3e8,Reference,Sphere,10,zPlanes,DebugMode,['Run ' num2str(k) ' With Receiver ' num2str(j) ' Location Error = ' ErrStr]);
+            locations=TDoA(RT,TimeDiffs*3e8,Reference,Sphere,10,zPlanes,DebugMode,['Run ' num2str(k) ' With Receiver ' num2str(j) ' Location Error = ' ErrStr],solver);
             
             if isempty(locations)==0 && size(locations,1)==4
                 %if we don't have lineFits, then we don't have a solution.
@@ -256,7 +256,7 @@ for i=1:1 %cycle through nothing. Clock error is 1D.
                 hold on
             end
             
-            locations=TDoA(RT,(TimeDiffs+TimeDiffErr)*3e8,Reference,Sphere,100,zPlanes,DebugMode,['Run ' num2str(k) ' With Time Error = ' ErrStr]);
+            locations=TDoA(RT,(TimeDiffs+TimeDiffErr)*3e8,Reference,Sphere,100,zPlanes,DebugMode,['Run ' num2str(k) ' With Time Error = ' ErrStr],solver);
             
             if isempty(locations)==0
                 %Sat in TDoA generated frame location.

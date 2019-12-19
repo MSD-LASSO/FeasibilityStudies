@@ -1,4 +1,4 @@
-function [means,stdDev,meanError,stdDevError, Data]=MonteCarlo(numTests,Az,El,Rng,ReceiverLocations,RL_err,ClkError,DebugMode)
+function [means,stdDev,meanError,stdDevError, Data]=MonteCarlo(numTests,Az,El,Rng,ReceiverLocations,RL_err,ClkError,DebugMode,solver)
 %This function perturbates the given parameters by their error,
 %approximated as a Gaussian. This will give us insight into approximate
 %uncertainties.
@@ -51,7 +51,7 @@ for i=1:numTests
     RL=normrnd(RT,RL_err);
     Rlocations{i}=RL;
     
-    [actualAzEl,err,locations]=doTest(RL,distanceDiff,Reference,Sphere,zPlanes,DebugMode,i,Az,El,expected);
+    [actualAzEl,err,locations]=doTest(RL,distanceDiff,Reference,Sphere,zPlanes,DebugMode,i,Az,El,expected,solver);
     
     TDoAsolution{i}=locations;
     EstAzEl(i,:)=actualAzEl(1,1:2);
@@ -78,14 +78,14 @@ if DebugMode>=0
 %     ElX=[min(EstAzEl(:,2)) max(EstAzEl(:,2))];
 %     AzR=normpdf(AzX,means(1),stdDev(1));
 %     ElR=normpdf(ElX,means(2),stdDev(2));
-   plotHistograms(Data,[Az El]);
+%    plotHistograms(Data,[Az El]);
 end
 end
 
-function [actualAzEl,err,locations]=doTest(RL,distanceDiff,Reference,Sphere,zPlanes,DebugMode,i,Az,El,expected)
+function [actualAzEl,err,locations]=doTest(RL,distanceDiff,Reference,Sphere,zPlanes,DebugMode,i,Az,El,expected,solver)
 
 % locations=TDoA(RL,distanceDiff,Reference,Sphere,10,zPlanes,DebugMode,['Iteration: ' num2str(i) ' for Azimuth/Elevation ' num2str(Az) ' and ' num2str(El)]);
-locations=TDoA(RL,distanceDiff,Reference,Sphere,10,zPlanes,DebugMode,['Iteration: ' num2str(i) ' for Azimuth/Elevation ' num2str(Az) ' and ' num2str(El)]);
+locations=TDoA(RL,distanceDiff,Reference,Sphere,10,zPlanes,DebugMode,['Iteration: ' num2str(i) ' for Azimuth/Elevation ' num2str(Az) ' and ' num2str(El)],solver);
     
     if isempty(locations)==0 && size(locations,1)==4
         %if we don't have lineFits, then we don't have a solution

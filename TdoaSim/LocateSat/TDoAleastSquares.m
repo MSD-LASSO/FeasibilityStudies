@@ -1,4 +1,4 @@
-function [location, locationError] = TDoA(receiverLocations,distanceDifferences,Reference,Sphere,AcceptanceTolerance,zPlanes,DebugMode,AdditionalTitleStr)
+function [location, planarPoints, locationError] = TDoA(receiverLocations,distanceDifferences,Reference,Sphere,AcceptanceTolerance,zPlanes,DebugMode,AdditionalTitleStr)
 %INPUTS: nx3 vector of receiver Locations (x,y,z) pairs, measured from a
         %fixed reference.
         %nxn upper triangular matrix of all combinations of 
@@ -79,30 +79,30 @@ for i=1:m
     end
     
     x0=[0;0];
-    Locations=zeros(length(zPlanes)*2,3);
+    planarPoints=zeros(length(zPlanes)*2,3);
     for z=1:length(zPlanes)
         HyperCost=@(x) (HyperCostFunc(x,zPlanes(z),receiverSet{m},distanceDiffSet{m}));
         temp=fminunc(HyperCost,x0,options);
         temp=[temp' zPlanes(z)];
-        Locations(2*z-1:2*z,:)=[temp; temp];
+        planarPoints(2*z-1:2*z,:)=[temp; temp];
     end
     
-    if size(Locations,1)==2 || isempty(Locations)
+    if size(planarPoints,1)==2 || isempty(planarPoints)
         %then we just have 2 points. A single plane. No need to do line
         %fits.
         %Locations can also be empty if the solution did not converge.
-        location=Locations;
+        location=planarPoints;
         return
     else
         %if nothing is returned from Locations, mark as false so we remove
         %this lines later.
-        if sum(sum(Locations))==0
+        if sum(sum(planarPoints))==0
             realLines(i,1)=false;
             realLines(i,2)=false;
         else
             %lineFit
-            LineFit{i,1}=fitLineParametric(Locations(1:2:end,:));
-            LineFit{i,2}=fitLineParametric(Locations(2:2:end,:));
+            LineFit{i,1}=fitLineParametric(planarPoints(1:2:end,:));
+            LineFit{i,2}=fitLineParametric(planarPoints(2:2:end,:));
         end
     end
     fprintf(num2str(i)) %progress report.
@@ -250,7 +250,9 @@ function OutCost=HyperCostFunc(x,zPlane,RL,DD)
 
 
    %for each set of receivers. Get the Hyperboloids, put them in a set.
-   Hyperboloid=zeros(3,1);
+   HyperboloidError=zeros(3,1);
+   %HyperboloidError is a measure of how close to the selected point is to
+   %the hyperboloid equation. A value of 0 means it is on the Hyperboloid. 
    p=1;
    for i=1:3
        for j=1:3
@@ -259,13 +261,16 @@ function OutCost=HyperCostFunc(x,zPlane,RL,DD)
                R2=RL(j,:);
                %assume SymVars is the same for all cases.
                temp=ComputeHyperboloid(R1,R2,DD(i,j),[x;zPlane]);
-               Hyperboloid(p)=temp;
+               HyperboloidError(p)=temp;
                p=p+1;
            end
        end
    end
    
-   OutCost=sqrt((Hyperboloid(1)-Hyperboloid(2))^2+(Hyperboloid(3)-Hyperboloid(2))^2+(Hyperboloid(1)-Hyperboloid(3))^2);
+   %Appears to lie below the triangle in all instances.
+%    OutCost=sqrt((Hyperboloid(1)-Hyperboloid(2))^2+(Hyperboloid(3)-Hyperboloid(2))^2+(Hyperboloid(1)-Hyperboloid(3))^2);
+
+    OutCost=sqrt(HyperboloidError(1)^2+HyperboloidError(2)^2+HyperboloidError(3)^2);
 
 
 end

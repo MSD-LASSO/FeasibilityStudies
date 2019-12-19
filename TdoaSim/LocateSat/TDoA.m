@@ -1,4 +1,4 @@
-function [location, locationError] = TDoA(receiverLocations,distanceDifferences,Reference,Sphere,AcceptanceTolerance,zPlanes,DebugMode,AdditionalTitleStr)
+function [location, locationError] = TDoA(receiverLocations,distanceDifferences,Reference,Sphere,AcceptanceTolerance,zPlanes,DebugMode,AdditionalTitleStr,solver)
 %INPUTS: nx3 vector of receiver Locations (x,y,z) pairs, measured from a
         %fixed reference.
         %nxn upper triangular matrix of all combinations of 
@@ -37,6 +37,17 @@ end
 
 if nargin<8
     AdditionalTitleStr='';
+end
+
+if nargin<9
+    solver=0;
+end
+
+if solver==1
+    %then we solve using least Squares
+    %locationError is not yet implemented in either function. 
+    location = TDoAleastSquares(receiverLocations,distanceDifferences,Reference,Sphere,AcceptanceTolerance,zPlanes,DebugMode,AdditionalTitleStr);
+    return;
 end
 
 %% Identify all combinations of 3 receiving Stations.
@@ -103,7 +114,14 @@ for i=1:m
         %1, even if debug mode is on.
         h1=[];
     end
-    Locations=solvePlanes(HyperboloidSet{i},zPlanes,SymVars,AcceptanceTolerance,h1,AdditionalTitleStr);
+    
+    if DebugMode==1
+        [~,PlanarPointsLS]=TDoAleastSquares(receiverSet{i},distanceDiffSet{i},Reference,Sphere,AcceptanceTolerance,zPlanes,DebugMode,AdditionalTitleStr);
+    else
+        PlanarPointsLS=[];
+    end
+    Locations=solvePlanes(HyperboloidSet{i},zPlanes,SymVars,AcceptanceTolerance,h1,AdditionalTitleStr,PlanarPointsLS);
+    
     if size(Locations,1)==2 || isempty(Locations)
         %then we just have 2 points. A single plane. No need to do line
         %fits.
@@ -252,7 +270,7 @@ end
 
 end
 
-function location=solvePlanes(HyperboloidSet,zPlanes,SymVars,AcceptanceTolerance,h1,AdditionalTitleStr)
+function location=solvePlanes(HyperboloidSet,zPlanes,SymVars,AcceptanceTolerance,h1,AdditionalTitleStr,planarPoints)
 %HyperboloidSet should be 3 Hyperboloids
 %Zplanes a 1D vector of z values to evaluate at. 
 %h1 is the figure handler.
@@ -265,8 +283,10 @@ function location=solvePlanes(HyperboloidSet,zPlanes,SymVars,AcceptanceTolerance
 %This function is optimized for p=3. It was programmed to do higher numbers
 %as well. 
 p=length(HyperboloidSet);
+Debug=0;
 %% Plot of this set of Hyperboloids and Single Hyperboloids.
 if isempty(h1)==0
+    Debug=1;
     figure(h1)
     h2=gca;
     X1=h2.XLim*2;
@@ -282,6 +302,7 @@ if isempty(h1)==0
 %         figure()
 %         fimplicit3(HyperboloidSet(i));%,[X1 Y1 h2.ZLim],'meshdensity',40
 %     end
+
 end
 
 %% Solve on each plane.
@@ -300,18 +321,18 @@ for u=1:length(zPlanes)
     
     
     %% Experimental -- Least Squares
-    HyperCostFunc=sqrt((Hyperboloidtemp(1)-Hyperboloidtemp(2))^2+(Hyperboloidtemp(3)-Hyperboloidtemp(2))^2+(Hyperboloidtemp(1)-Hyperboloidtemp(3))^2);
-    HyperCost=@(x) (double(subs(HyperCostFunc,SymVars(1:2),x)));
-    XY0=[0,0];
-    tic
-    XY=fminsearch(HyperCost,XY0);
-    toc
-    tic
-    XY2=fminunc(HyperCost,XY0);
-    toc
+%     HyperCostFunc=sqrt((Hyperboloidtemp(1)-Hyperboloidtemp(2))^2+(Hyperboloidtemp(3)-Hyperboloidtemp(2))^2+(Hyperboloidtemp(1)-Hyperboloidtemp(3))^2);
+%     HyperCost=@(x) (double(subs(HyperCostFunc,SymVars(1:2),x)));
+%     XY0=[0,0];
+%     tic
+%     XY=fminsearch(HyperCost,XY0);
+%     toc
+%     tic
+%     XY2=fminunc(HyperCost,XY0);
+%     toc
     %% Back to normal solution process
     
-    tic
+%     tic
     Intersect2HypersX=cell(p*(p-1)/2,1);
     Intersect2HypersY=cell(p*(p-1)/2,1);
     %intersect the ith hyperboloid with every hyperboloid after it.
@@ -326,29 +347,33 @@ for u=1:length(zPlanes)
             %intersection of 2 hyperboloids?
 %             Intersect2Hyperboloid=Intersect([HyperboloidSet(i),HyperboloidSet(j)],SymVars);
         end
-    end 
+    end
+    
     [temp,AllPts]=findSolnsFromIntersects(Intersect2HypersX,Intersect2HypersY,zPlanes(u),3,AcceptanceTolerance);
-    toc
+    
+%     toc
     %debugging around RIT. 
     %1e6.
 %     AllPts=[2609336.27447559,-4465985.03031150;3123096.09255623,-5678570.99208825;5691569.43165977,-9791094.78373877;16652500.7721629,-24649300.3029585]
 % AllPts=[1647440.63595431,-4517237.67132255;1855079.49953290,-5007104.42806191;2892441.75243371,-6668082.13052221;7319973.30647300,-12669995.2141345];   
 
 %Debugging Purposes
-    if isempty(h1)==0
+    if Debug==1
         h2=figure();
     %     fimplicit(Hyperboloidtemp,[min(AllPts(:,1)) max(AllPts(:,1)) min(AllPts(:,2)) max(AllPts(:,2))]);
     %     hold on
-        plot(AllPts(:,1),AllPts(:,2),'*');
+        plot(AllPts(:,1),AllPts(:,2),'s','linewidth',3,'color','black');
         hold on
-        fimplicit(Hyperboloidtemp);
+        fimplicit(Hyperboloidtemp,'linewidth',3);
         title(['ZPlane = ' num2str(zPlanes(u)) ' - ' AdditionalTitleStr]);
         
-        figure()
-        fimplicit(Hyperboloidtemp,[-6e7 6e7 -6e7 6e7])
-        hold on
-        fimplicit(abs(Hyperboloidtemp(1)-Hyperboloidtemp(2))+abs(Hyperboloidtemp(3)-Hyperboloidtemp(2))+abs(Hyperboloidtemp(1)-Hyperboloidtemp(3)))
-        
+%         figure()
+%         fimplicit(Hyperboloidtemp,[-6e7 6e7 -6e7 6e7])
+%         hold on
+        plot(planarPoints(2*u,1),planarPoints(2*u,2),'o','linewidth',3);
+        plot(temp(1,1),temp(1,2),'s','linewidth',3);
+        legend('All Intersections','R1R2','R1R3','R2R3','Least Squares Soln','Symbolic Solver Soln','location','northeastoutside')
+        hi=1;
         
     end
 

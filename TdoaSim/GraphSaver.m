@@ -53,6 +53,7 @@ while i<=length(plots)
             Figtitle=h1.Children(end).Title.String; %take first title for name
             Figtitle=strrep(Figtitle,'.','_');
             Figtitle=strrep(Figtitle,':','_');
+            Figtitle=strrep(Figtitle,'/','_');
             try
                 saveas(gcf,[location '/' Figtitle],formats{j});
             catch ME

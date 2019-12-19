@@ -5,7 +5,7 @@ close all
 load RangePolynomial.mat;
 P;
 
-h1=gcp;
+% h1=gcp;
 % h1=parpool;
 
 addpath('LocateSat')
@@ -68,7 +68,8 @@ ElevationRange=5:5:90;
 
 SatelliteAltitudeRange=500e3; %range of satellite range values.
 
-Tests=[1];
+Tests=[1,2,3,4,5,6,7,8,9,10];
+solver=1; %0 symbolic solver, 1 least squares.
 for TestNum=1:length(Tests)
 T=TR{Tests(TestNum)};
 OutputFolder=OF{Tests(TestNum)};
@@ -130,7 +131,7 @@ if ~isnan(numSamples)
             timeDiffs(i,:)=[TimeDiffs(1,2), TimeDiffs(1,3), TimeDiffs(2,3)];
             
             try
-                [SensitivityLocation, SensitivityTime]=OneAtaTime(GND,SAT,1,1,OutputFolder,1,DebugMode,numSamples,Sphere);
+                [SensitivityLocation, SensitivityTime]=OneAtaTime(GND,SAT,1,1,OutputFolder,1,DebugMode,numSamples,Sphere,solver);
                 %sensitivityLocation is a 2x1 cell and SensitivityTime a 2x1 cell.
                 %The cell entries are Azimuth and Elevation. Inside are mx3 and mx1
                 %slopes.
@@ -161,7 +162,7 @@ if ~isnan(numTests)
         El=Elevations(i);
         Rng=Ranges(i);
         try
-            [means,stdDev,meanError,stdDevError, Data]=MonteCarlo(numTests,Az,El,Rng,T,RL_err,ClkError,DebugMode);
+            [means,stdDev,meanError,stdDevError, Data]=MonteCarlo(numTests,Az,El,Rng,T,RL_err,ClkError,DebugMode,solver);
             AllMeans(i,:)=means;
             AllstdDevs(i,:)=stdDev;
             AllMeanErrors(i,:)=meanError;
@@ -176,9 +177,9 @@ if ~isnan(numTests)
  
     save(['OutputMonteCarlo' OutputFolder])
     
-    for i=1:p
-        plotHistograms(AllRawData{i},[Azimuths(i) Elevations(i)],['Plots/MonteCarloHistograms/' OutputFolder]);
-    end
+%     for i=1:p
+%         plotHistograms(AllRawData{i},[Azimuths(i) Elevations(i)],['Plots/MonteCarloHistograms/' OutputFolder]);
+%     end
     
 %     plotHistograms(AllRawData{i})
 end
