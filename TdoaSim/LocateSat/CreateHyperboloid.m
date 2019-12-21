@@ -30,6 +30,8 @@ else
 %     HyperboloidBody=xb^2/a^2-yb^2/b^2-zb^2/b^2-1;
     %body frame 1 sided hyperboloid
     HyperboloidBody=a*sqrt(1+yb^2/b^2+zb^2/b^2)-xb;
+     %1 sided Cone
+%      HyperboloidBody=a*sqrt(yb^2/b^2+zb^2/b^2)-xb;
 end
 
 

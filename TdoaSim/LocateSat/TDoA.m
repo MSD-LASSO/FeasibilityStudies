@@ -303,7 +303,7 @@ location=location(~isnan(location(:,1)),:);
 
 if isempty(h1)==0
     figure(h1)
-    plot3(location(:,1),location(:,2),location(:,3),'.','MarkerSize',10,'color','black')
+    plot3(location(:,1),location(:,2),location(:,3),'.','MarkerSize',25,'color','white')
     title('System Geometry - Earth Fixed Frame')
     xlabel('x (m)')
     ylabel('y (m)')

@@ -7,6 +7,7 @@
 clearvars
 close all
 AddAllPaths
+solver=0; %1 is least squares, 0 is symbolic. 
 Sphere=referenceSphere('Earth');
 
 R1=[0.751981147060969	-1.355756142252390	0.000000000000000]*180/pi;
@@ -72,9 +73,9 @@ TimeDiffs=timeDiff3toMatrix(GND,SAT(i));
 % TimeDiffs(2,3)=TimeDiffs(2,3)-56e-9;
 receivers=[GND(1).Topocoord; GND(2).Topocoord; GND(3).Topocoord];
 figure(h(i))
-% locations=TDoA(receivers,TimeDiffs*3e8,reference,Sphere,1e-10,[0 50e3 100e3 200e3 500e3 2000e3],1,['CrudeGroundTrackTestElevation: ' Elevation{i}]);
-% locations2=TDoA(receivers,TimeDiffs*3e8,reference,Sphere,1e-10,[50e3 400e3 1200e3],1,['CrudeGroundTrackTestElevation: ' Elevation{i}]);
-locations=TDoAleastSquares(receivers,TimeDiffs*3e8,reference,Sphere,1e-10,[50e3 400e3 1200e3],0,['CrudeGroundTrackTestElevation: ' Elevation{i}]);
+locations=TDoA(receivers,TimeDiffs*3e8,reference,Sphere,1e-10,[0 50e3 100e3 200e3 500e3 2000e3],1,['CrudeGroundTrackTestElevation: ' Elevation{i}],solver);
+% locations=TDoA(receivers,TimeDiffs*3e8,reference,Sphere,1e-10,[50e3 400e3 1200e3],1,['CrudeGroundTrackTestElevation: ' Elevation{i}],solver);
+% locations=TDoAleastSquares(receivers,TimeDiffs*3e8,reference,Sphere,1e-10,[50e3 400e3 1200e3],0,['CrudeGroundTrackTestElevation: ' Elevation{i}]);
 title(['TDoA solution to near ' Elevation{i} ' degree elevation test case'])
 legend('Receiver Locations','Satellite Locations','Receiver Connections','Hab','Hac','Hbc','Planes','L1','L1Bias','L2','L2Bias')
 virtualStation(i,:)=locations(2,:);

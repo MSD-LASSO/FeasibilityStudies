@@ -41,7 +41,7 @@ else
         %body frame 1 sided hyperboloid
         Hyperboloid=a*sqrt(1+yb^2/b^2+zb^2/b^2)-xb;
         %1 sided Cone
-    %     Hyperboloid=a*sqrt(yb^2/b^2+zb^2/b^2)-xb;
+%         Hyperboloid=a*sqrt(yb^2/b^2+zb^2/b^2)-xb;
 
     else
         %if the distance difference is greater, we cap it at the greatest
