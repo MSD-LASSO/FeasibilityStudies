@@ -1,4 +1,4 @@
-function [location, planarPoints, locationError] = TDoA(receiverLocations,distanceDifferences,Reference,Sphere,AcceptanceTolerance,zPlanes,DebugMode,AdditionalTitleStr)
+function [location, planarPoints, locationError] = TDoAleastSquares(receiverLocations,distanceDifferences,Reference,Sphere,AcceptanceTolerance,zPlanes,DebugMode,AdditionalTitleStr)
 %INPUTS: nx3 vector of receiver Locations (x,y,z) pairs, measured from a
         %fixed reference.
         %nxn upper triangular matrix of all combinations of 
@@ -14,47 +14,9 @@ function [location, planarPoints, locationError] = TDoA(receiverLocations,distan
 options = optimoptions('fminunc','Display','none');
 n=size(receiverLocations,1);
 
-if isempty(Reference)==1
-    %then ReceiverLocations are in Earth Centered Frame
-    Reference=[0 0 0];
-end
-
-if nargin<4
-    Sphere=referenceSphere('Earth');
-end
-
-if nargin<5
-    AcceptanceTolerance=1e-5;
-end
-
-if nargin<6
-    zPlanes=0;
-end
-
-if nargin<7
-    DebugMode=1;
-end
-
-if nargin<8
-    AdditionalTitleStr='';
-end
 
 %% Identify all combinations of 3 receiving Stations.
-receiverSet=cell(n*(n-1)*(n-2)/6,1);
-distanceDiffSet=cell(n*(n-1)*(n-2)/6,1);
-%the series looks something like 1,4,10,20,35,56,84 for n=[3 4 5 6 7 8 9].
-m=0;
-for i=1:n
-    for j=i+1:n
-        for k=j+1:n
-            m=m+1;
-            receiverSet{m}=receiverLocations([i j k],:);
-            distanceDiffSet{m}=[0 distanceDifferences(i,j) distanceDifferences(i,k); 0 0 distanceDifferences(j,k); 0 0 0];
-        end
-    end
-end
-
-
+[receiverSet, distanceDiffSet, m]=getReceiverSet(n,receiverLocations,distanceDifferences);
 
 %% for debugging purposes. Plot all intersections.
 if DebugMode==1
@@ -151,87 +113,7 @@ if DebugMode==1
 end
 
 %% Solve for single point or Direction. 
-if m>1
-    %single point. Multiple lines available.
-    
-    %Non-optimal Solution. We test every possible combination of lines.
-    NumPossible=2^m; 
-    locations=zeros(NumPossible,3);
-    Error=zeros(NumPossible,1);
-    IterMatrix=zeros(m,NumPossible);
-    for i=1:NumPossible
-        SolnChoice=cell(m,1);
-        d=zeros(m,1);
-        for j=1:m
-            %For 4 lines. This looks something like:
-            %1  2  3  4  5  6  7  8  9  10 11 12 13 14 15 16 iteration #
-            
-            %1  2  1  2  1  2  1  2  1  2  1  2  1  2  1  2 mod(iter,2)
-            %1  1  2  2  1  1  2  2  1  1  2  2  1  1  2  2 mod(ceil(iter/2),2)
-            %1  1  1  1  2  2  2  2  1  1  1  1  2  2  2  2 mod(ceil(iter/4),2)
-            %1  1  1  1  1  1  1 1   2  2  2  2  2  2  2  2 mod(ceil(iter/8).2)
-            d(j)=mod(ceil(i/2^(j-1)),2)+1; %for testing purposes.
-            SolnChoice{j}=LineFit{j,d(j)};
-        end
-        IterMatrix(:,i)=d;
-        [Pit,err]=LeastSquaresLines(SolnChoice);
-        locations(i,:)=Pit;
-        Error(i)=err;
-    end
-    %get the 2 lowest errors. Those are our solutions. 
-    location=zeros(2,3);
-    [minEr,I]=min(Error);
-    location(1,:)=locations(I,:);
-    Error(I)=inf;
-    [minEr,I]=min(Error);
-    location(2,:)=locations(I,:);
-    
-    Real=true(2,1);
-    for i=1:2
-        if location(i,3)<receiverLocations(1,3)
-            Real(i)=false;
-        end
-    end
-    location=location(Real,:);
-%     location=LeastSquaresLines(LineFit);
-elseif abs(sum(LineFit{1}(2,:)))>0
-    %only 1 line available. Get a direction instead.
-    %instead of finding an "imaginary" ground station by intersecting the
-    %line with Earth...
-%     [azimuth, elevation, GeodeticPointXYZ]=findDirection(LineFit{m},Reference);
-%     [azimuth2, elevation2, GeodeticPointXYZ2]=findDirection(LineFit{m+1},Reference);
-%     location=[azimuth, elevation, 0; GeodeticPointXYZ; azimuth2 elevation2 0; GeodeticPointXYZ2];
-
-    
-    %Let us use the bias term.
-    [azimuth, elevation]=geo2AzEl(LineFit{m}(2,:)+LineFit{m}(1,:),LineFit{m}(1,:),Reference,Sphere);
-    [azimuth2, elevation2]=geo2AzEl(LineFit{m+1}(2,:)+LineFit{m+1}(1,:),LineFit{m+1}(1,:),Reference,Sphere);
-    location=[azimuth, elevation, 0; LineFit{m}(1,:); azimuth2 elevation2 0; LineFit{m+1}(2,:)];
-    
-    %Debugging Purposes.
-%     figure()
-%     expected=[1115209.69912918,-5103843.88452363,4886149.18623531];
-%     [az, el]=geo2AzEl(expected,location(2,:));
-%     expectedAzEl=[az el 0];
-%     plot3([0 500],[0 0],[0 0],'linewidth', 3,'color','black')
-%     plot3([0 0],[0 500],[0 0],'linewidth', 3,'color','black')
-%     plot3([0 0],[0 0],[0 5e5],'linewidth', 3,'color','black')
-%     grid on
-%     legend('Soln1','Correct')
-% 
-%     %ignore 2nd solution...momentarily.
-%     soln1=expectedAzEl-location(1,:);
-%     
-%     PlotLine(LineFit{m}(1,:),expected-LineFit{m}(1,:),range,h1);
-%     
-%     temp=expected-location(2,:);
-%     [azex,elex]=getAzEl([temp(2) temp(1) temp(3)]);
-%     temp=2.285*LineFit{m}(2,:)+LineFit{m}(1,:)-LineFit{m}(1,:);
-%     [az,el]=getAzEl([temp(2) temp(1) temp(3)]);
-    
-else
-    error('Unexpected case')
-end
+location=computeDirection(m,LineFit,Reference,Sphere);
 
 end
 

@@ -1,6 +1,6 @@
 close all
 clearvars
-Folder='../TestData';
+Folder='/TestData';
 [stations,satellites,satellitesGT,GTframe,Time,fileName]=readGroundTrack(Folder);
 
 SE=[0.750	0.698	0.000;

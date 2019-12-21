@@ -34,22 +34,5 @@ end
 [xEast,yNorth,zUp] = ecef2enu(X,Y,Z,lat0,lon0,h0,Sphere);
 [azimuth,elevation]=getAzEl([yNorth xEast zUp]);
 
-% plot3([0 xEast], [0 yNorth],[0,zUp],'linewidth',3);
-% hold on
-
-% [la,ph,radius] = cart2sph(NewReference(1),NewReference(2),NewReference(3));
-% E=[-sin(la) cos(la) 0; -sin(ph)*cos(la) -sin(ph)*sin(la) cos(ph); cos(ph)*cos(la) cos(ph)*sin(la) sin(ph)];
-% R=6378137*[cos(ph)*cos(la); cos(ph)*sin(la); sin(ph)];
-% 
-% 
-% 
-% InTopoFrame=E*(Location-NewReference)';
-% %x and y are switched. Different definition by Orekit. 
-% [azimuth2,elevation2]=getAzEl([InTopoFrame(2) InTopoFrame(1) InTopoFrame(3)]);
-
-% [las,phs,rads]= cart2sph(Location(1),Location(2),Location(3));
-% earth = referenceSphere('Earth');
-% [xNorth,yEast,zDown] = geodetic2ned(phs,las,rads,ph,la,radius,earth,'radians')
-
 end
 

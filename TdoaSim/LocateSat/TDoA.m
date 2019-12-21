@@ -51,19 +51,7 @@ if solver==1
 end
 
 %% Identify all combinations of 3 receiving Stations.
-receiverSet=cell(n*(n-1)*(n-2)/6,1);
-distanceDiffSet=cell(n*(n-1)*(n-2)/6,1);
-%the series looks something like 1,4,10,20,35,56,84 for n=[3 4 5 6 7 8 9].
-m=0;
-for i=1:n
-    for j=i+1:n
-        for k=j+1:n
-            m=m+1;
-            receiverSet{m}=receiverLocations([i j k],:);
-            distanceDiffSet{m}=[0 distanceDifferences(i,j) distanceDifferences(i,k); 0 0 distanceDifferences(j,k); 0 0 0];
-        end
-    end
-end
+[receiverSet, distanceDiffSet, m]=getReceiverSet(n,receiverLocations,distanceDifferences);
 
 %% we construct 3 hyperboloids for each Receiver Set.
 
@@ -120,24 +108,24 @@ for i=1:m
     else
         PlanarPointsLS=[];
     end
-    Locations=solvePlanes(HyperboloidSet{i},zPlanes,SymVars,AcceptanceTolerance,h1,AdditionalTitleStr,PlanarPointsLS);
+    planarPoints=solvePlanes(HyperboloidSet{i},zPlanes,SymVars,AcceptanceTolerance,h1,AdditionalTitleStr,PlanarPointsLS);
     
-    if size(Locations,1)==2 || isempty(Locations)
+    if size(planarPoints,1)==2 || isempty(planarPoints)
         %then we just have 2 points. A single plane. No need to do line
         %fits.
         %Locations can also be empty if the solution did not converge.
-        location=Locations;
+        location=planarPoints;
         return
     else
         %if nothing is returned from Locations, mark as false so we remove
         %this lines later.
-        if sum(sum(Locations))==0
+        if sum(sum(planarPoints))==0
             realLines(i,1)=false;
             realLines(i,2)=false;
         else
             %lineFit
-            LineFit{i,1}=fitLineParametric(Locations(1:2:end,:));
-            LineFit{i,2}=fitLineParametric(Locations(2:2:end,:));
+            LineFit{i,1}=fitLineParametric(planarPoints(1:2:end,:));
+            LineFit{i,2}=fitLineParametric(planarPoints(2:2:end,:));
         end
     end
     fprintf(num2str(i)) %progress report.
@@ -186,87 +174,7 @@ if DebugMode==1
 end
 
 %% Solve for single point or Direction. 
-if m>1
-    %single point. Multiple lines available.
-    
-    %Non-optimal Solution. We test every possible combination of lines.
-    NumPossible=2^m; 
-    locations=zeros(NumPossible,3);
-    Error=zeros(NumPossible,1);
-    IterMatrix=zeros(m,NumPossible);
-    for i=1:NumPossible
-        SolnChoice=cell(m,1);
-        d=zeros(m,1);
-        for j=1:m
-            %For 4 lines. This looks something like:
-            %1  2  3  4  5  6  7  8  9  10 11 12 13 14 15 16 iteration #
-            
-            %1  2  1  2  1  2  1  2  1  2  1  2  1  2  1  2 mod(iter,2)
-            %1  1  2  2  1  1  2  2  1  1  2  2  1  1  2  2 mod(ceil(iter/2),2)
-            %1  1  1  1  2  2  2  2  1  1  1  1  2  2  2  2 mod(ceil(iter/4),2)
-            %1  1  1  1  1  1  1 1   2  2  2  2  2  2  2  2 mod(ceil(iter/8).2)
-            d(j)=mod(ceil(i/2^(j-1)),2)+1; %for testing purposes.
-            SolnChoice{j}=LineFit{j,d(j)};
-        end
-        IterMatrix(:,i)=d;
-        [Pit,err]=LeastSquaresLines(SolnChoice);
-        locations(i,:)=Pit;
-        Error(i)=err;
-    end
-    %get the 2 lowest errors. Those are our solutions. 
-    location=zeros(2,3);
-    [minEr,I]=min(Error);
-    location(1,:)=locations(I,:);
-    Error(I)=inf;
-    [minEr,I]=min(Error);
-    location(2,:)=locations(I,:);
-    
-    Real=true(2,1);
-    for i=1:2
-        if location(i,3)<receiverLocations(1,3)
-            Real(i)=false;
-        end
-    end
-    location=location(Real,:);
-%     location=LeastSquaresLines(LineFit);
-elseif abs(sum(LineFit{1}(2,:)))>0
-    %only 1 line available. Get a direction instead.
-    %instead of finding an "imaginary" ground station by intersecting the
-    %line with Earth...
-%     [azimuth, elevation, GeodeticPointXYZ]=findDirection(LineFit{m},Reference);
-%     [azimuth2, elevation2, GeodeticPointXYZ2]=findDirection(LineFit{m+1},Reference);
-%     location=[azimuth, elevation, 0; GeodeticPointXYZ; azimuth2 elevation2 0; GeodeticPointXYZ2];
-
-    
-    %Let us use the bias term.
-    [azimuth, elevation]=geo2AzEl(LineFit{m}(2,:)+LineFit{m}(1,:),LineFit{m}(1,:),Reference,Sphere);
-    [azimuth2, elevation2]=geo2AzEl(LineFit{m+1}(2,:)+LineFit{m+1}(1,:),LineFit{m+1}(1,:),Reference,Sphere);
-    location=[azimuth, elevation, 0; LineFit{m}(1,:); azimuth2 elevation2 0; LineFit{m+1}(2,:)];
-    
-    %Debugging Purposes.
-%     figure()
-%     expected=[1115209.69912918,-5103843.88452363,4886149.18623531];
-%     [az, el]=geo2AzEl(expected,location(2,:));
-%     expectedAzEl=[az el 0];
-%     plot3([0 500],[0 0],[0 0],'linewidth', 3,'color','black')
-%     plot3([0 0],[0 500],[0 0],'linewidth', 3,'color','black')
-%     plot3([0 0],[0 0],[0 5e5],'linewidth', 3,'color','black')
-%     grid on
-%     legend('Soln1','Correct')
-% 
-%     %ignore 2nd solution...momentarily.
-%     soln1=expectedAzEl-location(1,:);
-%     
-%     PlotLine(LineFit{m}(1,:),expected-LineFit{m}(1,:),range,h1);
-%     
-%     temp=expected-location(2,:);
-%     [azex,elex]=getAzEl([temp(2) temp(1) temp(3)]);
-%     temp=2.285*LineFit{m}(2,:)+LineFit{m}(1,:)-LineFit{m}(1,:);
-%     [az,el]=getAzEl([temp(2) temp(1) temp(3)]);
-    
-else
-    error('Unexpected case')
-end
+location=computeDirection(m,LineFit,Reference,Sphere);
 
 end
 

@@ -5,6 +5,7 @@ function OneAtaTime4(GND,SAT,time,location,folderName)
 %when it calls TDoA. 
 %It then creates plots of perturbation amount vs. absolute error.
 
+%NOTE: will likely not function. NOT UPDATED. 
 expected=SAT.coord;
 
 m=length(GND);

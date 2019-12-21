@@ -44,14 +44,4 @@ for i=1:2
     Solutions{i}=Solutions{i}(RemoveList);
 end
 
-%% plot feature, not implemented.
-% if nargin==3
-%     if Plot==1
-%         %currently not implemented correctly.
-%         %use fimplicit to plot Surf
-%         %use plot(SymbolicEqns.x,SymbolicEqns.y,...) to plot the solution. 
-%         PlotIntersect(Surf,SymbolicEqns)
-%     end
-% end
-
 end

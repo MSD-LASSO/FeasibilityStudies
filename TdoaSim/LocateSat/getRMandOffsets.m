@@ -21,7 +21,7 @@ Offset=R1+unitVector*distance/2;
 
 %The body frame x axis is aligned with distanceVector.
 %get azimuth and elevation.
-[az el]=getAzEl(distanceVector);
+[az, el]=getAzEl(distanceVector);
 
 RM=getAzElRotationMatrix(az,el);
 

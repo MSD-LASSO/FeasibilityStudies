@@ -1,3 +1,6 @@
+This work is licensed under a Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License.
+https://creativecommons.org/licenses/by-nc-sa/4.0/
+
 This folder contains a program to run a 3 station TDoA simulation, which will be used to easily see the effects that different parameters (e.g., ground station location, ground station location error, clock synchronization error, satellite position) will have on our TDoA calculations. We will use a spherical earth for the calculations.
 
 We currently have three programs.
