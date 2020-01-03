@@ -119,9 +119,10 @@ else
         'ValidationFrequency',Freq, ...
         'Shuffle','every-epoch',...
         'Plots','training-progress',...
-        'CheckpointPath','C:\Users\awian\Desktop\MachineIntelligence\Epochs',... 
         'ExecutionEnvironment','gpu');
 end
+%         'CheckpointPath','C:\Users\awian\Desktop\MachineIntelligence\Epochs',... 
+
 % 
 % 
 % 'GradientDecayFactor',0.9, %default is 0.9
@@ -130,7 +131,7 @@ end
    
 
 % net = trainNetwork(GTtable,layers,options);
-net=trainNetwork(GTtable(1,:),lgraph_2,options); 
+net=trainNetwork(GTtable,lgraph_2,options); 
 
 % ypredict=predict(net,Valtable(:,1));
 % error=ypredict-GT(1:i,:,zz);

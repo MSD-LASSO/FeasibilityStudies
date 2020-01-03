@@ -16,8 +16,8 @@ OF{7}='InnGCCBrockport';
 OF{8}='MeesGCCWilliamson';
 OF{9}='MeesWebsterGCC';
 OF{10}='MeesInnWilliamson';
-InputFolder='MonteCarloResults';
-PlotOutputFolder='MonteCarlo10TrianglesLeastSquares';
+InputFolder='MonteCarloResults/Time Difference Comparison';
+PlotOutputFolder='MonteCarlo10TrianglesLeastSquaresTimeDifference';
 
 numRows=18; %numRows=6;
 numCols=36; %numCols=9;
@@ -31,9 +31,9 @@ UncertaintyCriteria=5; %index of Vals to use.
 % RL_err;
 % SensitivityTest;
 
-TestsToRun=[1 2 3 4 5 6 7 8 9 10];
-% TestsToRun=[8];
-plotIntermediates=1;
+% TestsToRun=[1 2 3 4 5 6 7 8 9 10];
+TestsToRun=[8];
+plotIntermediates=0;
 
 n=length(TestsToRun);
 % TDoACoverage=zeros(n,1);

@@ -43,10 +43,13 @@ if nargin<9
     solver=0;
 end
 
-if solver==1
+if solver~=0
     %then we solve using least Squares
     %locationError is not yet implemented in either function. 
-    location = TDoAleastSquares(receiverLocations,distanceDifferences,Reference,Sphere,AcceptanceTolerance,zPlanes,DebugMode,AdditionalTitleStr);
+    % solver=1 minimizes distance to each hyperbola
+    % solver=2 minimizes difference between measured and estimated time
+    % difference.
+    location = TDoAleastSquares(receiverLocations,distanceDifferences,Reference,Sphere,AcceptanceTolerance,zPlanes,DebugMode,AdditionalTitleStr,solver);
     return;
 end
 
@@ -104,11 +107,12 @@ for i=1:m
     end
     
     if DebugMode==1
-        [~,PlanarPointsLS]=TDoAleastSquares(receiverSet{i},distanceDiffSet{i},Reference,Sphere,AcceptanceTolerance,zPlanes,DebugMode,AdditionalTitleStr);
+        [~,PlanarPointsLS]=TDoAleastSquares(receiverSet{i},distanceDiffSet{i},Reference,Sphere,AcceptanceTolerance,zPlanes,DebugMode,AdditionalTitleStr,1);
+        [~,PlanarPointsTD]=TDoAleastSquares(receiverSet{i},distanceDiffSet{i},Reference,Sphere,AcceptanceTolerance,zPlanes,DebugMode,AdditionalTitleStr,2);
     else
         PlanarPointsLS=[];
     end
-    planarPoints=solvePlanes(HyperboloidSet{i},zPlanes,SymVars,AcceptanceTolerance,h1,AdditionalTitleStr,PlanarPointsLS);
+    planarPoints=solvePlanes(HyperboloidSet{i},zPlanes,SymVars,AcceptanceTolerance,h1,AdditionalTitleStr,PlanarPointsLS,PlanarPointsTD);
     
     if size(planarPoints,1)==2 || isempty(planarPoints)
         %then we just have 2 points. A single plane. No need to do line
@@ -178,7 +182,7 @@ location=computeDirection(m,LineFit,Reference,Sphere);
 
 end
 
-function location=solvePlanes(HyperboloidSet,zPlanes,SymVars,AcceptanceTolerance,h1,AdditionalTitleStr,planarPoints)
+function location=solvePlanes(HyperboloidSet,zPlanes,SymVars,AcceptanceTolerance,h1,AdditionalTitleStr,planarPointsLS,planarPointsTD)
 %HyperboloidSet should be 3 Hyperboloids
 %Zplanes a 1D vector of z values to evaluate at. 
 %h1 is the figure handler.
@@ -278,9 +282,10 @@ for u=1:length(zPlanes)
 %         figure()
 %         fimplicit(Hyperboloidtemp,[-6e7 6e7 -6e7 6e7])
 %         hold on
-        plot(planarPoints(2*u,1),planarPoints(2*u,2),'o','linewidth',3);
+        plot(planarPointsLS(2*u,1),planarPointsLS(2*u,2),'o','linewidth',3);
+        plot(planarPointsTD(2*u,1),planarPointsTD(2*u,2),'d','linewidth',3);
         plot(temp(1,1),temp(1,2),'s','linewidth',3);
-        legend('All Intersections','R1R2','R1R3','R2R3','Least Squares Soln','Symbolic Solver Soln','location','northeastoutside')
+        legend('All Intersections','R1R2','R1R3','R2R3','Minimize Distance LS','Minimize Time Difference LS','Symbolic Solver Soln','location','northeastoutside')
         hi=1;
         
     end

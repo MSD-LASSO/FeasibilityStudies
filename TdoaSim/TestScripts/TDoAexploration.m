@@ -104,6 +104,7 @@ for i=start:p
 %         fprintf('\n')
 %     end
 end
+GraphSaver({'png','fig'},'../Plots/TDoAexploration',1);
 
 save(['OutputMonteCarlo' OutputFolder])
 

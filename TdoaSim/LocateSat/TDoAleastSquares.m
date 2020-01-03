@@ -1,4 +1,4 @@
-function [location, planarPoints, locationError] = TDoAleastSquares(receiverLocations,distanceDifferences,Reference,Sphere,AcceptanceTolerance,zPlanes,DebugMode,AdditionalTitleStr)
+function [location, planarPoints, locationError] = TDoAleastSquares(receiverLocations,distanceDifferences,Reference,Sphere,AcceptanceTolerance,zPlanes,DebugMode,AdditionalTitleStr,costFunction)
 %INPUTS: nx3 vector of receiver Locations (x,y,z) pairs, measured from a
         %fixed reference.
         %nxn upper triangular matrix of all combinations of 
@@ -43,7 +43,14 @@ for i=1:m
     x0=[0;0];
     planarPoints=zeros(length(zPlanes)*2,3);
     for z=1:length(zPlanes)
-        HyperCost=@(x) (HyperCostFunc(x,zPlanes(z),receiverSet{m},distanceDiffSet{m}));
+        if costFunction==1
+            HyperCost=@(x) (HyperCostFunc(x,zPlanes(z),receiverSet{m},distanceDiffSet{m}));
+        elseif costFunction==2
+            HyperCost=@(x) (TimeDifferenceComparison(x,zPlanes(z),receiverSet{m},distanceDiffSet{m}));
+        else
+            error('Unrecognized Cost Function')
+        end
+        
         temp=fminunc(HyperCost,x0,options);
         temp=[temp' zPlanes(z)];
         planarPoints(2*z-1:2*z,:)=[temp; temp];
@@ -154,5 +161,38 @@ function OutCost=HyperCostFunc(x,zPlane,RL,DD)
 
     OutCost=sqrt(HyperboloidError(1)^2+HyperboloidError(2)^2+HyperboloidError(3)^2);
 
+
+end
+
+function OutCost=TimeDifferenceComparison(x,zPlane,RL,DD)
+%This is an alternative cost function. It computes what the time
+%differences would be if the receiver was at the guessed point, (x,y,z). It
+%compares these to the the measured time differences.
+
+EmitterLocation=[x' zPlane];
+
+m = size(RL ,2);
+% k = factorial(m)/(factorial(m-2)*2);
+EstDistanceDifferences = zeros(m,m);
+SquaredError=zeros(m,m); %represents the error in estimated and actual time difference.
+
+for j = 1:m
+    for k = j+1:m
+        temp_dist1 = gnd2sat(RL(j,:), RL(j,:)*0, EmitterLocation, EmitterLocation*0);
+        temp_dist2 = gnd2sat(RL(k,:), RL(k,:)*0, EmitterLocation, EmitterLocation*0);
+        EstDistanceDifferences(j,k)=temp_dist1-temp_dist2;
+        %empirically this results in a slightly worse solution. 
+%         maxDD=norm(RL(j,:)-RL(k,:)); 
+%         if abs(DD(j,k))>maxDD
+%             %it is physically not possible to have a distance difference
+%             %greater than the the distance between the receivers. We can
+%             %safetly set any greater distance difference to the max. 
+%             DD(j,k)=maxDD;
+%         end
+        SquaredError(j,k)=(DD(j,k)-EstDistanceDifferences(j,k))^2;
+    end
+end
+
+OutCost=sqrt(sum(sum(SquaredError)));
 
 end

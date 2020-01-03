@@ -6,7 +6,7 @@ addpath('../TimeDiff')
 addpath('..');
 
 %% Inputs
-numPrimary=25000;
+numPrimary=200;
 numTests=[numPrimary numPrimary/10]; %number of tests done for both NO error and WITH error. so total number is twice this.
 numVal=numTests*0.25;
 
@@ -22,7 +22,7 @@ receivers=[GND(1).Topocoord; GND(2).Topocoord; GND(3).Topocoord];
 inputFolderWithBarcode='C:\Users\awian\Desktop\MachineIntelligence\netsBC';
 inputFolderWithoutBarcode='C:\Users\awian\Desktop\MachineIntelligence\netsNBC';
 
-outputFolder='Test13';
+outputFolder='Test11';
 
 AzimuthRange=[0 360]; %ALWAYS wrt to the first receiver. 
 ElevationRange=[15 85];
@@ -39,21 +39,21 @@ if exist([outputFolder '.mat'],'file')==0
 end
 
 %% Train
-RelativePath='C:\Users\awian\Desktop\MachineIntelligence\100kImages';
-% RelativePath='trainedNetworks';
+% RelativePath='C:\Users\awian\Desktop\MachineIntelligence\100kImages';
+RelativePath='trainedNetworks';
 mkdir([RelativePath '\netsBC'])
 mkdir([RelativePath '\netsNBC'])
 mkdir([RelativePath '\plots'])
 
 Error=cell(6,1);
-try 
+% try 
     ImageFolder='400'; zz=1; names=0; netPath=[RelativePath '\Resnet101Modified.mat']; textT='netz400';
     CNNtrain(ImageFolder,zz,names,netPath,textT,outputFolder,RelativePath);
 savePlots(RelativePath);
-catch ME
-    Error{1}=ME;
-    disp('400 Failed')
-end
+% catch ME
+%     Error{1}=ME;
+%     disp('400 Failed')
+% end
 
 % try
 % ImageFolder='400NBC'; zz=1; names=1; netPath=[RelativePath '\Resnet101Modified.mat']; textT='netz400';
