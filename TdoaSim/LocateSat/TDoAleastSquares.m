@@ -1,15 +1,14 @@
 function [location, planarPoints, locationError] = TDoAleastSquares(receiverLocations,distanceDifferences,Reference,Sphere,AcceptanceTolerance,zPlanes,DebugMode,AdditionalTitleStr,costFunction)
-%INPUTS: nx3 vector of receiver Locations (x,y,z) pairs, measured from a
-        %fixed reference.
-        %nxn upper triangular matrix of all combinations of 
-        %distanceDifferences. The diagonals and lower triangle all have 0's.
-        %for 3 station it looks something like
-        % 0 d12 d13
-        % 0  0  d23
-        % 0  0   0
-        %zPlanes is a vector of all planes to solve for. If left blank, the
-        %code will only solve for the plane z=0. 
-%OUTPUTS: Location of the transmitter.
+%Author: Anthony Iannuzzi, P20151 Team LASSO, email: awi7573@rit.edu
+
+%For documentation on I/O, see TDoA.m. Its recommended you call TDoA
+%instead of this function. TDoA will call this function with proper inputs
+%to it.
+
+%Last Updated: 1/7/2020
+
+%Missing Features: not returning location_error / confidence of solution. 
+
 
 options = optimoptions('fminunc','Display','none');
 n=size(receiverLocations,1);
@@ -95,28 +94,6 @@ if DebugMode==1
         end
     end
     
-    
-%     figure()
-%     x=1114097.00526875;
-%     % [1114097.00526875,-5098751.55457051,4881274.05987576]
-%     tCenter=(x-LineFit{1}(1,1))/LineFit{1}(2,1);
-%     x=zeros(m,2);
-%     y=zeros(m,2);
-%     z=zeros(m,2);
-%     for i=1:m
-%         for u=1:1
-%             Line=LineFit{i,u};
-%             syms t
-%             %     fplot3(Line(1,1)+t*Line(2,1),Line(1,2)+t*Line(2,2),Line(1,3)+t*Line(2,3), [0 2.5]);
-%             t=tCenter;
-%             x(i,u)=Line(1,1)+t*Line(2,1);
-%             y(i,u)=Line(1,2)+t*Line(2,2);
-%             z(i,u)=Line(1,3)+t*Line(2,3);
-%             plot3(x(i,u),y(i,u),z(i,u),'.','MarkerSize',20);
-%             hold on
-%         end
-%     end
-%     title(['Lines at Z = 4881274.05987576 - ' AdditionalTitleStr]);
 end
 
 %% Solve for single point or Direction. 

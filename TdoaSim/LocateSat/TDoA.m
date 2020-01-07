@@ -1,16 +1,50 @@
 function [location, locationError] = TDoA(receiverLocations,distanceDifferences,Reference,Sphere,AcceptanceTolerance,zPlanes,DebugMode,AdditionalTitleStr,solver)
-%INPUTS: nx3 vector of receiver Locations (x,y,z) pairs, measured from a
-        %fixed reference.
+%Author: Anthony Iannuzzi, P20151 Team LASSO, email: awi7573@rit.edu
+%INPUTS: nx3 vector of receiver Locations (x,y,z) pairs, all measured from 
+            %a fixed reference.
         %nxn upper triangular matrix of all combinations of 
-        %distanceDifferences. The diagonals and lower triangle all have 0's.
-        %for 3 station it looks something like
-        % 0 d12 d13
-        % 0  0  d23
-        % 0  0   0
-        %zPlanes is a vector of all planes to solve for. If left blank, the
-        %code will only solve for the plane z=0. 
-%OUTPUTS: Location of the transmitter.
+            %distanceDifferences. The diagonals and lower triangle all have 0's.
+            %for 3 station it looks something like
+            % 0 d12 d13
+            % 0  0  d23
+            % 0  0   0
+        %Reference is a (x,y,z) point representing the origin of the
+            %reference coordinate system. If left empty, code assumes an Earth
+            %Centered Frame and sets Reference to (0,0,0).
+        %Sphere is the shape the code uses for Earth. 
+            %It is a referenceSphere Matlab Object, usually specified as a
+            %Sphere or a OneAxisEllipsoid, like WGS84.
+            %Default is a 6731km sphere.
+        %AcceptanceTolerance is currently unused.
+            %It can be used as a threshold when deciding point clusters. 
+            %Default is 1e-5.
+        %zPlanes is a vector of all planes to solve on. If left blank, the
+            %code will only solve for the plane z=0.
+        %DebugMode dictates what the code outputs.
+            % <1 returns the location only.
+            % =1 returns the location along with intermediate plots of the
+            %hyperbolas on each plane intersecting. Also uses ALL solvers
+            %if solver = 0. 
+            %Default is 0.
+        %AdditionalTitleStr is a char array that is added to all plots.
+            %Only applicable if DebugMode=1. 
+            %Default is empty.
+        %solver is an integer that dictates solver type.
+            % =0 use the symbolic solver
+            % =1 use a least squares solver with minimum distance optimizer
+            % =2 use least squares minimizing the time difference error.
+            
+            % 0 is most accurate, 1 is slightly less accurate, but faster,
+            % 2 is the simpliest.
+            %Default is 0.
+%OUTPUTS: Location of the transmitter in form (x,y,z)
+            % It will return more than 1 result if solution is ambigious
+            % and solver is set to 0. 
+            %Least squares will always return one answer.
+            
+%Last Updated: 1/7/2020
 
+%Missing Features: not returning location_error / confidence of solution. 
 
 n=size(receiverLocations,1);
 
@@ -230,21 +264,9 @@ for u=1:length(zPlanes)
         %2D case. z already taken care of. 
         Hyperboloidtemp=HyperboloidSet;
     end
-    
-    
-    %% Experimental -- Least Squares
-%     HyperCostFunc=sqrt((Hyperboloidtemp(1)-Hyperboloidtemp(2))^2+(Hyperboloidtemp(3)-Hyperboloidtemp(2))^2+(Hyperboloidtemp(1)-Hyperboloidtemp(3))^2);
-%     HyperCost=@(x) (double(subs(HyperCostFunc,SymVars(1:2),x)));
-%     XY0=[0,0];
-%     tic
-%     XY=fminsearch(HyperCost,XY0);
-%     toc
-%     tic
-%     XY2=fminunc(HyperCost,XY0);
-%     toc
+   
     %% Back to normal solution process
     
-%     tic
     Intersect2HypersX=cell(p*(p-1)/2,1);
     Intersect2HypersY=cell(p*(p-1)/2,1);
     %intersect the ith hyperboloid with every hyperboloid after it.
@@ -263,12 +285,6 @@ for u=1:length(zPlanes)
     
     [temp,AllPts]=findSolnsFromIntersects(Intersect2HypersX,Intersect2HypersY,zPlanes(u),3,AcceptanceTolerance);
     
-%     toc
-    %debugging around RIT. 
-    %1e6.
-%     AllPts=[2609336.27447559,-4465985.03031150;3123096.09255623,-5678570.99208825;5691569.43165977,-9791094.78373877;16652500.7721629,-24649300.3029585]
-% AllPts=[1647440.63595431,-4517237.67132255;1855079.49953290,-5007104.42806191;2892441.75243371,-6668082.13052221;7319973.30647300,-12669995.2141345];   
-
 %Debugging Purposes
     if Debug==1
         h2=figure();
@@ -325,13 +341,7 @@ end
 
 
 function [location,potentialPoints]=findSolnsFromIntersects(Intersect2HypersX, Intersect2HypersY,z,pointThreshold,AcceptanceTolerance)
-%for Points, the strategy is as follows:
-        %1. sort the points and find the points closest together via a finite
-        %difference. If the finite difference is less than some threshold,
-        %call that the same point.
-        %2. figure out how many solutions there are and split up the "same"
-        %points into different bins based on the number of solutions
-        %3. Average the "same" points together.
+
         
         %% remove non-real intersections.
         potentialPoints=double([vpa(Intersect2HypersX) vpa(Intersect2HypersY)]);
@@ -345,21 +355,27 @@ function [location,potentialPoints]=findSolnsFromIntersects(Intersect2HypersX, I
         end
         potentialPoints=potentialPoints(realPoints,:);
         
+        %if we don't have 3 points, then we don't have an enclosed area,
+        %symbolic solver could not find a solution.
         if size(potentialPoints,1)<3
             location=nan(1,3);
             return
         end
-        
-%         if size(potentialPoints,1)<=3
-            location=mean(potentialPoints);
-            location(:,3)=z;
-%             return
-%         end
+
+        location=mean(potentialPoints);
+        location(:,3)=z;
 
         
         
         
-        
+        %for Points, the strategy is as follows:
+        %1. sort the points and find the points closest together via a finite
+        %difference. If the finite difference is less than some threshold,
+        %call that the same point.
+        %2. figure out how many solutions there are and split up the "same"
+        %points into different bins based on the number of solutions
+        %3. Average the "same" points together.
+        %Removed because it doesn't always work. Replaced with above code.
 %         try
 %             %% Solve. 
 %             %Sort by X.

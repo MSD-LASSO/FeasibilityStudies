@@ -1,4 +1,6 @@
-%This script will evaluate sensitivity over a dynamics range.
+%This script will evaluate sensitivity or Monte Carlo over a dynamic range.
+%WARNING: running Monte Carlo on 1 test takes 9 hours on 6 cores for the
+%symbolic solver.
 clearvars
 close all
 
@@ -40,9 +42,12 @@ RL_err=ones(3,3)*9; %9m location error.
 %% Invariants
 ClkError=ones(3,1)*TimeSyncErrFar; %3x1
 Sphere=wgs84Ellipsoid;
-numSamples=nan; %for OneAtATime
-numTests=30; %for MonteCarlo. 
-DebugMode=-1;
+%numSamples to estimate the partial derivative. Min is 1.
+numSamples=nan; %for OneAtATime. Set to nan to skip.
+%numTests to run before running statistics. Min is 15-30 by Central Limit
+%Theorem. Recommended: 1000. This is not practical for the symbolic solver.
+numTests=30; %for MonteCarlo. Set to nan to skip.
+DebugMode=-1; %tells OneAtATime to not output anything. 
 
 ReceiverError=[zeros(3,3) ClkError];
 
@@ -62,7 +67,7 @@ ElevationRange=5:5:90;
 % AzimuthRange=45;
 % ElevationRange=45;
 
-%this set of inputs causes an error!
+%this set of inputs causes an error with sensitivity.
 % AzimuthRange=0:2.5:359; ElevationRange=1:1:4;
 
 

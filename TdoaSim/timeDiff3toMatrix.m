@@ -1,4 +1,7 @@
 function [TimeDiffs, TimeDiffErr]=timeDiff3toMatrix(GND,SAT)
+%Translator function. timeDiff returns a 3D matrix of the time difference.
+%This function, used for 1 satellite and 3 receivers, reshapes the data
+%into a 2D matrix as dictated by TDoA.m.
 
     timeDifferences = timeDiff(GND, SAT);
     A_B=timeDifferences(1,1,1);

@@ -1,4 +1,5 @@
-%This script reads output files from a sensivity analysis and plots it.
+%This script reads output files from a monte carlo analysis and plots it.
+%Variables to change:
 clearvars
 close all
 
@@ -16,6 +17,8 @@ OF{7}='InnGCCBrockport';
 OF{8}='MeesGCCWilliamson';
 OF{9}='MeesWebsterGCC';
 OF{10}='MeesInnWilliamson';
+
+%% Inputs
 InputFolder='MonteCarloResults/Time Difference Comparison';
 PlotOutputFolder='MonteCarlo10TrianglesLeastSquaresTimeDifference';
 
@@ -35,6 +38,7 @@ UncertaintyCriteria=5; %index of Vals to use.
 TestsToRun=[8];
 plotIntermediates=0;
 
+%% Compute Plots.
 n=length(TestsToRun);
 % TDoACoverage=zeros(n,1);
 UncertaintyCoverage=zeros(n,4);
