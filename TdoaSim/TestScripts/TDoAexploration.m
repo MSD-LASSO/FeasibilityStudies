@@ -1,4 +1,7 @@
-%This script explores choosing points in the triangle formed by TDoA
+%This script explores choosing points in the triangle formed by TDoA.
+%this script has similar format to sensitivityhAnalysisNet.m, but only uses
+%Monte Carlo. It uses a debugmode=1 to save intermediate plots that show
+%TDoA solutions using all solvers. 
 clearvars
 close all
 
