@@ -12,22 +12,45 @@ file_name_5 = 'noisy_delay_data_new.wav';
 [~, Fs, N1] = readIQ(file_name_1);
 Time = N1/Fs;
 SNR = 0.1;
-BW = 50e3;
-make_IQ(BW, Fs, SNR, Time, file_name_2);
+BW = 100e3;
+make_IQ(BW, Fs, Time, file_name_2);
 plot_fft_IQ(file_name_2);
 
-num_success = 0;
-success = zeros(2, 120);
+% SNR_try = 10;
+%     
+% BW_try = 1e3;
+% make_IQ(BW_try, Fs, SNR, Time, file_name_2)
+% 
+% add_noise_IQ(file_name_2, SNR_try, file_name_3);
+% plot_fft_IQ(file_name_3);
+% add_noise_IQ(file_name_2, SNR_try, file_name_4);
+% plot_fft_IQ(file_name_4);
+% delay_IQ(file_name_4, input_delay, file_name_5);
+% plot_fft_IQ(file_name_5);
+% 
+% [delay, ~, ~, ~, ~] = cmplx_xcov_IQ(file_name_3, file_name_5, 0);
 
-for k = 1:120
-    SNR_try = k/8;
+
+
+
+
+
+
+num_success = 0;
+success = zeros(2, 20);
+
+for k = 1:20
+    SNR_try = 10;
+    
+    BW_try = 5e3*k;
+    make_IQ(BW_try, Fs, SNR, Time, file_name_2)
     
     add_noise_IQ(file_name_2, SNR_try, file_name_3);
-%     plot_fft_IQ(file_name_3);
+    plot_fft_IQ(file_name_3);
     add_noise_IQ(file_name_2, SNR_try, file_name_4);
-%     plot_fft_IQ(file_name_4);
+    plot_fft_IQ(file_name_4);
     delay_IQ(file_name_4, input_delay, file_name_5);
-% plot_fft_IQ(file_name_5);
+    plot_fft_IQ(file_name_5);
 
     [delay, ~, ~, ~, ~] = cmplx_xcov_IQ(file_name_3, file_name_5, 0);
 
@@ -38,7 +61,7 @@ for k = 1:120
         success(1, k) = abs(delay - input_delay);
     end
     
-    success(2, k) = SNR_try;
+    success(2, k) = BW_try;
     close all
 end
 
