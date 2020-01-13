@@ -1,8 +1,14 @@
 %tester
 clearvars
 close all
+
+input_delay = -27;
+
 file_name_1 = 'test_data_one.wav';
 file_name_2 = 'new_data.wav';
+file_name_3 = 'noisy1_new_data.wav';
+file_name_4 = 'noisy2_new_data.wav';
+file_name_5 = 'noisy_delay_data_new.wav';
 [~, Fs, N1] = readIQ(file_name_1);
 Time = N1/Fs;
 SNR = 0.1;
@@ -10,8 +16,31 @@ BW = 50e3;
 make_IQ(BW, Fs, SNR, Time, file_name_2);
 plot_fft_IQ(file_name_2);
 
+num_success = 0;
+success = zeros(2, 120);
 
+for k = 1:120
+    SNR_try = k/8;
+    
+    add_noise_IQ(file_name_2, SNR_try, file_name_3);
+%     plot_fft_IQ(file_name_3);
+    add_noise_IQ(file_name_2, SNR_try, file_name_4);
+%     plot_fft_IQ(file_name_4);
+    delay_IQ(file_name_4, input_delay, file_name_5);
+% plot_fft_IQ(file_name_5);
 
+    [delay, ~, ~, ~, ~] = cmplx_xcov_IQ(file_name_3, file_name_5, 0);
+
+    if delay == input_delay
+        num_success = num_success + 1;
+        success(1, k) = 0;
+    else
+        success(1, k) = abs(delay - input_delay);
+    end
+    
+    success(2, k) = SNR_try;
+    close all
+end
 
 
 
