@@ -1,4 +1,4 @@
-function [location, locationError] = TDoA(receiverLocations,distanceDifferences,Reference,Sphere,AcceptanceTolerance,zPlanes,DebugMode,AdditionalTitleStr,solver)
+function [location] = TDoA(receiverLocations,distanceDifferences,Reference,Sphere,AcceptanceTolerance,zPlanes,DebugMode,AdditionalTitleStr,solver)
 %Author: Anthony Iannuzzi, P20151 Team LASSO, email: awi7573@rit.edu
 %INPUTS: nx3 vector of receiver Locations (x,y,z) pairs, all measured from 
             %a fixed reference.
@@ -42,9 +42,7 @@ function [location, locationError] = TDoA(receiverLocations,distanceDifferences,
             % and solver is set to 0. 
             %Least squares will always return one answer.
             
-%Last Updated: 1/7/2020
-
-%Missing Features: not returning location_error / confidence of solution. 
+%Last Updated: 1/13/2020
 
 n=size(receiverLocations,1);
 

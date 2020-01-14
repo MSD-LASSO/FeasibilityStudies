@@ -1,13 +1,12 @@
-function [location, planarPoints, locationError] = TDoAleastSquares(receiverLocations,distanceDifferences,Reference,Sphere,AcceptanceTolerance,zPlanes,DebugMode,AdditionalTitleStr,costFunction)
+function [location, planarPoints] = TDoAleastSquares(receiverLocations,distanceDifferences,Reference,Sphere,AcceptanceTolerance,zPlanes,DebugMode,AdditionalTitleStr,costFunction)
 %Author: Anthony Iannuzzi, P20151 Team LASSO, email: awi7573@rit.edu
 
 %For documentation on I/O, see TDoA.m. Its recommended you call TDoA
 %instead of this function. TDoA will call this function with proper inputs
 %to it.
 
-%Last Updated: 1/7/2020
+%Last Updated: 1/13/2020
 
-%Missing Features: not returning location_error / confidence of solution. 
 
 
 options = optimoptions('fminunc','Display','none');

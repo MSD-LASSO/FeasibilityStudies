@@ -33,7 +33,7 @@ TDoAsolution=cell(numTests,1);
 EstAzEl=zeros(numTests,2);
 Errors=zeros(numTests,2);
 
-% [actualAzEl,err,locations]=doTest(RT,TimeDiff*3e8,Reference,Sphere,zPlanes,DebugMode,1,Az,El,expected);
+[actualAzEl,err,locations]=doTest(RT,TimeDiff*3e8,Reference,Sphere,zPlanes,DebugMode,1,Az,El,expected,solver);
 % DDs(1,:)=[TimeDiff(1,2), TimeDiff(1,3), TimeDiff(2,3)]*3e8;
 % Rlocations{1}=RT;
 % TDoAsolution{1}=locations;
