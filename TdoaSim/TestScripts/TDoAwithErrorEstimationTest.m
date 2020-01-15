@@ -102,12 +102,12 @@ for i=start:p
     Az=Azimuths(i);
     El=Elevations(i);
     Rng=Ranges(i);
-%         [means,stdDev,meanError,stdDevError, Data]=MonteCarlo(numTests,Az,El,Rng,T,RL_err,ClkError,DebugMode,solver);
-%         AllMeans(i,:)=means;
-%         AllstdDevs(i,:)=stdDev;
-%         AllMeanErrors(i,:)=meanError;
-%         AllstdDevError(i,:)=stdDevError;
-%         AllRawData{i}=Data;
+        [means,stdDev,meanError,stdDevError, Data]=MonteCarlo(numTests,Az,El,Rng,T,RL_err,ClkError,DebugMode,solver);
+        AllMeans(i,:)=means;
+        AllstdDevs(i,:)=stdDev;
+        AllMeanErrors(i,:)=meanError;
+        AllstdDevError(i,:)=stdDevError;
+        AllRawData{i}=Data;
         
         [lat, long, h]=enu2geodetic(Rng*cosd(El)*sind(Az),Rng*cosd(El)*cosd(Az),Rng*sind(El),TR(1,1),TR(1,2),TR(1,3),Sphere);
         SAT=getStruct([lat long h],zeros(1,4),RT(1,:),zeros(1,4),Sphere);
@@ -131,8 +131,22 @@ for i=start:p
         StdLineSlope=nanstd(LineSlopes);
         uncertaintyLineSlope=StdLineSlope*2;
         meanDirection=[atan2(meanLineSlope(1),meanLineSlope(2)) atan2(meanLineSlope(3),sqrt(sum(meanLineSlope(1:2).^2)))];
-        uncertaintyDirection=
+%         uncertaintyDirection=
         
+        dx=uncertaintyLineSlope(1);
+        dy=uncertaintyLineSlope(2);
+        dz=uncertaintyLineSlope(3);
+        x=meanLineSlope(1);
+        y=meanLineSlope(2);
+        z=meanLineSlope(3);
+        dazdx=1/(y*(x^2/y^2 + 1));
+        dazdy=-x/(y^2*(x^2/y^2 + 1));
+        deldx=-(x*z)/((z^2/(x^2 + y^2) + 1)*(x^2 + y^2)^(3/2));
+        deldy=-(y*z)/((z^2/(x^2 + y^2) + 1)*(x^2 + y^2)^(3/2));
+        deldz=1/((z^2/(x^2 + y^2) + 1)*(x^2 + y^2)^(1/2));
+        
+        daz=sqrt((dazdx*dx)^2+(dazdy*dy)^2);
+        del=sqrt((deldx*dx)^2+(deldy*dy)^2+(deldz*dz)^2);
         
         figure()
         plot3(RefPoints(1,1),RefPoints(1,2),RefPoints(1,3),'o','linewidth',4,'color','green')
@@ -140,7 +154,7 @@ for i=start:p
         plot3([RefPoints(1,1) LineEndPoint(1,1)], [RefPoints(1,2) LineEndPoint(1,2)], [RefPoints(1,3) LineEndPoint(1,3)], 'color','red','linewidth',3)
         
         plot3(RefPoints(2:end,1),RefPoints(2:end,2),RefPoints(2:end,3),'.','linewidth',3,'color','blue');
-        title(['Reference Point Sphere. Errors Est at: ' num2str(location_error(2,:))])
+        title(['Reference Errors: ' num2str(uncertaintyRef) 'm and AzEl Errors: ' num2str(daz*180/pi) '&' num2str(del*180/pi) ' deg'])
         xlabel('X east (m)')
         ylabel('Y north (m)')
         zlabel('Z zenith (m)')
@@ -148,8 +162,25 @@ for i=start:p
 
         
         for jj=1:length(LineEndPoint)
-            plot3([RefPoints(jj,1) LineEndPoint(jj,1)], [RefPoints(jj,2) LineEndPoint(jj,2)], [RefPoints(jj,3) LineEndPoint(jj,3)], 'color','cyan')
+            plot3([RefPoints(jj,1) LineEndPoint(jj,1)], [RefPoints(jj,2) LineEndPoint(jj,2)], [RefPoints(jj,3) LineEndPoint(jj,3)],'.-', 'color','cyan')
         end
+        
+        for i1=-1:2:1
+            for j1=-1:2:1
+                for k1=-1:2:1
+                    for L1=-1:2:1
+                        for m1=-1:2:1
+                            refBound=meanRef+[i1 j1 k1].*uncertaintyRef;
+                            elBound=location(1,2)+L1*del;
+                            azBound=location(1,1)+m1*daz;
+                            LineEndPointBound=[Rng*cos(elBound).*sin(azBound) Rng*cos(elBound).*cos(azBound) Rng*sin(elBound)];
+                            plot3([refBound(1) LineEndPointBound(1)], [refBound(2) LineEndPointBound(2)], [refBound(3) LineEndPointBound(3)],'o-', 'color','blue','linewidth',2)
+                        end
+                    end
+                end
+            end
+        end
+        
         legend('Nominal Reference','Nominal Direction','Reference Points','Directions')
         
         disp(i)
