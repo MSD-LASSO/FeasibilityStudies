@@ -7,7 +7,7 @@ x1 = zeros(N, 1);
 m1 = zeros(N, 1);
 for k = 1:N
     t(k) = Ts*(k-1);
-    m1(k) = sin(BW/2*t(k)) + 0.3*sin(BW/6*t(k));
+    m1(k) = sin(BW/2*t(k)) + (1/3)*sin(BW*t(k)) + (1/2) * cos(BW/4*t(k)) + (1/3)*cos(BW/6*t(k));
     x1(k) = cos(m1(k)) + 1i * sin(m1(k));
 end
 x2(:, 1) = real(x1);%/sqrt(2);

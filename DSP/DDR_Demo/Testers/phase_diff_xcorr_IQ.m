@@ -30,6 +30,7 @@ end
 [d, lags] = xcorr(m1, m2, max_lag_f);
 d_norm = abs(d)/max(abs(d));
 hold off
+figure
 plot(lags*Ts, abs(d_norm))
 xlabel('Time Delay [s]');
 ylabel('Normalized Crosscorrelation');
