@@ -39,12 +39,12 @@ ReceiverError=[zeros(3,3) ClkError];
 % ElevationRange=5:5:90;
 
 %for quick testing
-% AzimuthRange=0:45:360;
-% ElevationRange=5:15:80;
+AzimuthRange=0:45:360;
+ElevationRange=15:15:80;
 
 %for really quick testing
-AzimuthRange=180;
-ElevationRange=45;
+% AzimuthRange=0;
+% ElevationRange=15;
 
 %this set of inputs causes an error!
 % AzimuthRange=0:2.5:359; ElevationRange=1:1:4;
@@ -120,9 +120,9 @@ for i=start:p
 
         disp(i)
         fprintf('\n')
-        AssertToleranceMatrix(means*180/pi,location(1,1:2)*180/pi,0.1);
-        AssertToleranceMatrix(means*180/pi,location(3,1:2)*180/pi,0.1);
-        AssertToleranceMatrix(stdDev*180/pi,location_error(1,1:2)*180/pi,0.5);
+        AssertToleranceMatrix(means*180/pi,location(1,1:2)*180/pi,2);
+        AssertToleranceMatrix(means*180/pi,location(3,1:2)*180/pi,2);
+        AssertToleranceMatrix(stdDev*180/pi,location_error(1,1:2)*180/pi,2);
 %         AssertToleranceMatrix(stdDev*180/pi,[daz del]*180/pi,0.5);
 
 end

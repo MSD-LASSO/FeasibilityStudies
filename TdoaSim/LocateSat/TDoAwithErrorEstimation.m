@@ -70,6 +70,12 @@ for i=2:numTrials
     
 end
 
+%% Determine if the Estimated Azimuth values vary across 0. (i.e. we have 5 degrees and 359 degrees)
+[EstAzEl,flag]=moveAzimuthReference(EstAzEl);
+%if flag=1, we must convert the final answers back to the original
+%reference.
+
+%% Collect nominal values.
 nominalAzEl=EstAzEl(1,:);
 nominalReference=EstRef(1,:);
 
@@ -174,6 +180,15 @@ legend('Nominal Reference','mean Reference','Nominal Direction','mean Direction'
 
 
 %% Return in TDoA.m's return format.
+if flag==1
+    if nominalAzEl(1)<0
+        nominalAzEl(1)=nominalAzEl(1)+2*pi;
+    end
+    if meanAzEl(1)<0
+        meanAzEl(1)=meanAzEl(1)+2*pi;
+    end
+end
+
 
 %Data structure for easy reference
 rawData.DistanceDiff=DDs;
@@ -193,11 +208,12 @@ Data.AzEluncertainty95percent=uncerAzEl;
 Data.Refuncertainty95percent=uncertaintyRef;
 Data.covarianceMixedUnits=covariance; %not much phyiscal meaning
 Data.covarianceNormalized=covarianceNormalized;
+Data.movedAzimuthReference=flag;
 
 
 location=[nominalAzEl 0; nominalReference; meanAzEl 0; meanRef];
-location_error=[daz del 0; uncertaintyRef; daz del 0; uncertaintyRef];
-
+% location_error=[daz del 0; uncertaintyRef; daz del 0; uncertaintyRef];
+location_error=[uncerAzEl 0; uncertaintyRef; uncerAzEl 0; uncertaintyRef];
 
 if DebugMode>0
     plotHistograms(rawData,nan,plotSavePath,1);

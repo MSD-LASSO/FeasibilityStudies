@@ -59,12 +59,12 @@ for i=1:numTests
     if abs(err(1,1))>pi
         if err(1,1)>pi
             %actual is 359 and estimated is 2 degrees
-            %error is calc at -357 degrees. Should be 3 degrees.
-            Errors(i,:)=[2*pi-err(1,1) err(1,2)];
+            %error is calc at 357 degrees. Should be -3 degrees.
+            Errors(i,:)=[err(1,1)-2*pi];
         else
             %actual is 2 degrees, estimated is 359 degrees
-            %error is calc at 357 degrees. Should be -3 degrees
-            Errors(i,:)=[err(1,1)+2*pi err(1,2)];
+            %error is calc at -357 degrees. Should be 3 degrees
+            Errors(i,:)=2*pi-err(1,1:2);
         end
     else
         Errors(i,:)=err(1,1:2); 

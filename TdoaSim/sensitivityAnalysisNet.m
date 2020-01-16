@@ -46,7 +46,7 @@ Sphere=wgs84Ellipsoid;
 numSamples=nan; %for OneAtATime. Set to nan to skip.
 %numTests to run before running statistics. Min is 15-30 by Central Limit
 %Theorem. Recommended: 1000. This is not practical for the symbolic solver.
-numTests=30; %for MonteCarlo. Set to nan to skip.
+numTests=100; %for MonteCarlo. Set to nan to skip.
 DebugMode=-1; %tells OneAtATime to not output anything. 
 
 ReceiverError=[zeros(3,3) ClkError];
