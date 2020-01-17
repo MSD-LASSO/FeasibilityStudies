@@ -19,13 +19,13 @@ end
 Ts = 1 / Fs1;
 [d, lags] = xcorr(x1, x2, max_lag_f);
 d_norm = abs(d)/max(abs(d));
-hold off
-figure
-plot(lags*Ts, abs(d_norm))
-xlabel('Time Delay [s]');
-ylabel('Normalized Crosscorrelation');
-title('Complex Crosscorrelation Plot');
-legend(strcat(IQ_data_1,' - ',IQ_data_2));
+% hold off
+% figure
+% plot(lags*Ts, abs(d_norm))
+% xlabel('Time Delay [s]');
+% ylabel('Normalized Crosscorrelation');
+% title('Complex Crosscorrelation Plot');
+% legend(strcat(IQ_data_1,' - ',IQ_data_2));
 [corr_factor, index_max] = max(abs(d));
 sample_delay = index_max - round(size(lags, 2)/2); 
 lags_matrix = d;
