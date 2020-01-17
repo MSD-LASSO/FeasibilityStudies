@@ -73,8 +73,8 @@ ElevationRange=5:5:90;
 
 SatelliteAltitudeRange=500e3; %range of satellite range values.
 
-% Tests=[1,2,3,4,5,6,7,8,9,10]; 
-Tests=8;
+Tests=[1,2,3,4,5,6,7,8,9,10]; 
+% Tests=8;
 solver=1; %0 symbolic solver, 1 least squares.
 for TestNum=1:length(Tests)
 T=TR{Tests(TestNum)};

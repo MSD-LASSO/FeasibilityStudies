@@ -19,8 +19,8 @@ OF{9}='MeesWebsterGCC';
 OF{10}='MeesInnWilliamson';
 
 %% Inputs
-InputFolder='MonteCarloResults/Time Difference Comparison';
-PlotOutputFolder='MonteCarlo10TrianglesLeastSquaresTimeDifference';
+InputFolder='MonteCarloResults/EdgesAdjustedClosestHyperbolaCost';
+PlotOutputFolder='MonteCarlo10TrianglesEdgesAdjustedHyperbolaCost';
 
 numRows=18; %numRows=6;
 numCols=36; %numCols=9;
