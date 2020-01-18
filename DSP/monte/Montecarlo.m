@@ -28,12 +28,12 @@ Times = [0.1 0.5 1 2];
 Sample_Rates = [1e6 3e6 10e6 20e6];
 % Sample_Rate_index = 1; %4 sample rates
 
-Num_Trials = 100;
+Num_Trials = 30;
 
 monte_1 = 'monte_carlo_data_1.wav';
 monte_2 = 'monte_carlo_data_2.wav';
 
-test_vector = zeros(48000, 13);
+test_vector = zeros(14400, 13);
 
 % global_trial_index
 c = 1;
@@ -82,7 +82,7 @@ Fs = test_vector(:, 4);
 ks = test_vector(:, 5);
 
 
-parfor (n =1:48000)
+parfor (n =1:14400)
     raw_data = make_IQ(BW(n), Fs(n), Time(n));
     raw_delay_data = delay_IQ(raw_data, delay_input);
     noise_data_1 = add_noise_IQ(raw_data, SNR(n));
