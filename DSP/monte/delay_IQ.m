@@ -1,7 +1,8 @@
-function [] = delay_IQ(IQ_file, sample_delay, new_IQ_name)
+function [delayed_data] = delay_IQ(data, sample_delay)
 %This function writes a delayed copy of an existing IQ data file sample
 %delays are negative to indicate that the new file is lagging the old one
-[x1, Fs, N] = readIQ(IQ_file);
+x1 = data(:, 1) + 1i * data(:, 2);
+N = size(x1, 1);
 x2 = zeros(N, 2);
 for k = 1:N
     if k <= -1 * sample_delay
@@ -11,6 +12,7 @@ for k = 1:N
         x2(k, 2) = imag(x1(k + sample_delay));
     end
 end
-audiowrite(new_IQ_name, x2, Fs);
+delayed_data = x2;
+% audiowrite(new_IQ_name, x2, Fs);
 end
 

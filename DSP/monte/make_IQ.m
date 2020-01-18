@@ -1,4 +1,4 @@
-function [] = make_IQ(BW, Fs, Time, new_IQ_name)
+function [data] = make_IQ(BW, Fs, Time)
 %This function will write a new IQ file using the input parameters
 Ts = 1 / Fs;
 N = round(Time/Ts);
@@ -12,6 +12,7 @@ for k = 1:N
 end
 x2(:, 1) = real(x1);%/sqrt(2);
 x2(:, 2) = imag(x1);%/sqrt(2);
-audiowrite(new_IQ_name, x2, Fs);
+data = x2;
+% audiowrite(new_IQ_name, x2, Fs);
 end
 

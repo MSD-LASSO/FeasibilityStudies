@@ -83,10 +83,10 @@ ks = test_vector(:, 5);
 
 
 parfor (n =1:48000)
-    make_IQ(BW(n), Fs(n), Time(n), monte_1);
-    delay_IQ(monte_1, delay_input, monte_2);
-    add_noise_IQ(monte_1, SNR(n), monte_1);
-    add_noise_IQ(monte_2, SNR(n), monte_2);
+    raw_data = make_IQ(BW(n), Fs(n), Time(n));
+    raw_delay_data = delay_IQ(raw_data, delay_input);
+    noise_data_1 = add_noise_IQ(raw_data, SNR(n));
+    noise_data_2 = add_noise_IQ(raw_delay_data, SNR(n));
     
     test_vector_sub = zeros(1, 13);
     
@@ -96,33 +96,34 @@ parfor (n =1:48000)
     test_vector_sub(4) = Fs(n);
     test_vector_sub(5) = ks(n);
     
+    max_delay = size(noise_data_1, 1)/2;
     
-    [cmplx_xcorr_delay, ~, ~, ~, ~] = cmplx_xcorr_IQ(monte_1, monte_2, 0);
+    
+    [cmplx_xcorr_delay, ~, ~, ~] = cmplx_xcorr_IQ(noise_data_1, noise_data_2, max_delay);
     test_vector_sub(6) = delay_input - cmplx_xcorr_delay;
 
-    [cmplx_xcov_delay, ~, ~, ~, ~] = cmplx_xcov_IQ(monte_1, monte_2, 0);
+    [cmplx_xcov_delay, ~, ~, ~] = cmplx_xcov_IQ(noise_data_1, noise_data_2, max_delay);
     test_vector_sub(7) = delay_input - cmplx_xcov_delay;
 
-    [abs_xcorr_delay, ~, ~, ~, ~] = abs_xcorr_IQ(monte_1, monte_2, 0);
+    [abs_xcorr_delay, ~, ~, ~] = abs_xcorr_IQ(noise_data_1, noise_data_2, max_delay);
     test_vector_sub(8) = delay_input - abs_xcorr_delay;
 
-    [abs_xcov_delay, ~, ~, ~, ~] = abs_xcov_IQ(monte_1, monte_2, 0);
+    [abs_xcov_delay, ~, ~, ~] = abs_xcov_IQ(noise_data_1, noise_data_2, max_delay);
     test_vector_sub(9) = delay_input - abs_xcov_delay;
     
-    [phase_xcorr_delay, ~, ~, ~, ~] = phase_xcorr_IQ(monte_1, monte_2, 0);
+    [phase_xcorr_delay, ~, ~, ~] = phase_xcorr_IQ(noise_data_1, noise_data_2, max_delay);
     test_vector_sub(10) = delay_input - phase_xcorr_delay;
 
-    [phase_xcov_delay, ~, ~, ~, ~] = phase_xcov_IQ(monte_1, monte_2, 0);
+    [phase_xcov_delay, ~, ~, ~] = phase_xcov_IQ(noise_data_1, noise_data_2, max_delay);
     test_vector_sub(11) = delay_input - phase_xcov_delay;
 
-    [phase_diff_xcorr_delay, ~, ~, ~, ~] = phase_diff_xcorr_IQ(monte_1, monte_2, 0);
+    [phase_diff_xcorr_delay, ~, ~, ~] = phase_diff_xcorr_IQ(noise_data_1, noise_data_2, max_delay);
     test_vector_sub(12) = delay_input - phase_diff_xcorr_delay;
 
-    [phase_diff_xcov_delay, ~, ~, ~, ~] = phase_diff_xcov_IQ(monte_1, monte_2, 0);
+    [phase_diff_xcov_delay, ~, ~, ~] = phase_diff_xcov_IQ(noise_data_1, noise_data_2, max_delay);
     test_vector_sub(13) = delay_input - phase_diff_xcov_delay;
     
     test_vector(n, :) = test_vector_sub;
-    n/48000 * 100
 end
 
 save results.mat
