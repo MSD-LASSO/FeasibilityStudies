@@ -28,9 +28,18 @@ public class Utils {
 
         for (int i=0;i<latArray.length;i++) {
             String identifier="Station "+Integer.toString(i);
-            stations.add(new Station(identifier,new double[]{latArray[i],lonArray[i],altArray[i]},new double[3],minElevations[i],0,earth));
+            if(inRadians) {
+                stations.add(new Station(identifier, new double[]{latArray[i], lonArray[i], altArray[i]}, new double[3], minElevations[i], 0, earth));
+            } else {
+                stations.add(new Station(identifier, new double[]{FastMath.toRadians(latArray[i]),FastMath.toRadians(lonArray[i]),FastMath.toRadians(altArray[i])}, new double[3], minElevations[i], 0, earth));
+            }
         }
         return stations;
+    }
+
+    public static ArrayList<Station> createStations(boolean inRadians,double[] latArray, double[] lonArray, double[] altArray, double[] minElevations) {
+        BodyShape earth=Station.getDefaultEarth();
+        return createStations(inRadians,latArray,lonArray,altArray,minElevations,earth);
     }
 
 }

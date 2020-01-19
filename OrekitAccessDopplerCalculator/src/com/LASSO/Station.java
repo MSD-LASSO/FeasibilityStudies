@@ -87,7 +87,7 @@ public class Station {
         return frame;
     }
 
-    private static BodyShape getDefaultEarth(){
+    public static BodyShape getDefaultEarth(){
         Frame earthFrame = FramesFactory.getITRF(IERSConventions.IERS_2010, true);
         ///*
         return new OneAxisEllipsoid(Constants.WGS84_EARTH_EQUATORIAL_RADIUS,

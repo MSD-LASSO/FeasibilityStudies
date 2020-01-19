@@ -36,6 +36,7 @@ public class TimeFrequencyPair {
     }
 
     public String toString(){
-        return date.toString() + "      "+ frequency.getNominal()+"     "+frequency.getLowerBound()+"       "+frequency.getUpperBound();
+        return String.format(date.toString()+"     %.8f     %.8f    %.8f", frequency.getNominal(),frequency.getLowerBound(),frequency.getUpperBound());
+//        return date.toString() + "      "+ frequency.getNominal()+"     "+frequency.getLowerBound()+"       "+frequency.getUpperBound();
     }
 }

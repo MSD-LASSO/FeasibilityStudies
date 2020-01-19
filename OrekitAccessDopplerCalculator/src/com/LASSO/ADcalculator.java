@@ -25,6 +25,8 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 public class ADcalculator {
@@ -39,10 +41,13 @@ public class ADcalculator {
 
     private ArrayList<Station> stations;
 
+    private StringBuilder writeToText= new StringBuilder();
+
     /** custom event detector used to determine when 3 stations have access to the satellite.*/
     private BooleanDetector threeStationDetector;
 
     public ADcalculator(int noradID, double timeInterval, ArrayList<Station> stations){
+        Utils.addOrekitData();
         this.noradID=noradID;
         this.timeInterval=timeInterval;
         this.stations=stations;
@@ -54,13 +59,16 @@ public class ADcalculator {
         }
     }
 
-    public ArrayList<AbsoluteDate> computeAccessTimes(AbsoluteDate endDate, boolean verbose){
+    public ArrayList<Access> computeAccessTimes(AbsoluteDate endDate, boolean verbose){
 
         Frame inertialFrame = FramesFactory.getEME2000();
         TimeScale utc = TimeScalesFactory.getUTC();
 
         //set initial date as October 30th, 2019 at 0:00
-        AbsoluteDate initialDate = new AbsoluteDate(2019, 10, 30, 0, 0, 00.000, utc);
+//        AbsoluteDate initialDate = new AbsoluteDate(2019, 10, 30, 0, 0, 00.000, utc);
+        Date today= Calendar.getInstance().getTime();
+        //TODO convert this to an Absolute Date.
+        AbsoluteDate initialDate=new AbsoluteDate(2020,1,19,0,0,00.000,utc);
 
         //TODO How can we better quanitify these? Does it matter?
         double mass=100; // 54 kg is FalconSat3. 100kg assumption?
@@ -79,7 +87,6 @@ public class ADcalculator {
         oreTLEPropagator.addEventDetector(booleanLogger.monitorDetector(threeStationDetector));  //add event detector to propagator
 
         //Propagation
-        SpacecraftState initialState= oreTLEPropagator.getInitialState();
         oreTLEPropagator.propagate(initialDate, endDate);
         List<EventsLogger.LoggedEvent> stationOverlap=booleanLogger.getLoggedEvents(); //getting event instances.
         if(verbose) {
@@ -87,48 +94,22 @@ public class ADcalculator {
             System.out.println(initialDate.toString());
         }
 
+        ArrayList<Access> accesses=new ArrayList<>();
         //For each event, propagate from the start to the end of the access with the specified interval time step.
         for (int entryIndex=0;entryIndex<stationOverlap.size()-1;entryIndex=entryIndex+2) {
+            writeToText.append("Access Number: ").append(entryIndex / 2).append("\n");
             if(verbose) {
                 System.out.println("Event" +entryIndex);
             }
-
-            AbsoluteDate propagateTime=stationOverlap.get(entryIndex).getState().getDate(); //setting initial time for propagation.
-            AbsoluteDate endTime=stationOverlap.get(entryIndex+1).getState().getDate();
-
-            while (propagateTime.compareTo(endTime)<=0) {
-                PVCoordinates pvInert   = oreTLEPropagator.getPVCoordinates(propagateTime);
-                //TODO Insert Doppler Shift calculations here.
-//                Vector3D positionVectorSatellite=pvInert.getPosition();   //3D vector of satellite in earth EME2000 frame.
-//                String currentTimeStamp=propagateTime.getDate().toString();
-
-
-                propagateTime = propagateTime.shiftedBy(timeInterval); //getting info every x seconds.
-            } //end of propagation while loop
+            Access accessPoint=new Access(noradID,stationOverlap.get(entryIndex),stationOverlap.get(entryIndex+1),oreTLEPropagator);
+            accessPoint.computeAccessCalculations(300,timeInterval);
+            writeToText.append(accessPoint.toString());
+            accesses.add(accessPoint);
 
         } //end of for loop for each station
+        writeToFile();
 
-        //Write to file
-        try {
-            PrintWriter unWriter= new PrintWriter("./DopplerAccess"+noradID+".txt", "UTF_8");
-            unWriter.printf("%d \n", tleLines.length);
-            unWriter.printf("%s\t%s\t%s\t%s\n","Latitude","Longitude","Altitude","Station");
-            for (int s=0;s<tleLines.length;s++) {
-                //System.out.format("%s %n",maxElevationArray.get(s).toString().replaceAll("[,\\[\\]]",""));
-
-                unWriter.printf("%s %n", maxElevationArray.get(s).toString().replaceAll("[,\\[\\]]",""));
-
-                System.out.format("%s %n",maxElevationArray.get(s).toString().replaceAll("[,\\[\\]]",""));
-                //System.out.println(maxElevationArray);
-            }
-            unWriter.close();
-        } catch (FileNotFoundException e) {
-            System.out.println("Could not find specified file");
-        } catch (UnsupportedEncodingException e) {
-            System.out.println("Specified encoding not supposted.");
-        }
-
-         return null;
+         return accesses;
         }
 
 
@@ -153,6 +134,18 @@ public class ADcalculator {
         }
 
         threeStationDetector=BooleanDetector.andCombine(stationVisibilityDetectors);
+    }
+
+    public void writeToFile(){
+        try {
+            PrintWriter unWriter= new PrintWriter("./DopplerAccess"+noradID+".txt", "UTF_8");
+            unWriter.print(writeToText);
+            unWriter.close();
+        } catch (FileNotFoundException e) {
+            System.out.println("Could not find specified file");
+        } catch (UnsupportedEncodingException e) {
+            System.out.println("Specified encoding not supposted.");
+        }
     }
 
 
