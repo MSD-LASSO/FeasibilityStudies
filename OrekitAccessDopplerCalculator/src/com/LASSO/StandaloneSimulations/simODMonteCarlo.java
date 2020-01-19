@@ -1,4 +1,4 @@
-package com.LASSO;
+package com.LASSO.StandaloneSimulations;
 
 // This script runs Monte Carlo analysis over 50 iterations of OD. (slightly modified from simODErrorAnalysis file 
 

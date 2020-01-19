@@ -14,7 +14,11 @@
       </list>
     </option>
   </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
+  </component>
   <component name="ProjectId" id="1WZpOWQm70hcWBb3GwAhKPCyXdy" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showExcludedFiles" value="true" />
@@ -29,6 +33,7 @@
     <property name="project.structure.last.edited" value="SDKs" />
     <property name="project.structure.proportion" value="0.15" />
     <property name="project.structure.side.proportion" value="0.2" />
+    <property name="settings.editor.selected.configurable" value="vcs.Git" />
   </component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
@@ -50,11 +55,11 @@
       </method>
     </configuration>
     <configuration name="simODErrorAnalysis" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
-      <option name="MAIN_CLASS_NAME" value="com.LASSO.simODErrorAnalysis" />
+      <option name="MAIN_CLASS_NAME" value="com.LASSO.StandaloneSimulations.simODErrorAnalysis" />
       <module name="OrekitAccessDopplerCalculator" />
       <extension name="coverage">
         <pattern>
-          <option name="PATTERN" value="com.LASSO.*" />
+          <option name="PATTERN" value="com.LASSO.StandaloneSimulations.*" />
           <option name="ENABLED" value="true" />
         </pattern>
       </extension>
@@ -123,15 +128,15 @@
     </state>
     <state width="1877" height="282" key="GridCell.Tab.0.right/0.0.1536.824/-1920.0.1920.1040@-1920.0.1920.1040" timestamp="1579371434044" />
     <state width="1877" height="282" key="GridCell.Tab.0.right/0.0.1920.1040@0.0.1920.1040" timestamp="1579455266314" />
-    <state x="-1040" y="134" key="SettingsEditor" timestamp="1579371235693">
-      <screen x="-1920" y="0" width="1920" height="1040" />
-    </state>
-    <state x="-1040" y="134" key="SettingsEditor/0.0.1536.824/-1920.0.1920.1040@-1920.0.1920.1040" timestamp="1579371235693" />
-    <state x="880" y="134" key="SettingsEditor/0.0.1920.1040@0.0.1920.1040" timestamp="1579368488761" />
-    <state x="656" y="345" key="com.intellij.ide.util.TipDialog" timestamp="1579454577612">
+    <state x="880" y="134" key="SettingsEditor" timestamp="1579455948449">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state x="656" y="345" key="com.intellij.ide.util.TipDialog/0.0.1920.1040@0.0.1920.1040" timestamp="1579454577612" />
+    <state x="-1040" y="134" key="SettingsEditor/0.0.1536.824/-1920.0.1920.1040@-1920.0.1920.1040" timestamp="1579371235693" />
+    <state x="880" y="134" key="SettingsEditor/0.0.1920.1040@0.0.1920.1040" timestamp="1579455948449" />
+    <state x="656" y="345" key="com.intellij.ide.util.TipDialog" timestamp="1579455814966">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="656" y="345" key="com.intellij.ide.util.TipDialog/0.0.1920.1040@0.0.1920.1040" timestamp="1579455814966" />
     <state x="996" y="391" key="com.intellij.jarRepository.RepositoryAttachDialog-DOWNLOAD" timestamp="1579368486319">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>

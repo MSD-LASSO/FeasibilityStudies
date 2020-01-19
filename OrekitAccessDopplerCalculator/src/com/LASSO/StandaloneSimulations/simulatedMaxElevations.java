@@ -1,5 +1,5 @@
-package com.LASSO;
-// This program looks at TLE data for 9 dif Satellites to get azimuths
+package com.LASSO.StandaloneSimulations;
+
 //3 ground stations
 //Event detectors to see when all three are in view
 //azimuth, elevation, and range with respect to one station
@@ -10,15 +10,6 @@ package com.LASSO;
 
 //possibly use circular field of view detector? or unecessary?
 
-
-
-//TO DO FOR ME:
-
-// needa pick sun synchronous orbit. Choose parameters close to one form the TLE. e close to 0. inclination and semi major linked.
-// then do max error.
-// use paper to get inclination and semi major axis.
-// chose whatever I want. 
-// do monte carlo 1000 or 10000 times. get mean, std deviation of all the measurements. Error from the nominal...
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -83,7 +74,7 @@ import org.orekit.utils.PVCoordinates;
 import org.orekit.utils.PVCoordinatesProvider;
 import org.orekit.frames.TopocentricFrame;
 
-public class simulatedAzimuths {
+public class simulatedMaxElevations {
 	
 	public static void main(String[] args) throws FileNotFoundException, UnsupportedEncodingException {
 
@@ -225,7 +216,7 @@ public class simulatedAzimuths {
 		Frame earthFrame = FramesFactory.getITRF(IERSConventions.IERS_2010, true);
 		///*
 		BodyShape earth = new OneAxisEllipsoid(Constants.WGS84_EARTH_EQUATORIAL_RADIUS,
-				Constants.WGS84_EARTH_FLATTENING,
+				0,    //let flattening = 0 (sphere)//Constants.WGS84_EARTH_FLATTENING,
 				earthFrame);
 		//*/
 		//SPHERICAL EARTH MODEL//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -273,9 +264,8 @@ public class simulatedAzimuths {
 							   	"2 33493  98.1273 252.1078 0016114  33.0885 327.1340 14.96814275588412"   
 							   }, //LILACSAT
 							   {"1 40908U 15049K   19339.41053193  .00000498  00000-0  31094-4 0  9993", 
-							   	"2 40908  97.4848 337.0453 0015544 341.9934 157.4020 15.13907814232487"   
+								"2 40908  97.4848 337.0453 0015544 341.9934 157.4020 15.13907814232487"      
 							   }
-							  
 							 };
 		//Double[][] satelliteMasses= {54,};			   
 		//System.out.println(tleLines[0][1]);
@@ -283,10 +273,10 @@ public class simulatedAzimuths {
 		//String tleLine1= "1 30776U 07006E   19322.84223699  .00002052  00000-0  57149-4 0  9995" ;
 		//String tleLine2="2 30776  35.4334 192.8565 0001675  36.1627 323.9213 15.36801110704254" ;
 		
-		ArrayList<ArrayList<Double>> azimuthArray=new ArrayList<ArrayList<Double>>(1);
+		ArrayList<ArrayList<Double>> maxElevationArray=new ArrayList<ArrayList<Double>>(1);
 		for (int k=0;k<tleLines.length;k++)
 		{
-			azimuthArray.add(new ArrayList<Double>(1));
+			maxElevationArray.add(new ArrayList<Double>(1));
 			String tleLine1=tleLines[k][0];
 			String tleLine2=tleLines[k][1];
 					
@@ -340,10 +330,8 @@ public class simulatedAzimuths {
 			
 			//System.out.println(maxElevationArray);
 			//ArrayList<Double> maxElevationArray=new ArrayList<Double>(1);
-			//System.out.println(stationOverlap.size());
-			//System.out.println(k);
-			//System.out.println(tleLine1);
-			//System.out.println(stationOverlap.size());
+			System.out.println(stationOverlap.size());
+			System.out.println(k);
 			for (int b=0;b<stationOverlap.size()-1;b=b+2)
 			{
 				//System.out.println(b);
@@ -359,7 +347,7 @@ public class simulatedAzimuths {
 				// propagation loop to get lat, lon, azi, elevation during one overhead pass in view of all stations/////////////////////////////////////////////////////////////
 	
 	
-				
+				double currentMaxElevation=0;
 	
 				while (propagateTime.compareTo(endTime)<=0) {
 					PVCoordinates pvInert   = oreTLEPropagator.getPVCoordinates(propagateTime);
@@ -372,8 +360,12 @@ public class simulatedAzimuths {
 					double elevation=stationFrames[stationReference].getElevation(positionVectorSatellite, inertialFrame, propagateTime);
 					double range=stationFrames[stationReference].getRange(positionVectorSatellite, inertialFrame, propagateTime);
 					String currentTimeStamp=propagateTime.getDate().toString();
-					
-					
+	
+					if (elevation*180/Math.PI>currentMaxElevation)
+					{
+						currentMaxElevation=elevation*180/Math.PI;
+					}   
+	
 					//System.out.format("Elevation: %6.15f   Azimuth: %8.15f    Range: %12.15f Time: %s %n" ,elevation*180/Math.PI, azimuth*180/Math.PI,range,propagateTime.getDate().toString());      
 					GeodeticPoint satLatLonAlt = earth.transform(pvInert.getPosition(), FramesFactory.getEME2000(),propagateTime);
 					//System.out.println(satLatLonAlt);
@@ -382,17 +374,11 @@ public class simulatedAzimuths {
 					double altitude=satLatLonAlt.getAltitude();
 					// System.out.format("Latitude: %3.15f	Longitude: %3.15f	Altitude: %3.15f %n", //%n
 					//		   latitude,longitude,altitude);//*180/Math.PI);
-					propagateTime = propagateTime.shiftedBy(60); //getting info every x seconds.
-					
-					//if (elevation>(20*Math.PI/180))
-					//{
-						azimuthArray.get(k).add(azimuth);
-			//		}
-					
+					propagateTime = propagateTime.shiftedBy(30); //getting info every x seconds.
 				}
 				//System.out.println(currentMaxElevation);
 				
-
+				maxElevationArray.get(k).add(currentMaxElevation);
 				//System.out.println(maxElevationArray);
 				/*
 				if (currentMaxElevation>30)
@@ -403,16 +389,16 @@ public class simulatedAzimuths {
 			}  //end of propagation while loop
 			//*/
 		}   //end of for loop for each satellite
-		 PrintWriter unWriter= new PrintWriter("/Users/mtruong/Desktop/JAVA/Histogram/azimuthdebug.txt", "UTF-8");
+		 PrintWriter unWriter= new PrintWriter("/Users/mtruong/Desktop/JAVA/Histogram/maxElevationData.txt", "UTF-8");
 		 unWriter.printf("%d \n", tleLines.length);
 		// unWriter.printf("%s\t%s\t%s\t%s\n","Latitude","Longitude","Altitude","Station");
 		for (int s=0;s<tleLines.length;s++)
 		{
 		//System.out.format("%s %n",maxElevationArray.get(s).toString().replaceAll("[,\\[\\]]","")); 
 		
-		unWriter.printf("%s %n", azimuthArray.get(s).toString().replaceAll("[,\\[\\]]",""));
+		unWriter.printf("%s %n", maxElevationArray.get(s).toString().replaceAll("[,\\[\\]]",""));
 		
-		System.out.format("%s %n",azimuthArray.get(s).toString().replaceAll("[,\\[\\]]","")); 
+		System.out.format("%s %n",maxElevationArray.get(s).toString().replaceAll("[,\\[\\]]","")); 
 		//System.out.println(maxElevationArray);
 		}
 		unWriter.close();

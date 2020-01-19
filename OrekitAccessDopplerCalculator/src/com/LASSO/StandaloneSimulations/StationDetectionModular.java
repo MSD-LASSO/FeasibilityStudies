@@ -1,4 +1,4 @@
-package com.LASSO;
+package com.LASSO.StandaloneSimulations;
 
 //3 ground stations
 //Event detectors to see when all three are in view

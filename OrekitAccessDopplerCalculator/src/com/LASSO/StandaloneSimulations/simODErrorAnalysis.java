@@ -1,4 +1,4 @@
-package com.LASSO;
+package com.LASSO.StandaloneSimulations;
 
 // sim OD test- adding gaussian distributed errors to result.
 
