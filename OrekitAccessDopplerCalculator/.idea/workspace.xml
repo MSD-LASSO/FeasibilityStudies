@@ -100,14 +100,18 @@
     <servers />
   </component>
   <component name="WindowStateProjectService">
-    <state x="765" y="222" key="#com.intellij.ide.util.MemberChooser" timestamp="1579459907587">
+    <state x="765" y="222" key="#com.intellij.ide.util.MemberChooser" timestamp="1579468918990">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state x="765" y="222" key="#com.intellij.ide.util.MemberChooser/0.0.1920.1040@0.0.1920.1040" timestamp="1579459907587" />
+    <state x="765" y="222" key="#com.intellij.ide.util.MemberChooser/0.0.1920.1040@0.0.1920.1040" timestamp="1579468918990" />
     <state x="-790" y="343" key="#com.intellij.ide.util.TreeClassChooserDialog" timestamp="1579369536549">
       <screen x="-1920" y="0" width="1920" height="1040" />
     </state>
     <state x="-790" y="343" key="#com.intellij.ide.util.TreeClassChooserDialog/0.0.1536.824/-1920.0.1920.1040@-1920.0.1920.1040" timestamp="1579369536549" />
+    <state x="669" y="0" key="#com.intellij.refactoring.rename.AutomaticRenamingDialog" timestamp="1579468482481">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="669" y="0" key="#com.intellij.refactoring.rename.AutomaticRenamingDialog/0.0.1920.1040@0.0.1920.1040" timestamp="1579468482481" />
     <state x="666" y="262" key="FileChooserDialogImpl" timestamp="1579367626415">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
@@ -145,5 +149,9 @@
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
     <state x="996" y="391" key="com.intellij.jarRepository.RepositoryAttachDialog-DOWNLOAD/0.0.1920.1040@0.0.1920.1040" timestamp="1579368486319" />
+    <state x="623" y="225" width="672" height="678" key="search.everywhere.popup" timestamp="1579467916929">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="623" y="225" width="672" height="678" key="search.everywhere.popup/0.0.1920.1040@0.0.1920.1040" timestamp="1579467916929" />
   </component>
 </project>
