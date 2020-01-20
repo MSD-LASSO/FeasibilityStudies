@@ -30,7 +30,7 @@
     <property name="Repository.Attach.JavaDocs" value="false" />
     <property name="Repository.Attach.Sources" value="false" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
-    <property name="project.structure.last.edited" value="SDKs" />
+    <property name="project.structure.last.edited" value="Modules" />
     <property name="project.structure.proportion" value="0.15" />
     <property name="project.structure.side.proportion" value="0.2" />
     <property name="settings.editor.selected.configurable" value="vcs.Git" />
@@ -43,7 +43,7 @@
       <recent name="C:\Users\Acer\IdeaProjects\OrekitAccessDopplerCalculator" />
     </key>
   </component>
-  <component name="RunManager" selected="Application.simulatedMaxElevations">
+  <component name="RunManager" selected="Application.Main">
     <configuration name="Main" type="Application" factoryName="Application" temporary="true">
       <option name="MAIN_CLASS_NAME" value="com.LASSO.Main" />
       <module name="OrekitAccessDopplerCalculator" />
@@ -82,9 +82,9 @@
     </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="Application.Main" />
         <item itemvalue="Application.simulatedMaxElevations" />
         <item itemvalue="Application.simODErrorAnalysis" />
-        <item itemvalue="Application.Main" />
       </list>
     </recent_temporary>
   </component>
@@ -126,55 +126,55 @@
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
     <state x="669" y="0" key="#com.intellij.refactoring.rename.AutomaticRenamingDialog/0.0.1920.1040@0.0.1920.1040" timestamp="1579470066359" />
-    <state x="715" y="224" key="#xdebugger.evaluate" timestamp="1579470014091">
+    <state x="1230" y="280" key="#xdebugger.evaluate" timestamp="1579479813631">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state x="715" y="224" key="#xdebugger.evaluate/0.0.1920.1040@0.0.1920.1040" timestamp="1579470014091" />
-    <state x="666" y="262" key="FileChooserDialogImpl" timestamp="1579367626415">
+    <state x="1230" y="280" key="#xdebugger.evaluate/0.0.1920.1040@0.0.1920.1040" timestamp="1579479813631" />
+    <state x="666" y="262" key="FileChooserDialogImpl" timestamp="1579480662494">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state x="666" y="262" key="FileChooserDialogImpl/0.0.1920.1040@0.0.1920.1040" timestamp="1579367626415" />
-    <state width="1877" height="348" key="GridCell.Tab.0.bottom" timestamp="1579470821956">
+    <state x="666" y="262" key="FileChooserDialogImpl/0.0.1920.1040@0.0.1920.1040" timestamp="1579480662494" />
+    <state width="1877" height="282" key="GridCell.Tab.0.bottom" timestamp="1579480071220">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
     <state width="1877" height="282" key="GridCell.Tab.0.bottom/0.0.1536.824/-1920.0.1920.1040@-1920.0.1920.1040" timestamp="1579371434044" />
-    <state width="1877" height="348" key="GridCell.Tab.0.bottom/0.0.1920.1040@0.0.1920.1040" timestamp="1579470821956" />
-    <state width="1877" height="348" key="GridCell.Tab.0.center" timestamp="1579470821956">
+    <state width="1877" height="282" key="GridCell.Tab.0.bottom/0.0.1920.1040@0.0.1920.1040" timestamp="1579480071220" />
+    <state width="1877" height="282" key="GridCell.Tab.0.center" timestamp="1579480071220">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
     <state width="1877" height="282" key="GridCell.Tab.0.center/0.0.1536.824/-1920.0.1920.1040@-1920.0.1920.1040" timestamp="1579371434044" />
-    <state width="1877" height="348" key="GridCell.Tab.0.center/0.0.1920.1040@0.0.1920.1040" timestamp="1579470821956" />
-    <state width="1877" height="348" key="GridCell.Tab.0.left" timestamp="1579470821955">
+    <state width="1877" height="282" key="GridCell.Tab.0.center/0.0.1920.1040@0.0.1920.1040" timestamp="1579480071220" />
+    <state width="1877" height="282" key="GridCell.Tab.0.left" timestamp="1579480071220">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
     <state width="1877" height="282" key="GridCell.Tab.0.left/0.0.1536.824/-1920.0.1920.1040@-1920.0.1920.1040" timestamp="1579371434044" />
-    <state width="1877" height="348" key="GridCell.Tab.0.left/0.0.1920.1040@0.0.1920.1040" timestamp="1579470821955" />
-    <state width="1877" height="348" key="GridCell.Tab.0.right" timestamp="1579470821956">
+    <state width="1877" height="282" key="GridCell.Tab.0.left/0.0.1920.1040@0.0.1920.1040" timestamp="1579480071220" />
+    <state width="1877" height="282" key="GridCell.Tab.0.right" timestamp="1579480071220">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
     <state width="1877" height="282" key="GridCell.Tab.0.right/0.0.1536.824/-1920.0.1920.1040@-1920.0.1920.1040" timestamp="1579371434044" />
-    <state width="1877" height="348" key="GridCell.Tab.0.right/0.0.1920.1040@0.0.1920.1040" timestamp="1579470821956" />
-    <state width="1877" height="348" key="GridCell.Tab.1.bottom" timestamp="1579470821956">
+    <state width="1877" height="282" key="GridCell.Tab.0.right/0.0.1920.1040@0.0.1920.1040" timestamp="1579480071220" />
+    <state width="1877" height="348" key="GridCell.Tab.1.bottom" timestamp="1579479868177">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state width="1877" height="348" key="GridCell.Tab.1.bottom/0.0.1920.1040@0.0.1920.1040" timestamp="1579470821956" />
-    <state width="1877" height="348" key="GridCell.Tab.1.center" timestamp="1579470821956">
+    <state width="1877" height="348" key="GridCell.Tab.1.bottom/0.0.1920.1040@0.0.1920.1040" timestamp="1579479868177" />
+    <state width="1877" height="348" key="GridCell.Tab.1.center" timestamp="1579479868177">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state width="1877" height="348" key="GridCell.Tab.1.center/0.0.1920.1040@0.0.1920.1040" timestamp="1579470821956" />
-    <state width="1877" height="348" key="GridCell.Tab.1.left" timestamp="1579470821956">
+    <state width="1877" height="348" key="GridCell.Tab.1.center/0.0.1920.1040@0.0.1920.1040" timestamp="1579479868177" />
+    <state width="1877" height="348" key="GridCell.Tab.1.left" timestamp="1579479868177">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state width="1877" height="348" key="GridCell.Tab.1.left/0.0.1920.1040@0.0.1920.1040" timestamp="1579470821956" />
-    <state width="1877" height="348" key="GridCell.Tab.1.right" timestamp="1579470821956">
+    <state width="1877" height="348" key="GridCell.Tab.1.left/0.0.1920.1040@0.0.1920.1040" timestamp="1579479868177" />
+    <state width="1877" height="348" key="GridCell.Tab.1.right" timestamp="1579479868177">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state width="1877" height="348" key="GridCell.Tab.1.right/0.0.1920.1040@0.0.1920.1040" timestamp="1579470821956" />
-    <state x="880" y="134" key="SettingsEditor" timestamp="1579455948449">
+    <state width="1877" height="348" key="GridCell.Tab.1.right/0.0.1920.1040@0.0.1920.1040" timestamp="1579479868177" />
+    <state x="541" y="100" key="SettingsEditor" timestamp="1579480708696">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
     <state x="-1040" y="134" key="SettingsEditor/0.0.1536.824/-1920.0.1920.1040@-1920.0.1920.1040" timestamp="1579371235693" />
-    <state x="880" y="134" key="SettingsEditor/0.0.1920.1040@0.0.1920.1040" timestamp="1579455948449" />
+    <state x="541" y="100" key="SettingsEditor/0.0.1920.1040@0.0.1920.1040" timestamp="1579480708696" />
     <state x="656" y="345" key="com.intellij.ide.util.TipDialog" timestamp="1579455814966">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
@@ -195,6 +195,11 @@
           <url>file://$PROJECT_DIR$/src/com/LASSO/StandaloneSimulations/simulatedMaxElevations.java</url>
           <line>332</line>
           <option name="timeStamp" value="1" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/com/LASSO/ADcalculator.java</url>
+          <line>96</line>
+          <option name="timeStamp" value="2" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>

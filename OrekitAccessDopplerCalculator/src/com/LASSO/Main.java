@@ -27,6 +27,7 @@ import java.util.ArrayList;
 public class Main {
 
     public static void main(String[] args) {
+        Utils.addOrekitData();
 
         ///* CASE 4: Mess Bristol , Brockport,   Webster High School:43.204291, -77.469981
         double[] stationLatitudes= {43.209037, 42.700192,43.204291 };
@@ -34,14 +35,15 @@ public class Main {
         double[] stationAltitudes=  {0,  0,  0 };
         double[] minElevations ={0,0,0};
         TimeScale utc = TimeScalesFactory.getUTC();
+        double baseFrequency=437;
 
         //set initial date as October 30th, 2019 at 0:00
-        AbsoluteDate endDate = new AbsoluteDate(2020, 1, 21, 0, 0, 00.000, utc);
+        AbsoluteDate endDate = new AbsoluteDate(2020, 1, 23, 0, 0, 00.000, utc);
 
 
         ArrayList<Station> stations=Utils.createStations(false,stationLatitudes,stationLongitudes,stationAltitudes,minElevations);
 
-        ADcalculator calc=new ADcalculator(26719,60,stations);
+        ADcalculator calc=new ADcalculator(30776,60,stations,baseFrequency);
 
         calc.computeAccessTimes(endDate,true);
 

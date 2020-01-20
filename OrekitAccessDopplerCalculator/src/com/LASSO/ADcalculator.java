@@ -24,6 +24,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -46,11 +47,14 @@ public class ADcalculator {
     /** custom event detector used to determine when 3 stations have access to the satellite.*/
     private BooleanDetector threeStationDetector;
 
-    public ADcalculator(int noradID, double timeInterval, ArrayList<Station> stations){
-        Utils.addOrekitData();
+    /**This is the frequency the satellite transmits at, NOT the frequency the receiver will get.*/
+    private double baseFrequency;
+
+    public ADcalculator(int noradID, double timeInterval, ArrayList<Station> stations, double baseFrequency){
         this.noradID=noradID;
         this.timeInterval=timeInterval;
         this.stations=stations;
+        this.baseFrequency=baseFrequency;
 
         try {
             satelliteOrbit=CelestrakImporter.importSatelliteData(noradID);
@@ -101,7 +105,7 @@ public class ADcalculator {
             if(verbose) {
                 System.out.println("Event" +entryIndex);
             }
-            Access accessPoint=new Access(noradID,stationOverlap.get(entryIndex),stationOverlap.get(entryIndex+1),oreTLEPropagator);
+            Access accessPoint=new Access(noradID,stationOverlap.get(entryIndex),stationOverlap.get(entryIndex+1),oreTLEPropagator,baseFrequency);
             accessPoint.computeAccessCalculations(300,timeInterval);
             writeToText.append(accessPoint.toString());
             accesses.add(accessPoint);
@@ -120,7 +124,7 @@ public class ADcalculator {
      * @param threshold The approximate accuracy of the event detector. WARNING: there is still inherent error in the
      *                  propagator itself.
      * @param minElevation Use this if below a certain elevation, the stations cannot detect the object.
-     *                     //TODO consider changing minElevation to an ArrayList since each site may have a different min Elevation.
+     *                     //TODO consider changing minElevation to an ArrayList since each site may have a different min Elevation. The station object already has minElevation as an option.
      * @return a booleanDetector to use for propagation.
      */
     public void createBooleanDetector(double maxCheck, double threshold, double minElevation) {
@@ -138,13 +142,18 @@ public class ADcalculator {
 
     public void writeToFile(){
         try {
-            PrintWriter unWriter= new PrintWriter("./DopplerAccess"+noradID+".txt", "UTF_8");
+            PrintWriter unWriter= new PrintWriter("./DopplerAccess"+noradID+".txt", StandardCharsets.UTF_8);
             unWriter.print(writeToText);
             unWriter.close();
         } catch (FileNotFoundException e) {
             System.out.println("Could not find specified file");
+            System.out.println(e.getMessage());
         } catch (UnsupportedEncodingException e) {
-            System.out.println("Specified encoding not supposted.");
+            System.out.println("Specified encoding not supported.");
+            System.out.println(e.getMessage());
+        } catch (IOException e) {
+            System.out.println("Wrong Input");
+            System.out.println(e.getMessage());
         }
     }
 

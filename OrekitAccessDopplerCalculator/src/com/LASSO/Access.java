@@ -12,13 +12,14 @@ import java.util.ArrayList;
  */
 public class Access {
 
-    private ArrayList<TimeFrequencyPair> timesAndFrequency;
+    private ArrayList<TimeFrequencyPair> timesAndFrequency=new ArrayList<>();
 
     private int noradID;
 
     private EventsLogger.LoggedEvent begin;
     private EventsLogger.LoggedEvent end;
     private SGP4 oreTLEPropagator;
+    private double baseFrequency;
 
     /**
      *
@@ -27,11 +28,12 @@ public class Access {
      * @param end last time the satellite will be in view of the network
      * @param oreTLEPropagator the propagator associated with the TLE of this satellite.
      */
-    public Access(int noradID,EventsLogger.LoggedEvent begin, EventsLogger.LoggedEvent end, SGP4 oreTLEPropagator) {
+    public Access(int noradID,EventsLogger.LoggedEvent begin, EventsLogger.LoggedEvent end, SGP4 oreTLEPropagator, double baseFrequency) {
         this.noradID = noradID;
         this.begin = begin;
         this.end = end;
         this.oreTLEPropagator=oreTLEPropagator;
+        this.baseFrequency=baseFrequency;
     }
 
     public ArrayList<TimeFrequencyPair> getTimesAndFrequency() {
@@ -74,7 +76,7 @@ public class Access {
             //TODO Insert Doppler Shift calculations here.
 
             //insert whatever needed parameters into frequencyCalc.
-            TimeFrequencyPair omega=new TimeFrequencyPair(propagateTime,frequencyCalc());
+            TimeFrequencyPair omega=new TimeFrequencyPair(propagateTime,frequencyCalc(baseFrequency));
 
             timesAndFrequency.add(omega);
             propagateTime = propagateTime.shiftedBy(timeInterval); //getting info every x seconds.
@@ -84,7 +86,7 @@ public class Access {
     }
 
 
-    public ValueRange frequencyCalc(){
+    public ValueRange frequencyCalc(double baseFrequency){
         //TODO implement frequencyCalc method. Method should return the nominal frequency and estimate the lower and upper bound.
         return new ValueRange(437,436,438);
     }
