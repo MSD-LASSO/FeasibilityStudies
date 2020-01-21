@@ -98,6 +98,10 @@ public class ADcalculator {
             System.out.println(initialDate.toString());
         }
 
+        //Getting station frame for doppler calcs.
+        int stationFrameNo=2;
+        TopocentricFrame stationFrameForDoppler=stations.get(stationFrameNo).getFrame();
+
         ArrayList<Access> accesses=new ArrayList<>();
         //For each event, propagate from the start to the end of the access with the specified interval time step.
         for (int entryIndex=0;entryIndex<stationOverlap.size()-1;entryIndex=entryIndex+2) {
@@ -106,7 +110,7 @@ public class ADcalculator {
                 System.out.println("Event" +entryIndex);
             }
             Access accessPoint=new Access(noradID,stationOverlap.get(entryIndex),stationOverlap.get(entryIndex+1),oreTLEPropagator,baseFrequency);
-            accessPoint.computeAccessCalculations(300,timeInterval);
+            accessPoint.computeAccessCalculations(300,timeInterval,stationFrameForDoppler,inertialFrame);
             writeToText.append(accessPoint.toString());
             accesses.add(accessPoint);
 
@@ -130,9 +134,9 @@ public class ADcalculator {
     public void createBooleanDetector(double maxCheck, double threshold, double minElevation) {
 
         ArrayList<EventDetector> stationVisibilityDetectors=new ArrayList<>();
-        for (int i=0; i<stations.size();i++) {
+        for (Station station : stations) {
 
-            stationVisibilityDetectors.add(new ElevationDetector(maxCheck,threshold,stations.get(i).getFrame()).
+            stationVisibilityDetectors.add(new ElevationDetector(maxCheck, threshold, station.getFrame()).
                     withConstantElevation(minElevation).
                     withHandler(new RecordAndContinue()));
         }

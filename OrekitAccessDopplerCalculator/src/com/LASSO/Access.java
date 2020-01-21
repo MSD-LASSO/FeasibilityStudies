@@ -20,6 +20,7 @@ public class Access {
     private EventsLogger.LoggedEvent end;
     private SGP4 oreTLEPropagator;
     private double baseFrequency;
+    private double dopplerVelocity;
 
     /**
      *
@@ -61,7 +62,8 @@ public class Access {
      * @param backupTime amount of time (in sec) before and after a pass to record during also. Recommended ~5min.
      * @return list of all times to record and the frequency range to record at.
      */
-    public ArrayList<TimeFrequencyPair> computeAccessCalculations(double backupTime, double timeInterval){
+    public ArrayList<TimeFrequencyPair> computeAccessCalculations(double backupTime, double timeInterval,org.orekit.frames.TopocentricFrame staF,
+                                                                  org.orekit.frames.Frame theInertialFrame){
         AbsoluteDate propagateTime= begin.getState().getDate(); //setting initial time for propagation.
         AbsoluteDate endTime=end.getState().getDate();
 
@@ -70,13 +72,16 @@ public class Access {
 
         while (propagateTime.compareTo(endTime.shiftedBy(backupTime))<=0) {
 
-//            PVCoordinates pvInert = oreTLEPropagator.getPVCoordinates(propagateTime);
+            PVCoordinates pvInert = oreTLEPropagator.getPVCoordinates(propagateTime);
 //             Vector3D positionVectorSatellite=pvInert.getPosition();   //3D vector of satellite in earth EME2000 frame.
 //             String currentTimeStamp=propagateTime.getDate().toString();
-            //TODO Insert Doppler Shift calculations here.
+            PVCoordinates pvStation = theInertialFrame.getTransformTo(staF, propagateTime).transformPVCoordinates(pvInert);
+            //CALCULATING DOPPLER EFFECT (from orekit example online)
+            dopplerVelocity = org.hipparchus.geometry.euclidean.threed.Vector3D.dotProduct(pvStation.getPosition(), pvStation.getVelocity()) / pvStation.getPosition().getNorm();
+            //System.out.println(doppler);
 
             //insert whatever needed parameters into frequencyCalc.
-            TimeFrequencyPair omega=new TimeFrequencyPair(propagateTime,frequencyCalc(baseFrequency));
+            TimeFrequencyPair omega=new TimeFrequencyPair(propagateTime,frequencyCalc(baseFrequency,dopplerVelocity));
 
             timesAndFrequency.add(omega);
             propagateTime = propagateTime.shiftedBy(timeInterval); //getting info every x seconds.
@@ -86,8 +91,14 @@ public class Access {
     }
 
 
-    public ValueRange frequencyCalc(double baseFrequency){
+    public ValueRange frequencyCalc(double baseFrequency, double dopplerVelocity){
         //TODO implement frequencyCalc method. Method should return the nominal frequency and estimate the lower and upper bound.
+        double c=org.orekit.utils.Constants.SPEED_OF_LIGHT;
+
+        //shifted frequency from Doppler effect. Altered by a factor of (c+ v_receiver) / (c+v_satellite)
+
+        double shiftedFreq= (c/(c+dopplerVelocity))*baseFrequency;
+        System.out.println(shiftedFreq);
         return new ValueRange(437,436,438);
     }
 
