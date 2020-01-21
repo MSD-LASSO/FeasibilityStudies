@@ -21,7 +21,8 @@ OF{10}='MeesInnWilliamson';
 %% Inputs
 InputFolder='MonteCarloResults/Estimated Uncertainty';
 % InputFolder='.';
-PlotOutputFolder='MonteCarlo10TrianglesEstimatedUncertainty';
+% PlotOutputFolder='MonteCarlo10TrianglesEstimatedUncertainty';
+PlotOutputFolder='dummy';
 
 numRows=18; %numRows=6;
 numCols=36; %numCols=9;
@@ -35,9 +36,10 @@ UncertaintyCriteria=5; %index of Vals to use.
 % RL_err;
 % SensitivityTest;
 
-TestsToRun=[1 2 3 4 5 6 7 8 9 10];
-% TestsToRun=[8];
-plotIntermediates=0;
+% TestsToRun=[1 2 3 4 5 6 7 8 9 10];
+TestsToRun=[8];
+plotIntermediates=2;
+AuxInput='MonteCarloResults/EdgesAdjustedClosestHyperbolaCost';
 
 %% Compute Plots.
 n=length(TestsToRun);
@@ -53,6 +55,19 @@ MaxSensitivities=cell(n,1);
 
 for TN=1:length(TestsToRun)
 matName=OF{TestsToRun(TN)};
+
+if plotIntermediates==2
+    load([AuxInput '/OutputMonteCarlo' matName])
+    % AllMeanErrors(AllMeanErrors==0)=nan;
+    AllstdDevError(AllstdDevError==0)=nan;
+    %% Reorganize the data
+    TotalUncertaintyAux=(AllMeanErrors+2*AllstdDevError)*180/pi; %get error in degrees.
+    zAux=reshape(TotalUncertaintyAux(:,1),numRows,numCols);
+    z2Aux=reshape(TotalUncertaintyAux(:,2),numRows,numCols);
+end
+    
+    
+
 load([InputFolder '/OutputMonteCarlo' matName])
 % AllMeanErrors(AllMeanErrors==0)=nan;
 AllstdDevError(AllstdDevError==0)=nan;
@@ -96,6 +111,38 @@ if plotIntermediates==1
 %     plot3(Azimuths,Elevations,TotalUncertainty(:,2),'*')
     legend('Azimuth Uncertainty','Elevation Uncertainty')
     zlim([0 Vals(UncertaintyCriteria)*2])
+    if length(TestsToRun)>1
+        GraphSaver({'png','fig'},['Plots/' PlotOutputFolder '/' matName],1,1);
+    end
+elseif plotIntermediates==2
+    figure()
+    colors = get(gca, 'ColorOrder');
+    colormap(colors)
+    surf(x,y,z,z*0+1)
+    title('Uncertainty comparison Azimuth')
+    xlabel('Input Azimuth (deg)')
+    ylabel('Input Elevation (deg)')
+    zlabel('Azimuth  Uncertainty (deg)')
+    hold on
+    grid on
+    surf(x,y,zAux,zAux*0+2)
+    legend('Azimuth Estimated Unc.','Azimuth Absolute Unc.')
+    zlim([0 Vals(UncertaintyCriteria)*2])
+    
+    figure()
+    colors = get(gca, 'ColorOrder');
+    colormap(colors)
+    surf(x,y,z2,z2*0+1)
+    title('Uncertainty comparison Elevation')
+    xlabel('Input Azimuth (deg)')
+    ylabel('Input Elevation (deg)')
+    zlabel('Elevation  Uncertainty (deg)')
+    hold on
+    grid on
+    surf(x,y,z2Aux,z2Aux*0+2)
+    legend('Elevation Estimated Unc.','Elevation Absolute Unc.')
+    zlim([0 Vals(UncertaintyCriteria)*2])
+    
     if length(TestsToRun)>1
         GraphSaver({'png','fig'},['Plots/' PlotOutputFolder '/' matName],1,1);
     end

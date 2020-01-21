@@ -44,7 +44,7 @@ ReceiverError=[zeros(3,3) ClkError];
 
 %for really quick testing
 AzimuthRange=180;
-ElevationRange=45;
+ElevationRange=5;
 
 %this set of inputs causes an error!
 % AzimuthRange=0:2.5:359; ElevationRange=1:1:4;
@@ -105,12 +105,12 @@ for i=start:p
     Az=Azimuths(i);
     El=Elevations(i);
     Rng=Ranges(i);
-        [means,stdDev,meanError,stdDevError, Data]=MonteCarlo(numTests,Az,El,Rng,T,RL_err,ClkError,DebugMode,solver,1);
-        AllMeans(i,:)=means;
-        AllstdDevs(i,:)=stdDev;
-        AllMeanErrors(i,:)=meanError;
-        AllstdDevError(i,:)=stdDevError;
-        AllRawData{i}=Data;
+%         [means,stdDev,meanError,stdDevError, Data]=MonteCarlo(numTests,Az,El,Rng,T,RL_err,ClkError,DebugMode,solver,1);
+%         AllMeans(i,:)=means;
+%         AllstdDevs(i,:)=stdDev;
+%         AllMeanErrors(i,:)=meanError;
+%         AllstdDevError(i,:)=stdDevError;
+%         AllRawData{i}=Data;
         
         [lat, long, h]=enu2geodetic(Rng*cosd(El)*sind(Az),Rng*cosd(El)*cosd(Az),Rng*sind(El),TR(1,1),TR(1,2),TR(1,3),Sphere);
         SAT=getStruct([lat long h],zeros(1,4),RT(1,:),zeros(1,4),Sphere);

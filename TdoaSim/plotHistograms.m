@@ -18,7 +18,7 @@ if ~(isnan(Az) || isnan(El))
 else
     Az=Data.EstAzEl(1,1);
     El=Data.EstAzEl(1,2);
-    nominalReference=EstRef(1,:);
+    nominalReference=Data.EstRef(1,:);
     Errors=Data.EstAzEl-[Az El];
     RefErrors=Data.References-nominalReference;
 end

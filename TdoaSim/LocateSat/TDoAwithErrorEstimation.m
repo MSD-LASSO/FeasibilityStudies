@@ -90,7 +90,7 @@ uncerAzEl=nanstd(EstAzEl)*2;
 
 RefAz=EstAzEl(:,1);
 RefEl=EstAzEl(:,2);
-Rng=500e3; %Range is a free variable. Pick anything desired. A large number makes the graph look nicer. 
+Rng=2500e3; %Range is a free variable. Pick anything desired. A large number makes the graph look nicer. 
 
 LineEndPoint=[Rng*cos(RefEl).*sin(RefAz) Rng*cos(RefEl).*cos(RefAz) Rng*sin(RefEl)]+EstRef;
 LineSlopes=LineEndPoint-EstRef;
@@ -217,7 +217,7 @@ location=[nominalAzEl 0; nominalReference; meanAzEl 0; meanRef];
 location_error=[uncerAzEl 0; uncertaintyRef; uncerAzEl 0; uncertaintyRef];
 
 if DebugMode>0
-    plotHistograms(rawData,nan,plotSavePath,1);
+    plotHistograms(rawData,nan(1,2),plotSavePath,1);
 end
 
 end
