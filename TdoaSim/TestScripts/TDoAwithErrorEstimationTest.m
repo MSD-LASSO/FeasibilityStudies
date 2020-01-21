@@ -39,12 +39,12 @@ ReceiverError=[zeros(3,3) ClkError];
 % ElevationRange=5:5:90;
 
 %for quick testing
-AzimuthRange=0:45:360;
-ElevationRange=15:15:80;
+% AzimuthRange=0:45:360;
+% ElevationRange=15:15:80;
 
 %for really quick testing
-% AzimuthRange=0;
-% ElevationRange=15;
+AzimuthRange=180;
+ElevationRange=45;
 
 %this set of inputs causes an error!
 % AzimuthRange=0:2.5:359; ElevationRange=1:1:4;
@@ -53,7 +53,7 @@ ElevationRange=15:15:80;
 SatelliteAltitudeRange=500e3; %range of satellite range values.
 
 
-DebugMode=0;
+DebugMode=1;
 T=TR;
 OutputFolder=OF;
 start=1;
@@ -105,7 +105,7 @@ for i=start:p
     Az=Azimuths(i);
     El=Elevations(i);
     Rng=Ranges(i);
-        [means,stdDev,meanError,stdDevError, Data]=MonteCarlo(numTests,Az,El,Rng,T,RL_err,ClkError,DebugMode,solver);
+        [means,stdDev,meanError,stdDevError, Data]=MonteCarlo(numTests,Az,El,Rng,T,RL_err,ClkError,DebugMode,solver,1);
         AllMeans(i,:)=means;
         AllstdDevs(i,:)=stdDev;
         AllMeanErrors(i,:)=meanError;

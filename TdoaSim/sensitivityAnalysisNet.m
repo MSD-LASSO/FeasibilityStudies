@@ -46,7 +46,9 @@ Sphere=wgs84Ellipsoid;
 numSamples=nan; %for OneAtATime. Set to nan to skip.
 %numTests to run before running statistics. Min is 15-30 by Central Limit
 %Theorem. Recommended: 1000. This is not practical for the symbolic solver.
-numTests=100; %for MonteCarlo. Set to nan to skip.
+numTests=30; %for MonteCarlo. Set to nan to skip.
+useAbsoluteError=0; %for MonteCarlo. Set to 1 to use the actual satellite position in the error calculation. 
+%leave at 0 to allow code to estimate its error based on statistics. 
 DebugMode=-1; %tells OneAtATime to not output anything. 
 
 ReceiverError=[zeros(3,3) ClkError];
@@ -73,8 +75,8 @@ ElevationRange=5:5:90;
 
 SatelliteAltitudeRange=500e3; %range of satellite range values.
 
-Tests=[1,2,3,4,5,6,7,8,9,10]; 
-% Tests=8;
+% Tests=[1,2,3,4,5,6,7,8,9,10]; 
+Tests=8;
 solver=1; %0 symbolic solver, 1 least squares.
 for TestNum=1:length(Tests)
 T=TR{Tests(TestNum)};
@@ -168,7 +170,7 @@ if ~isnan(numTests)
         El=Elevations(i);
         Rng=Ranges(i);
         try
-            [means,stdDev,meanError,stdDevError, Data]=MonteCarlo(numTests,Az,El,Rng,T,RL_err,ClkError,DebugMode,solver);
+            [means,stdDev,meanError,stdDevError, Data]=MonteCarlo(numTests,Az,El,Rng,T,RL_err,ClkError,DebugMode,solver,useAbsoluteError,T(1,:));
             AllMeans(i,:)=means;
             AllstdDevs(i,:)=stdDev;
             AllMeanErrors(i,:)=meanError;

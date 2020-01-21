@@ -136,25 +136,26 @@ meanLineSlope=nanmean(LineSlopes);
 % del=sqrt((deldx*dx)^2+(deldy*dy)^2+(deldz*dz)^2);
 
 %% Plot
-figure()
-plot3(EstRef(1,1),EstRef(1,2),EstRef(1,3),'o','linewidth',4,'color','green')
-hold on
-plot3(meanRef(1,1),meanRef(1,2),meanRef(1,3),'s','linewidth',4,'color','green')
-plot3([EstRef(1,1) LineEndPoint(1,1)], [EstRef(1,2) LineEndPoint(1,2)], [EstRef(1,3) LineEndPoint(1,3)], 'color','red','linewidth',3)
-plot3([meanRef(1,1) meanLineSlope(1)+meanRef(1,1)], [meanRef(1,2) meanRef(1,2)+meanLineSlope(2)], [meanRef(1,3) meanRef(1,3)+meanLineSlope(3)], 'color',[0.545,0,0],'linewidth',3)
+if DebugMode>0
+    figure()
+    plot3(EstRef(1,1),EstRef(1,2),EstRef(1,3),'o','linewidth',4,'color','green')
+    hold on
+    plot3(meanRef(1,1),meanRef(1,2),meanRef(1,3),'s','linewidth',4,'color','green')
+    plot3([EstRef(1,1) LineEndPoint(1,1)], [EstRef(1,2) LineEndPoint(1,2)], [EstRef(1,3) LineEndPoint(1,3)], 'color','red','linewidth',3)
+    plot3([meanRef(1,1) meanLineSlope(1)+meanRef(1,1)], [meanRef(1,2) meanRef(1,2)+meanLineSlope(2)], [meanRef(1,3) meanRef(1,3)+meanLineSlope(3)], 'color',[0.545,0,0],'linewidth',3)
 
-plot3(EstRef(2:end,1),EstRef(2:end,2),EstRef(2:end,3),'.','linewidth',3,'color','blue');
-% title(['Reference Errors: ' num2str(uncertaintyRef) 'm and AzEl Errors: ' num2str(daz*180/pi) '&' num2str(del*180/pi) ' deg'])
-title(['Reference Errors: ' num2str(uncertaintyRef) 'm and AzEl Errors: ' num2str(uncerAzEl(1)*180/pi) '&' num2str(uncerAzEl(2)*180/pi) ' deg'])
-xlabel('X east (m)')
-ylabel('Y north (m)')
-zlabel('Z zenith (m)')
-grid on
+    plot3(EstRef(2:end,1),EstRef(2:end,2),EstRef(2:end,3),'.','linewidth',3,'color','blue');
+    % title(['Reference Errors: ' num2str(uncertaintyRef) 'm and AzEl Errors: ' num2str(daz*180/pi) '&' num2str(del*180/pi) ' deg'])
+    title(['Reference Errors: ' num2str(uncertaintyRef) 'm and AzEl Errors: ' num2str(uncerAzEl(1)*180/pi) '&' num2str(uncerAzEl(2)*180/pi) ' deg'])
+    xlabel('X east (m)')
+    ylabel('Y north (m)')
+    zlabel('Z zenith (m)')
+    grid on
 
 
-for jj=1:length(LineEndPoint)
-    plot3([EstRef(jj,1) LineEndPoint(jj,1)], [EstRef(jj,2) LineEndPoint(jj,2)], [EstRef(jj,3) LineEndPoint(jj,3)],'.-', 'color','cyan')
-end
+    for jj=1:length(LineEndPoint)
+        plot3([EstRef(jj,1) LineEndPoint(jj,1)], [EstRef(jj,2) LineEndPoint(jj,2)], [EstRef(jj,3) LineEndPoint(jj,3)],'.-', 'color','cyan')
+    end
 
 %either does not work as intended or just doesn't look pretty.
 %         for i1=-1:2:1
@@ -173,9 +174,9 @@ end
 %             end
 %         end
 
-legend('Nominal Reference','mean Reference','Nominal Direction','mean Direction','Reference Points','Directions')
+    legend('Nominal Reference','mean Reference','Nominal Direction','mean Direction','Reference Points','Directions')
 
-
+end
 
 
 

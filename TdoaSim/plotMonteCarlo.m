@@ -19,8 +19,9 @@ OF{9}='MeesWebsterGCC';
 OF{10}='MeesInnWilliamson';
 
 %% Inputs
-InputFolder='MonteCarloResults/EdgesAdjustedClosestHyperbolaCost';
-PlotOutputFolder='MonteCarlo10TrianglesEdgesAdjustedHyperbolaCost';
+InputFolder='MonteCarloResults/Estimated Uncertainty';
+% InputFolder='.';
+PlotOutputFolder='MonteCarlo10TrianglesEstimatedUncertainty';
 
 numRows=18; %numRows=6;
 numCols=36; %numCols=9;
@@ -34,8 +35,8 @@ UncertaintyCriteria=5; %index of Vals to use.
 % RL_err;
 % SensitivityTest;
 
-% TestsToRun=[1 2 3 4 5 6 7 8 9 10];
-TestsToRun=[8];
+TestsToRun=[1 2 3 4 5 6 7 8 9 10];
+% TestsToRun=[8];
 plotIntermediates=0;
 
 %% Compute Plots.
@@ -53,7 +54,7 @@ MaxSensitivities=cell(n,1);
 for TN=1:length(TestsToRun)
 matName=OF{TestsToRun(TN)};
 load([InputFolder '/OutputMonteCarlo' matName])
-AllMeanErrors(AllMeanErrors==0)=nan;
+% AllMeanErrors(AllMeanErrors==0)=nan;
 AllstdDevError(AllstdDevError==0)=nan;
 %% Reorganize the data
 TotalUncertainty=(AllMeanErrors+2*AllstdDevError)*180/pi; %get error in degrees. 
@@ -156,14 +157,16 @@ figure()
 subplot(1,2,1)
 boxplot(Azb,'symbol','');
 title('Azimuth Uncertainties')
-ylim([0 max(max(AzUncertaintyBox))*1.25])
+% ylim([0 max(max(AzUncertaintyBox))*1.25])
+ylim([0 30]);
 ylabel('Azimuth Uncertainty (deg)')
 xlabel('Tests')
 
 subplot(1,2,2)
 boxplot(Elb,'symbol','');
 title('Elevation Uncertainties')
-ylim([0 max(max(ElUncertaintyBox))*1.25])
+% ylim([0 max(max(ElUncertaintyBox))*1.25])
+ylim([0 10])
 ylabel('Elevation Uncertainty (deg)')
 xlabel('Tests')
 

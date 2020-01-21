@@ -1,4 +1,4 @@
-function [means,stdDev,meanError,stdDevError, Data]=MonteCarlo(numTests,Az,El,Rng,ReceiverLocations,RL_err,ClkError,DebugMode,solver)
+function [means,stdDev,meanError,stdDevError, Data]=MonteCarlo(numTests,Az,El,Rng,ReceiverLocations,RL_err,ClkError,DebugMode,solver,useAbsoluteError,TR)
 %This function perturbates the given parameters by their error,
 %approximated as a Gaussian. This will give us insight into approximate
 %uncertainties.
@@ -23,6 +23,19 @@ expected=SAT.Topocoord;
 %% Set up nominal conditions
 [TimeDiff, TimeDiffErr]=timeDiff3toMatrix(GND,SAT);
 % [X, Y, Z]=geodetic2enu(ReceiverLocations(:,1),ReceiverLocations(:,2),ReceiverLocations(:,3),Rx,Ry,Rz,Sphere);
+
+%% Estimate using relative error if asked
+if useAbsoluteError==0
+    TR_err=[1e-5*pi/180 1e-5*pi/180 3];
+    [location,location_error,Data]=TDoAwithErrorEstimation(numTests,ReceiverError(:,1:3),TimeDiffErr*3e8,TR_err,RT,TimeDiff*3e8,TR,Sphere,0,zPlanes,DebugMode,'',solver);
+    means=Data.meanAzEl;
+    stdDev=Data.AzElstandardDeviation;
+    meanError=(Data.nominalAzEl-Data.meanAzEl)*0; %zero out. doesn't seem like a good measure
+    stdDevError=Data.AzElstandardDeviation;
+    return
+end
+
+
 %% Run No error.
 cols=3;
 %here to optimize parfor.
@@ -33,7 +46,7 @@ TDoAsolution=cell(numTests,1);
 EstAzEl=zeros(numTests,2);
 Errors=zeros(numTests,2);
 
-[actualAzEl,err,locations]=doTest(RT,TimeDiff*3e8,Reference,Sphere,zPlanes,DebugMode,1,Az,El,expected,solver);
+% [actualAzEl,err,locations]=doTest(RT,TimeDiff*3e8,Reference,Sphere,zPlanes,DebugMode,1,Az,El,expected,solver);
 % DDs(1,:)=[TimeDiff(1,2), TimeDiff(1,3), TimeDiff(2,3)]*3e8;
 % Rlocations{1}=RT;
 % TDoAsolution{1}=locations;
