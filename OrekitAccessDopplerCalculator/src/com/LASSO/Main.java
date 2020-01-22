@@ -38,7 +38,7 @@ public class Main {
         double baseFrequency=437;
 
         //set initial date as October 30th, 2019 at 0:00
-        AbsoluteDate endDate = new AbsoluteDate(2020, 1, 23, 0, 0, 00.000, utc);
+        AbsoluteDate endDate = new AbsoluteDate(2020, 1, 24, 0, 0, 00.000, utc);
 
 
         ArrayList<Station> stations=Utils.createStations(false,stationLatitudes,stationLongitudes,stationAltitudes,minElevations);

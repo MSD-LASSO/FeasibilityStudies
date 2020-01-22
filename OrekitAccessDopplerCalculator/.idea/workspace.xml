@@ -44,7 +44,7 @@
       <recent name="C:\Users\Acer\IdeaProjects\OrekitAccessDopplerCalculator\src\com\LASSO" />
     </key>
   </component>
-  <component name="RunManager" selected="Application.elevationDetectorExample">
+  <component name="RunManager" selected="Application.Main">
     <configuration name="Main" type="Application" factoryName="Application" temporary="true">
       <option name="MAIN_CLASS_NAME" value="com.LASSO.Main" />
       <module name="OrekitAccessDopplerCalculator" />
@@ -96,8 +96,8 @@
     </configuration>
     <recent_temporary>
       <list>
-        <item itemvalue="Application.elevationDetectorExample" />
         <item itemvalue="Application.Main" />
+        <item itemvalue="Application.elevationDetectorExample" />
         <item itemvalue="Application.simulatedMaxElevations" />
         <item itemvalue="Application.simODErrorAnalysis" />
       </list>
@@ -149,26 +149,26 @@
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
     <state x="666" y="262" key="FileChooserDialogImpl/0.0.1920.1040@0.0.1920.1040" timestamp="1579480662494" />
-    <state width="938" height="282" key="GridCell.Tab.0.bottom" timestamp="1579730233170">
-      <screen x="-1920" y="0" width="1920" height="1040" />
+    <state width="938" height="282" key="GridCell.Tab.0.bottom" timestamp="1579733858679">
+      <screen x="0" y="0" width="1920" height="1040" />
     </state>
     <state width="938" height="282" key="GridCell.Tab.0.bottom/0.0.1536.824/-1920.0.1920.1040@-1920.0.1920.1040" timestamp="1579730233170" />
-    <state width="938" height="282" key="GridCell.Tab.0.bottom/0.0.1920.1040@0.0.1920.1040" timestamp="1579729312041" />
-    <state width="938" height="282" key="GridCell.Tab.0.center" timestamp="1579730233169">
-      <screen x="-1920" y="0" width="1920" height="1040" />
+    <state width="938" height="282" key="GridCell.Tab.0.bottom/0.0.1920.1040@0.0.1920.1040" timestamp="1579733858679" />
+    <state width="938" height="282" key="GridCell.Tab.0.center" timestamp="1579733858679">
+      <screen x="0" y="0" width="1920" height="1040" />
     </state>
     <state width="938" height="282" key="GridCell.Tab.0.center/0.0.1536.824/-1920.0.1920.1040@-1920.0.1920.1040" timestamp="1579730233169" />
-    <state width="938" height="282" key="GridCell.Tab.0.center/0.0.1920.1040@0.0.1920.1040" timestamp="1579729312040" />
-    <state width="938" height="282" key="GridCell.Tab.0.left" timestamp="1579730233169">
-      <screen x="-1920" y="0" width="1920" height="1040" />
+    <state width="938" height="282" key="GridCell.Tab.0.center/0.0.1920.1040@0.0.1920.1040" timestamp="1579733858679" />
+    <state width="938" height="282" key="GridCell.Tab.0.left" timestamp="1579733858679">
+      <screen x="0" y="0" width="1920" height="1040" />
     </state>
     <state width="938" height="282" key="GridCell.Tab.0.left/0.0.1536.824/-1920.0.1920.1040@-1920.0.1920.1040" timestamp="1579730233169" />
-    <state width="938" height="282" key="GridCell.Tab.0.left/0.0.1920.1040@0.0.1920.1040" timestamp="1579729312040" />
-    <state width="938" height="282" key="GridCell.Tab.0.right" timestamp="1579730233170">
-      <screen x="-1920" y="0" width="1920" height="1040" />
+    <state width="938" height="282" key="GridCell.Tab.0.left/0.0.1920.1040@0.0.1920.1040" timestamp="1579733858679" />
+    <state width="938" height="282" key="GridCell.Tab.0.right" timestamp="1579733858679">
+      <screen x="0" y="0" width="1920" height="1040" />
     </state>
     <state width="938" height="282" key="GridCell.Tab.0.right/0.0.1536.824/-1920.0.1920.1040@-1920.0.1920.1040" timestamp="1579730233170" />
-    <state width="938" height="282" key="GridCell.Tab.0.right/0.0.1920.1040@0.0.1920.1040" timestamp="1579729312040" />
+    <state width="938" height="282" key="GridCell.Tab.0.right/0.0.1920.1040@0.0.1920.1040" timestamp="1579733858679" />
     <state width="938" height="348" key="GridCell.Tab.1.bottom" timestamp="1579729286863">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>

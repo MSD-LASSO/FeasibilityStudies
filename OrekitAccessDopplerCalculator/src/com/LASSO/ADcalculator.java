@@ -72,7 +72,7 @@ public class ADcalculator {
 //        AbsoluteDate initialDate = new AbsoluteDate(2019, 10, 30, 0, 0, 00.000, utc);
         Date today= Calendar.getInstance().getTime();
         //TODO convert this to an Absolute Date.
-        AbsoluteDate initialDate=new AbsoluteDate(2020,1,19,0,0,00.000,utc);
+        AbsoluteDate initialDate=new AbsoluteDate(2020,1,22,16,0,00.000,utc);
 
         //TODO How can we better quanitify these? Does it matter?
         double mass=100; // 54 kg is FalconSat3. 100kg assumption?
@@ -137,11 +137,10 @@ public class ADcalculator {
         for (Station station : stations) {
 
             stationVisibilityDetectors.add(new ElevationDetector(maxCheck, threshold, station.getFrame()).
-                    withConstantElevation(minElevation).
-                    withHandler(new RecordAndContinue()));
+                    withConstantElevation(minElevation));
         }
 
-        threeStationDetector=BooleanDetector.andCombine(stationVisibilityDetectors);
+        threeStationDetector=BooleanDetector.andCombine(stationVisibilityDetectors).withHandler(new RecordAndContinue<>());
     }
 
     public void writeToFile(){
