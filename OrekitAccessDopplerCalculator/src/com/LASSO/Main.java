@@ -8,6 +8,7 @@ import org.orekit.time.TimeScale;
 import org.orekit.time.TimeScalesFactory;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 
@@ -26,19 +27,30 @@ import java.util.ArrayList;
 
 public class Main {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws FileNotFoundException {
         Utils.addOrekitData();
 
+        String fileName="/Users/mtruong/IdeaProjects/FeasibilityStudies/OrekitAccessDopplerCalculator/LASSO_INPUT.txt";
+        InputReader laReada=new InputReader(fileName);
+        laReada.read();
+
+
+        /*
         ///* CASE 4: Mess Bristol , Brockport,   Webster High School:43.204291, -77.469981
         double[] stationLatitudes= {43.209037, 42.700192,43.204291 };
         double[] stationLongitudes=  {-77.950921,-77.408628,-77.469981};
+
+//        double[] stationLatitudes= {43.1574, 43.1574,43.1574 };
+//        double[] stationLongitudes=  {-77.6042,-77.6042,-77.6042};
+
+
         double[] stationAltitudes=  {0,  0,  0 };
         double[] minElevations ={0,0,0};
         TimeScale utc = TimeScalesFactory.getUTC();
         double baseFrequency=437;
 
-        //set initial date as October 30th, 2019 at 0:00
-        AbsoluteDate endDate = new AbsoluteDate(2020, 1, 24, 0, 0, 00.000, utc);
+        //setting end date for propagation (initial is set in ADcalculator)?
+        AbsoluteDate endDate = new AbsoluteDate(2020, 1, 23, 0, 0, 00.000, utc);
 
 
         ArrayList<Station> stations=Utils.createStations(false,stationLatitudes,stationLongitudes,stationAltitudes,minElevations);
@@ -61,5 +73,6 @@ public class Main {
 //        } catch (IOException e) {
 //            e.printStackTrace();
 //        }
+        */
     }
 }

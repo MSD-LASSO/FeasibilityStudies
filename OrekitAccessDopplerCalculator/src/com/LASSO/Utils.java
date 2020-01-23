@@ -17,7 +17,9 @@ import java.util.ArrayList;
 public class Utils {
 
     public static void addOrekitData() {
-        File orekitData = new File(".\\orekit-data-master");
+        //File orekitData = new File(".\\orekit-data-master"); //for windows
+        File orekitData = new File("./orekit-data-master"); //for mac
+
         DataProvidersManager manager = DataProvidersManager.getInstance();
         manager.addProvider(new DirectoryCrawler(orekitData));
     }
