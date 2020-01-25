@@ -1,0 +1,162 @@
+# this module will be imported in the into your flowgraph
+import os
+import re
+from datetime import datetime
+
+text="./LASSO_INPUT.txt"
+
+
+# As written, this program reads the text 5 five times to get all the variables. Using global variables is another
+# option that's just as nonideal. Maybe something in GNU makes this easier?
+def read(ID) :
+    file1=open("C:/Users/Acer/Desktop/MSD/GNU/FeasibilityStudies/GNU/read Text File/LASSO_INPUT.txt")
+    # transform cannot do decimals or dates.
+
+    noradID=transform(file1.readline())
+    baseFreq=transform(file1.readline())
+    timeInterval=transform(file1.readline())
+    endTimeAsString=file1.readline()
+    errorTime=transform(file1.readline())
+
+    endDate=getDate(endTimeAsString)
+
+
+
+    if ID == 1:
+        return noradID
+    elif ID==2:
+        return baseFreq
+    elif ID==3:
+        return timeInterval
+    elif ID==4:
+        return errorTime
+    elif ID==5:
+        return endDate
+    #
+    # return endDate
+
+
+def transform(stringToRead):
+    # see https://www.tutorialspoint.com/How-to-extract-numbers-from-a-string-in-Python
+    [float(s) for s in re.findall(r'-?\d+\.?\d*', stringToRead)]
+    return s
+
+
+# Needs further research to get this working flawlessly.
+def getDate(stringToRead):
+    # endTime=2020-01-19T10:20:03.000:-15:45
+    stringToRead=remove_prefix(stringToRead,"endTime=")
+
+    # TODO explore this more. I don't know if this is just a windows thing, but I can't read the time zone with %z
+    stringToRead=remove_from_end(stringToRead,8)
+
+    return datetime.strptime(stringToRead,"%Y-%m-%dT%H:%M:%S.%f")
+    # return datetime.strptime(stringToRead,"%Y-%m-%dT%H:%M:%S.%f:%z")
+
+# https://stackoverflow.com/questions/16891340/remove-a-prefix-from-a-string
+def remove_prefix(string, prefix):
+    return string[string.startswith(prefix) and len(prefix):]
+
+def remove_from_end(string, num):
+    return string[:-num]
+
+
+
+
+
+
+
+///////////////////////////////////////////
+
+# this module will be imported in the into your flowgraph
+import os
+import re
+from datetime import datetime
+import numpy
+
+# As written, this program reads the text 5 five times to get all the variables. Using global variables is another
+# option that's just as nonideal. Maybe something in GNU makes this easier?
+def read(noradID) :
+    file1=open("C:/Users/Acer/Desktop/MSD/GNU/FeasibilityStudies/GNU/read Text File/DopplerAccess"+noradID+".txt")
+    # transform cannot do decimals or dates.
+
+    file1.readline()
+    endofAccess=False
+    counter=0
+    time=[]
+    freqNominal=[]
+    frequnder=[]
+    freqover=[]
+
+    while not endofAccess:
+        string=file1.readline()
+        if "Access" in string :
+            endofAccess=True
+        else:
+            string=remove_from_end(string,2)
+            splitstrings=string.split("     ")
+            # return splitstrings[0]
+            # time[counter]=getDate(splitstrings[0])
+            # freqNominal[counter]=transform(splitstrings[1])
+            # frequnder[counter]=transform(splitstrings[2])
+            # freqover[counter]=transform(splitstrings[3])
+            time.append(getDate(splitstrings[0]))
+            freqNominal.append(transform(splitstrings[1]))
+            frequnder.append(transform(splitstrings[2]))
+            freqover.append(transform(splitstrings[3]))
+            counter=counter+1
+
+    return freqNominal
+
+
+
+
+
+
+    # noradID=transform(file1.readline())
+    # baseFreq=transform(file1.readline())
+    # timeInterval=transform(file1.readline())
+    # endTimeAsString=file1.readline()
+    # errorTime=transform(file1.readline())
+    #
+    # endDate=getDate(endTimeAsString)
+    #
+    #
+    #
+    # if ID == 1:
+    #     return noradID
+    # elif ID==2:
+    #     return baseFreq
+    # elif ID==3:
+    #     return timeInterval
+    # elif ID==4:
+    #     return errorTime
+    # elif ID==5:
+    #     return endDate
+    #
+    # return endDate
+
+
+def transform(stringToRead):
+    # see https://www.tutorialspoint.com/How-to-extract-numbers-from-a-string-in-Python
+    [float(s) for s in re.findall(r'-?\d+\.?\d*', stringToRead)]
+    return s
+
+
+# Needs further research to get this working flawlessly.
+def getDate(stringToRead):
+    # endTime=2020-01-19T10:20:03.000:-15:45
+    # stringToRead=remove_prefix(stringToRead,"endTime=")
+
+    # TODO explore this more. I don't know if this is just a windows thing, but I can't read the time zone with %z
+    # stringToRead=remove_from_end(stringToRead,8)
+
+    return datetime.strptime(stringToRead,"%Y-%m-%dT%H:%M:%S.%f")
+    # return datetime.strptime(stringToRead,"%Y-%m-%dT%H:%M:%S.%f:%z")
+
+# https://stackoverflow.com/questions/16891340/remove-a-prefix-from-a-string
+def remove_prefix(string, prefix):
+    return string[string.startswith(prefix) and len(prefix):]
+
+def remove_from_end(string, num):
+    return string[:-num]

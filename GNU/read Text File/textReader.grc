@@ -101,7 +101,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(8, 228)</value>
+      <value>(8, 300)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -109,7 +109,7 @@
     </param>
     <param>
       <key>id</key>
-      <value>booleanOpen</value>
+      <value>baseFrequency</value>
     </param>
     <param>
       <key>value</key>
@@ -128,7 +128,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(8, 160)</value>
+      <value>(16, 524)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -136,11 +136,246 @@
     </param>
     <param>
       <key>id</key>
-      <value>samp_rate</value>
+      <value>endDate</value>
     </param>
     <param>
       <key>value</key>
-      <value>stuff.double(3)</value>
+      <value>TextFileReader.read(5)</value>
+    </param>
+  </block>
+  <block>
+    <key>variable</key>
+    <param>
+      <key>comment</key>
+      <value></value>
+    </param>
+    <param>
+      <key>_enabled</key>
+      <value>True</value>
+    </param>
+    <param>
+      <key>_coordinate</key>
+      <value>(16, 452)</value>
+    </param>
+    <param>
+      <key>_rotation</key>
+      <value>0</value>
+    </param>
+    <param>
+      <key>id</key>
+      <value>errorInTime</value>
+    </param>
+    <param>
+      <key>value</key>
+      <value>TextFileReader.read(4)</value>
+    </param>
+  </block>
+  <block>
+    <key>variable</key>
+    <param>
+      <key>comment</key>
+      <value></value>
+    </param>
+    <param>
+      <key>_enabled</key>
+      <value>True</value>
+    </param>
+    <param>
+      <key>_coordinate</key>
+      <value>(8, 228)</value>
+    </param>
+    <param>
+      <key>_rotation</key>
+      <value>0</value>
+    </param>
+    <param>
+      <key>id</key>
+      <value>noradID</value>
+    </param>
+    <param>
+      <key>value</key>
+      <value>TextFileReader.read(1)</value>
+    </param>
+  </block>
+  <block>
+    <key>variable</key>
+    <param>
+      <key>comment</key>
+      <value>This should be a list of nominal frequencies in one Access.
+
+TODO figure out how to access it</value>
+    </param>
+    <param>
+      <key>_enabled</key>
+      <value>True</value>
+    </param>
+    <param>
+      <key>_coordinate</key>
+      <value>(328, 228)</value>
+    </param>
+    <param>
+      <key>_rotation</key>
+      <value>0</value>
+    </param>
+    <param>
+      <key>id</key>
+      <value>noradID_0</value>
+    </param>
+    <param>
+      <key>value</key>
+      <value>DopplerShiftReader.read(noradID)</value>
+    </param>
+  </block>
+  <block>
+    <key>variable</key>
+    <param>
+      <key>comment</key>
+      <value></value>
+    </param>
+    <param>
+      <key>_enabled</key>
+      <value>True</value>
+    </param>
+    <param>
+      <key>_coordinate</key>
+      <value>(8, 380)</value>
+    </param>
+    <param>
+      <key>_rotation</key>
+      <value>0</value>
+    </param>
+    <param>
+      <key>id</key>
+      <value>timeInterval</value>
+    </param>
+    <param>
+      <key>value</key>
+      <value>TextFileReader.read(3)</value>
+    </param>
+  </block>
+  <block>
+    <key>epy_module</key>
+    <param>
+      <key>alias</key>
+      <value></value>
+    </param>
+    <param>
+      <key>source_code</key>
+      <value># this module will be imported in the into your flowgraph&#13;
+import os&#13;
+import re&#13;
+from datetime import datetime&#13;
+import numpy&#13;
+&#13;
+# As written, this program reads the text 5 five times to get all the variables. Using global variables is another&#13;
+# option that's just as nonideal. Maybe something in GNU makes this easier?&#13;
+def read(noradID) :&#13;
+    file1=open("C:/Users/Acer/Desktop/MSD/GNU/FeasibilityStudies/GNU/read Text File/DopplerAccess"+noradID+".txt")&#13;
+    # transform cannot do decimals or dates.&#13;
+&#13;
+    file1.readline()&#13;
+    endofAccess=False&#13;
+    counter=0&#13;
+    time=[]&#13;
+    freqNominal=[]&#13;
+    frequnder=[]&#13;
+    freqover=[]&#13;
+&#13;
+    while not endofAccess:&#13;
+        string=file1.readline()&#13;
+        if "Access" in string :&#13;
+            endofAccess=True&#13;
+        else:&#13;
+            string=remove_from_end(string,2)&#13;
+            splitstrings=string.split("     ")&#13;
+            # return splitstrings[0]&#13;
+            # time[counter]=getDate(splitstrings[0])&#13;
+            # freqNominal[counter]=transform(splitstrings[1])&#13;
+            # frequnder[counter]=transform(splitstrings[2])&#13;
+            # freqover[counter]=transform(splitstrings[3])&#13;
+            time.append(getDate(splitstrings[0]))&#13;
+            freqNominal.append(transform(splitstrings[1]))&#13;
+            frequnder.append(transform(splitstrings[2]))&#13;
+            freqover.append(transform(splitstrings[3]))&#13;
+            counter=counter+1&#13;
+&#13;
+    return freqNominal&#13;
+&#13;
+&#13;
+&#13;
+&#13;
+&#13;
+&#13;
+    # noradID=transform(file1.readline())&#13;
+    # baseFreq=transform(file1.readline())&#13;
+    # timeInterval=transform(file1.readline())&#13;
+    # endTimeAsString=file1.readline()&#13;
+    # errorTime=transform(file1.readline())&#13;
+    #&#13;
+    # endDate=getDate(endTimeAsString)&#13;
+    #&#13;
+    #&#13;
+    #&#13;
+    # if ID == 1:&#13;
+    #     return noradID&#13;
+    # elif ID==2:&#13;
+    #     return baseFreq&#13;
+    # elif ID==3:&#13;
+    #     return timeInterval&#13;
+    # elif ID==4:&#13;
+    #     return errorTime&#13;
+    # elif ID==5:&#13;
+    #     return endDate&#13;
+    #&#13;
+    # return endDate&#13;
+&#13;
+&#13;
+def transform(stringToRead):&#13;
+    # see https://www.tutorialspoint.com/How-to-extract-numbers-from-a-string-in-Python&#13;
+    [float(s) for s in re.findall(r'-?\d+\.?\d*', stringToRead)]&#13;
+    return s&#13;
+&#13;
+&#13;
+# Needs further research to get this working flawlessly.&#13;
+def getDate(stringToRead):&#13;
+    # endTime=2020-01-19T10:20:03.000:-15:45&#13;
+    # stringToRead=remove_prefix(stringToRead,"endTime=")&#13;
+&#13;
+    # TODO explore this more. I don't know if this is just a windows thing, but I can't read the time zone with %z&#13;
+    # stringToRead=remove_from_end(stringToRead,8)&#13;
+&#13;
+    return datetime.strptime(stringToRead,"%Y-%m-%dT%H:%M:%S.%f")&#13;
+    # return datetime.strptime(stringToRead,"%Y-%m-%dT%H:%M:%S.%f:%z")&#13;
+&#13;
+# https://stackoverflow.com/questions/16891340/remove-a-prefix-from-a-string&#13;
+def remove_prefix(string, prefix):&#13;
+    return string[string.startswith(prefix) and len(prefix):]&#13;
+&#13;
+def remove_from_end(string, num):&#13;
+    return string[:-num]</value>
+    </param>
+    <param>
+      <key>comment</key>
+      <value>Contains text reader for DopperAccessXXXXX.txt
+See below for read variables:
+
+Current Issues:</value>
+    </param>
+    <param>
+      <key>_enabled</key>
+      <value>True</value>
+    </param>
+    <param>
+      <key>_coordinate</key>
+      <value>(336, 68)</value>
+    </param>
+    <param>
+      <key>_rotation</key>
+      <value>0</value>
+    </param>
+    <param>
+      <key>id</key>
+      <value>DopplerShiftReader</value>
     </param>
   </block>
   <block>
@@ -156,11 +391,12 @@ import os&#13;
 import re&#13;
 from datetime import datetime&#13;
 &#13;
-a=2&#13;
 text="./LASSO_INPUT.txt"&#13;
 &#13;
 &#13;
-def read(arg) :&#13;
+# As written, this program reads the text 5 five times to get all the variables. Using global variables is another&#13;
+# option that's just as nonideal. Maybe something in GNU makes this easier?&#13;
+def read(ID) :&#13;
     file1=open("C:/Users/Acer/Desktop/MSD/GNU/FeasibilityStudies/GNU/read Text File/LASSO_INPUT.txt")&#13;
     # transform cannot do decimals or dates.&#13;
 &#13;
@@ -171,36 +407,56 @@ def read(arg) :&#13;
     errorTime=transform(file1.readline())&#13;
 &#13;
     endDate=getDate(endTimeAsString)&#13;
-    return endDate&#13;
 &#13;
 &#13;
-    # file1=os.getcwd()&#13;
-    #     file1=open(text)&#13;
-    # return file1&#13;
-        # return 1&#13;
+&#13;
+    if ID == 1:&#13;
+        return noradID&#13;
+    elif ID==2:&#13;
+        return baseFreq&#13;
+    elif ID==3:&#13;
+        return timeInterval&#13;
+    elif ID==4:&#13;
+        return errorTime&#13;
+    elif ID==5:&#13;
+        return endDate&#13;
+    #&#13;
+    # return endDate&#13;
+&#13;
 &#13;
 def transform(stringToRead):&#13;
-    # works for integers&#13;
-    # temp = re.findall(r'\d+', stringToRead)&#13;
-    # return list(map(int, temp))&#13;
-&#13;
     # see https://www.tutorialspoint.com/How-to-extract-numbers-from-a-string-in-Python&#13;
     [float(s) for s in re.findall(r'-?\d+\.?\d*', stringToRead)]&#13;
     return s&#13;
 &#13;
+&#13;
+# Needs further research to get this working flawlessly.&#13;
 def getDate(stringToRead):&#13;
     # endTime=2020-01-19T10:20:03.000:-15:45&#13;
     stringToRead=remove_prefix(stringToRead,"endTime=")&#13;
-    return datetime.strptime(stringToRead,"%Y-%m-%dT%H:%M:%S.%f\n")&#13;
+&#13;
+    # TODO explore this more. I don't know if this is just a windows thing, but I can't read the time zone with %z&#13;
+    stringToRead=remove_from_end(stringToRead,8)&#13;
+&#13;
+    return datetime.strptime(stringToRead,"%Y-%m-%dT%H:%M:%S.%f")&#13;
     # return datetime.strptime(stringToRead,"%Y-%m-%dT%H:%M:%S.%f:%z")&#13;
 &#13;
 # https://stackoverflow.com/questions/16891340/remove-a-prefix-from-a-string&#13;
-def remove_prefix(text, prefix):&#13;
-    return text[text.startswith(prefix) and len(prefix):]</value>
+def remove_prefix(string, prefix):&#13;
+    return string[string.startswith(prefix) and len(prefix):]&#13;
+&#13;
+def remove_from_end(string, num):&#13;
+    return string[:-num]</value>
     </param>
     <param>
       <key>comment</key>
-      <value></value>
+      <value>Contains text reader for LASSO_Input.txt
+See below for read variables:
+
+Current Issues:
+1. Reads text files 5 times to get each variable.
+2. Not getting timezone correctly. Might be a windows
+    problem...need to test in Lunux</value>
     </param>
     <param>
       <key>_enabled</key>
@@ -208,7 +464,7 @@ def remove_prefix(text, prefix):&#13;
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(168, 184)</value>
+      <value>(16, 76)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -217,112 +473,6 @@ def remove_prefix(text, prefix):&#13;
     <param>
       <key>id</key>
       <value>TextFileReader</value>
-    </param>
-  </block>
-  <block>
-    <key>epy_block</key>
-    <param>
-      <key>alias</key>
-      <value></value>
-    </param>
-    <param>
-      <key>_io_cache</key>
-      <value>('Embedded Python Block', 'blk', [('example_param', '1.0')], [('0', 'complex', 1)], [('0', 'complex', 1)], 'Embedded Python Block example - a simple multiply const', ['example_param'])</value>
-    </param>
-    <param>
-      <key>_source_code</key>
-      <value>"""
-Embedded Python Blocks:
-
-Each time this file is saved, GRC will instantiate the first class it finds
-to get ports and parameters of your block. The arguments to __init__  will
-be the parameters. All of them are required to have default values!
-"""
-
-import numpy as np
-from gnuradio import gr
-
-
-class blk(gr.sync_block):  # other base classes are basic_block, decim_block, interp_block
-    """Embedded Python Block example - a simple multiply const"""
-
-    def __init__(self, example_param=1.0):  # only default arguments here
-        """arguments to this function show up as parameters in GRC"""
-        gr.sync_block.__init__(
-            self,
-            name='Embedded Python Block',   # will show up in GRC
-            in_sig=[np.complex64],
-            out_sig=[np.complex64]
-        )
-        # if an attribute with the same name as a parameter is found,
-        # a callback is registered (properties work, too).
-        self.example_param = example_param
-
-    def work(self, input_items, output_items):
-        """example: multiply with constant"""
-        output_items[0][:] = input_items[0] * self.example_param
-        return len(output_items[0])
-</value>
-    </param>
-    <param>
-      <key>comment</key>
-      <value></value>
-    </param>
-    <param>
-      <key>_enabled</key>
-      <value>True</value>
-    </param>
-    <param>
-      <key>example_param</key>
-      <value>1.0</value>
-    </param>
-    <param>
-      <key>_coordinate</key>
-      <value>(360, 52)</value>
-    </param>
-    <param>
-      <key>_rotation</key>
-      <value>0</value>
-    </param>
-    <param>
-      <key>id</key>
-      <value>epy_block_0</value>
-    </param>
-  </block>
-  <block>
-    <key>epy_module</key>
-    <param>
-      <key>alias</key>
-      <value></value>
-    </param>
-    <param>
-      <key>source_code</key>
-      <value># this module will be imported in the into your flowgraph&#13;
-&#13;
-a=2&#13;
-&#13;
-def double(arg) :&#13;
-    return 4*arg</value>
-    </param>
-    <param>
-      <key>comment</key>
-      <value></value>
-    </param>
-    <param>
-      <key>_enabled</key>
-      <value>True</value>
-    </param>
-    <param>
-      <key>_coordinate</key>
-      <value>(280, 140)</value>
-    </param>
-    <param>
-      <key>_rotation</key>
-      <value>0</value>
-    </param>
-    <param>
-      <key>id</key>
-      <value>stuff</value>
     </param>
   </block>
 </flow_graph>
