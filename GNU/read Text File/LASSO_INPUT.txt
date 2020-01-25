@@ -1,0 +1,5 @@
+noradID=30776
+baseFrequency=437.15
+timeInterval=60.12345
+endTime=2020-01-19T10:20:03.000:-15:45
+errorTime=0.3
