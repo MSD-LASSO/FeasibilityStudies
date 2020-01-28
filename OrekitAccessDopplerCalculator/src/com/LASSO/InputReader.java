@@ -33,6 +33,11 @@ public class InputReader {
 
         elScanner.useDelimiter("\n");
 
+        if(System.getProperty("os.name").toLowerCase().contains("windows")){
+            elScanner.useDelimiter("\r\n");
+        }
+
+
         //1st line: Norad ID
         String noradString=elScanner.next();
         noradID= Integer.valueOf(noradString.replace("noradID=",""));

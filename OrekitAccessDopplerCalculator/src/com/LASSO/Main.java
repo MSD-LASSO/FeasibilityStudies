@@ -31,7 +31,8 @@ public class Main {
         Utils.addOrekitData();
 
         //gathering parameters from the input file
-        String fileName="/Users/mtruong/IdeaProjects/FeasibilityStudies/OrekitAccessDopplerCalculator/LASSO_INPUT.txt";
+//        String fileName="/Users/mtruong/IdeaProjects/FeasibilityStudies/OrekitAccessDopplerCalculator/LASSO_INPUT.txt";
+        String fileName="./LASSO_INPUT.txt";
         InputReader theInputReader=new InputReader(fileName);
         theInputReader.read();
 

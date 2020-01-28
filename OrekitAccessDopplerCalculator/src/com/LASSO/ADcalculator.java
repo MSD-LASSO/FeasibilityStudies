@@ -97,7 +97,7 @@ public class ADcalculator {
 
         //leaving the hardcode initial date line commented in for debugging
        // 2020-01-27T06:55:33.125
-        AbsoluteDate initialDate=new AbsoluteDate(2020,1,27,7,0,00.000,utc);
+        AbsoluteDate initialDate=new AbsoluteDate(2020,1,27,8,40,00.000,utc);
         System.out.println("Start Date: "+initialDate.toString());
 
 
