@@ -16,6 +16,7 @@ public class InputReader {
     private int noradID;
     private double timeInterval;
     private double baseFrequency;
+    private double signalBandwidth;
     private AbsoluteDate endTime;
     private String inputFileName;
     private double dopplerErrorTime;
@@ -35,19 +36,24 @@ public class InputReader {
         //1st line: Norad ID
         String noradString=elScanner.next();
         noradID= Integer.valueOf(noradString.replace("noradID=",""));
-        System.out.println(noradID);
+      //  System.out.println(noradID);
 
         //2nd line: downlink base frequency
         String baseFreqString=elScanner.next();
         baseFrequency= Double.valueOf(baseFreqString.replace("baseFrequency=",""));
-        System.out.println(baseFrequency);
+        //System.out.println(baseFrequency);
 
-        //3rd line: time interval for doppler shift tuning
+        //3rd line: signal bandwidth
+        String signalBandwidthString=elScanner.next();
+        signalBandwidth= Double.valueOf(signalBandwidthString.replace("signalBandwidth=",""));
+        //System.out.println(signalBandwidth);
+
+        //4th line: time interval for doppler shift tuning
         String timeIntervalString=elScanner.next();
         timeInterval= Double.valueOf(timeIntervalString.replace("timeInterval=",""));
-        System.out.println(timeInterval);
+        //System.out.println(timeInterval);
 
-        //4th line: End Time in Eastern Standard Time.
+        //5th line: End Time in Eastern Standard Time.
         // NOTE: UTC time scale is +5 hrs ahead of EST!!!
         //2020-01-19T10:20:00
         //NOTE: the T after the day just is an indicator that the time part of the string is starting
@@ -58,7 +64,7 @@ public class InputReader {
         //1994-11-05T08:15:30-05:00 corresponds to November 5, 1994, 8:15:30 am, US Eastern Standard Time.
         String endTimeString=elScanner.next();
         endTimeString= endTimeString.replace("endTime=","");
-        System.out.println(endTimeString);
+       // System.out.println(endTimeString);
 
         //splitting end date string into year month day and hour min sec components
         String[] splitEndTimeString=endTimeString.split("T");
@@ -77,12 +83,12 @@ public class InputReader {
         //endTime=new AbsoluteDate(,,,);
 
         endTime=convertToAbsoluteDate(yearMonthDay,hourMinSec,hourMinOffset);
-        System.out.println(endTime.toString());
+        //System.out.println(endTime.toString());
 
-        //5th line: error time for doppler shift max min bound
+        //6th line: error time for doppler shift max min bound
         String errorTimeString=elScanner.next();
         dopplerErrorTime= Double.valueOf(errorTimeString.replace("errorTime=",""));
-        System.out.println(dopplerErrorTime);
+        //System.out.println(dopplerErrorTime);
         elScanner.close();
 
     }
@@ -142,5 +148,6 @@ public class InputReader {
     public double getBaseFrequency(){return baseFrequency;}
     public AbsoluteDate getEndTime(){return endTime;}
     public double getDopplerErrorTime(){return dopplerErrorTime;}
+    public double getSignalBandwidth(){return signalBandwidth;}
 
 }

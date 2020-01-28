@@ -29,6 +29,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.time.Instant;
 
 public class ADcalculator {
 
@@ -38,6 +39,9 @@ public class ADcalculator {
     /**time step to use when recording points during satellite access*/
     private double timeInterval;
 
+    /** the time to shift back and forth for doppler upper and lower bound */
+    private double dopplerErrorTime;
+    private double signalBandwidth;
     private TLE satelliteOrbit;
 
     private ArrayList<Station> stations;
@@ -50,12 +54,14 @@ public class ADcalculator {
     /**This is the frequency the satellite transmits at, NOT the frequency the receiver will get.*/
     private double baseFrequency;
 
-    public ADcalculator(int noradID, double timeInterval, ArrayList<Station> stations, double baseFrequency){
+    public ADcalculator(int noradID, double timeInterval, ArrayList<Station> stations, double baseFrequency,double dopplerErrorTime,
+                        double signalBandwidth){
         this.noradID=noradID;
         this.timeInterval=timeInterval;
         this.stations=stations;
         this.baseFrequency=baseFrequency;
-
+        this.dopplerErrorTime=dopplerErrorTime;
+        this.signalBandwidth=signalBandwidth;
         try {
             satelliteOrbit=CelestrakImporter.importSatelliteData(noradID);
         } catch (IOException e) {
@@ -68,11 +74,32 @@ public class ADcalculator {
         Frame inertialFrame = FramesFactory.getEME2000();
         TimeScale utc = TimeScalesFactory.getUTC();
 
-        //set initial date as October 30th, 2019 at 0:00
-//        AbsoluteDate initialDate = new AbsoluteDate(2019, 10, 30, 0, 0, 00.000, utc);
-        Date today= Calendar.getInstance().getTime();
-        //TODO convert this to an Absolute Date.
-        AbsoluteDate initialDate=new AbsoluteDate(2020,1,22,16,0,00.000,utc);
+
+        // Using the Instant class to get UTC time at time the program runs.
+
+        String initialTimeString=Instant.now().toString();
+        String[] splitInitialTimeString=initialTimeString.split("T");
+
+        //splitting those strings and separating each component
+        String[] yearMonthDay= splitInitialTimeString[0].split("-");
+        String hourMinSecString=splitInitialTimeString[1].replace("Z","");
+        String[] hourMinSec=hourMinSecString.split(":");
+        int year=Integer.valueOf(yearMonthDay[0]);
+        int month=Integer.valueOf(yearMonthDay[1]);
+        int day=Integer.valueOf(yearMonthDay[2]);
+        int hour=Integer.valueOf(hourMinSec[0]);
+        int min=Integer.valueOf(hourMinSec[1]);
+        double sec=Double.valueOf(hourMinSec[2]);
+        // defining the initialDate in AbsoluteDate form from the string components above.
+
+        //AbsoluteDate initialDate=new AbsoluteDate(year,month,day,hour,min,sec,utc);
+
+
+        //leaving the hardcode initial date line commented in for debugging
+       // 2020-01-27T06:55:33.125
+        AbsoluteDate initialDate=new AbsoluteDate(2020,1,27,7,0,00.000,utc);
+        System.out.println("Start Date: "+initialDate.toString());
+
 
         //TODO How can we better quanitify these? Does it matter?
         double mass=100; // 54 kg is FalconSat3. 100kg assumption?
@@ -98,20 +125,51 @@ public class ADcalculator {
             System.out.println(initialDate.toString());
         }
 
-        //Getting station frame for doppler calcs.
+        //CHECKING IF THE START OR END DATE WAS IN THE MIDDLE OF A PASS (this will screw up the outputted frequencies)
+
+        if (! stationOverlap.get(0).isIncreasing()){  //if the 1st event returns false, it means that the event is an exit.
+            stationOverlap.remove(0);          //You ran the program as the satellite was passing overhead.
+        }                                            // simply remove this pass and start from next one to keep program working.
+        if ( stationOverlap.get(stationOverlap.size()-1).isIncreasing() ){ //if the last event returns true, then it is an entry.
+            stationOverlap.remove(stationOverlap.size()-1);         //You have an end date in the middle of a pass.
+        }                                                                 // Remove this last pass to keep program working.
+        //*/
+        //Getting station frame array for doppler calcs.
         int stationFrameNo=2;
-        TopocentricFrame stationFrameForDoppler=stations.get(stationFrameNo).getFrame();
+        TopocentricFrame[] stationFramesForDoppler=new TopocentricFrame[stations.size()];
+
+        for (int i=0;i<stations.size();i++){
+            stationFramesForDoppler[i]=stations.get(i).getFrame();
+        }
+
+        //OUTPUT Text File Header/ Formatting
+        //TopocentricFrame stationFrameForDoppler=stations.get(stationFrameNo).getFrame();
+        // crafting header string
+        StringBuilder headerString=new StringBuilder();
+        for (int b=0; b<stations.size();b++) {
+            headerString = headerString.append(String.format("Sta # %d Nom         Lower           Upper       ", b));
+        }
+
+        //pass thru variables for next phase of code flow
+        writeToText.append(String.format("baseFrequency=%.4f\nsignalBandwidth=%.4f\n",baseFrequency,signalBandwidth));
 
         ArrayList<Access> accesses=new ArrayList<>();
         //For each event, propagate from the start to the end of the access with the specified interval time step.
         for (int entryIndex=0;entryIndex<stationOverlap.size()-1;entryIndex=entryIndex+2) {
-            writeToText.append("Access Number: ").append(entryIndex / 2).append("\n");
+
+            writeToText.append("Access Number: ").append(entryIndex / 2).append("            "+headerString).append("\n");
             if(verbose) {
                 System.out.println("Event" +entryIndex);
             }
             Access accessPoint=new Access(noradID,stationOverlap.get(entryIndex),stationOverlap.get(entryIndex+1),oreTLEPropagator,baseFrequency);
-            accessPoint.computeAccessCalculations(300,timeInterval,stationFrameForDoppler,inertialFrame);
-            writeToText.append(accessPoint.toString());
+            System.out.println(stationOverlap.get(entryIndex).isIncreasing());
+            System.out.println(stationOverlap.get(entryIndex+1).isIncreasing());
+
+            accessPoint.computeAccessCalculations(300,timeInterval,stationFramesForDoppler,inertialFrame,dopplerErrorTime);
+            writeToText.append(accessPoint.toStringStationList());
+            //writeToText.append(accessPoint.toString(stationFrameNo));  //debugging line to check each station output individually.
+
+
             accesses.add(accessPoint);
 
         } //end of for loop for each station

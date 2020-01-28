@@ -6,7 +6,7 @@ import org.orekit.propagation.analytical.tle.TLE;
 import org.orekit.time.AbsoluteDate;
 import org.orekit.time.TimeScale;
 import org.orekit.time.TimeScalesFactory;
-
+import java.time.Instant;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -30,12 +30,20 @@ public class Main {
     public static void main(String[] args) throws FileNotFoundException {
         Utils.addOrekitData();
 
+        //gathering parameters from the input file
         String fileName="/Users/mtruong/IdeaProjects/FeasibilityStudies/OrekitAccessDopplerCalculator/LASSO_INPUT.txt";
-        InputReader laReada=new InputReader(fileName);
-        laReada.read();
+        InputReader theInputReader=new InputReader(fileName);
+        theInputReader.read();
 
+        //Declaring Variable Values from the input file
 
-        /*
+        double baseFrequency=theInputReader.getBaseFrequency();
+        AbsoluteDate endDate= theInputReader.getEndTime();
+        int noradID=theInputReader.getNoradID();
+        double timeInterval=theInputReader.getTimeInterval();
+        double dopplerErrorTime=theInputReader.getDopplerErrorTime();
+        double signalBandwidth=theInputReader.getSignalBandwidth();
+
         ///* CASE 4: Mess Bristol , Brockport,   Webster High School:43.204291, -77.469981
         double[] stationLatitudes= {43.209037, 42.700192,43.204291 };
         double[] stationLongitudes=  {-77.950921,-77.408628,-77.469981};
@@ -46,19 +54,24 @@ public class Main {
 
         double[] stationAltitudes=  {0,  0,  0 };
         double[] minElevations ={0,0,0};
+
+
+       /*
         TimeScale utc = TimeScalesFactory.getUTC();
         double baseFrequency=437;
 
         //setting end date for propagation (initial is set in ADcalculator)?
         AbsoluteDate endDate = new AbsoluteDate(2020, 1, 23, 0, 0, 00.000, utc);
+        */
 
+        System.out.println("End Date: "+endDate.toString());
 
         ArrayList<Station> stations=Utils.createStations(false,stationLatitudes,stationLongitudes,stationAltitudes,minElevations);
 
-        ADcalculator calc=new ADcalculator(30776,60,stations,baseFrequency);
+        ADcalculator calc=new ADcalculator(noradID,timeInterval,stations,baseFrequency,dopplerErrorTime,signalBandwidth);
 
         calc.computeAccessTimes(endDate,true);
-
+        //*/
         //Consider the below a test.
 //        System.out.println("HI Daniel");
 //
@@ -73,6 +86,6 @@ public class Main {
 //        } catch (IOException e) {
 //            e.printStackTrace();
 //        }
-        */
+
     }
 }
