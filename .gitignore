@@ -1,4 +1,7 @@
-.idea/
+.DS_Store
+/.*/
+/OrekitAccessDopplerCalculator/.DS_Store
+/OrekitAccessDopplerCalculator/.idea
 *.xml
 out/
 .DS_Store
