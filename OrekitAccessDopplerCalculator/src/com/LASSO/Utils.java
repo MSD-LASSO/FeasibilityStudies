@@ -24,12 +24,12 @@ public class Utils {
         manager.addProvider(new DirectoryCrawler(orekitData));
     }
 
-    public static ArrayList<Station> createStations(boolean inRadians,double[] latArray, double[] lonArray, double[] altArray, double[] minElevations, BodyShape earth) {
+    public static ArrayList<Station> createStations(boolean inRadians,double[] latArray, double[] lonArray, double[] altArray, double[] minElevations, BodyShape earth,String[] stationNames) {
 
         ArrayList<Station> stations = new ArrayList<>();
 
         for (int i=0;i<latArray.length;i++) {
-            String identifier="Station "+Integer.toString(i);
+            String identifier="Station "+Integer.toString(i)+":"+stationNames[i];
             if(inRadians) {
                 stations.add(new Station(identifier, new double[]{latArray[i], lonArray[i], altArray[i]}, new double[3], minElevations[i], 0, earth));
             } else {
@@ -39,9 +39,9 @@ public class Utils {
         return stations;
     }
 
-    public static ArrayList<Station> createStations(boolean inRadians,double[] latArray, double[] lonArray, double[] altArray, double[] minElevations) {
+    public static ArrayList<Station> createStations(boolean inRadians,double[] latArray, double[] lonArray, double[] altArray, double[] minElevations,String[] stationNames) {
         BodyShape earth=Station.getDefaultEarth();
-        return createStations(inRadians,latArray,lonArray,altArray,minElevations,earth);
+        return createStations(inRadians,latArray,lonArray,altArray,minElevations,earth,stationNames);
     }
 
 }

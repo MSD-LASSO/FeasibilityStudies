@@ -44,10 +44,13 @@ public class Main {
         double timeInterval=theInputReader.getTimeInterval();
         double dopplerErrorTime=theInputReader.getDopplerErrorTime();
         double signalBandwidth=theInputReader.getSignalBandwidth();
+        double recordTime=theInputReader.getRecordTime();
 
         ///* CASE 4: Mess Bristol , Brockport,   Webster High School:43.204291, -77.469981
         double[] stationLatitudes= {43.209037, 42.700192,43.204291 };
         double[] stationLongitudes=  {-77.950921,-77.408628,-77.469981};
+        String[] stationNames={"Brockport University", "Mees Bristol","Webster HS"};
+
 
 //        double[] stationLatitudes= {43.1574, 43.1574,43.1574 };
 //        double[] stationLongitudes=  {-77.6042,-77.6042,-77.6042};
@@ -67,9 +70,9 @@ public class Main {
 
         System.out.println("End Date: "+endDate.toString());
 
-        ArrayList<Station> stations=Utils.createStations(false,stationLatitudes,stationLongitudes,stationAltitudes,minElevations);
+        ArrayList<Station> stations=Utils.createStations(false,stationLatitudes,stationLongitudes,stationAltitudes,minElevations,stationNames);
 
-        ADcalculator calc=new ADcalculator(noradID,timeInterval,stations,baseFrequency,dopplerErrorTime,signalBandwidth);
+        ADcalculator calc=new ADcalculator(noradID,timeInterval,stations,baseFrequency,dopplerErrorTime,signalBandwidth,recordTime);
 
         calc.computeAccessTimes(endDate,true);
         //*/

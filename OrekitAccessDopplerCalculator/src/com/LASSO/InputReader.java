@@ -20,6 +20,7 @@ public class InputReader {
     private AbsoluteDate endTime;
     private String inputFileName;
     private double dopplerErrorTime;
+    private double recordTime;
     private File inputFile;
     private Scanner elScanner;
 
@@ -94,7 +95,13 @@ public class InputReader {
         String errorTimeString=elScanner.next();
         dopplerErrorTime= Double.valueOf(errorTimeString.replace("errorTime=",""));
         //System.out.println(dopplerErrorTime);
+
+        //7th line: record time for SDR. How long it will record data for Cross Correlation purposes
+        String recordTimeString=elScanner.next();
+        recordTime=Double.valueOf(recordTimeString.replace("recordTime=",""));
         elScanner.close();
+
+
 
     }
     public static AbsoluteDate convertToAbsoluteDate(String[] yearMonthDay, String[] hourMinSec, String[] hourMinOffset){
@@ -154,5 +161,6 @@ public class InputReader {
     public AbsoluteDate getEndTime(){return endTime;}
     public double getDopplerErrorTime(){return dopplerErrorTime;}
     public double getSignalBandwidth(){return signalBandwidth;}
+    public double getRecordTime(){return recordTime;}
 
 }

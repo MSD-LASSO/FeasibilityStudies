@@ -1,5 +1,9 @@
 package com.LASSO;
 
+import java.net.Socket;
+import java.io.*;
+import java.nio.ByteBuffer;
+import java.net.*;
 import org.hipparchus.analysis.function.Abs;
 import org.hipparchus.geometry.euclidean.threed.Vector3D;
 import org.orekit.attitudes.NadirPointing;
@@ -42,6 +46,7 @@ public class ADcalculator {
     /** the time to shift back and forth for doppler upper and lower bound */
     private double dopplerErrorTime;
     private double signalBandwidth;
+    private double recordTime;
     private TLE satelliteOrbit;
 
     private ArrayList<Station> stations;
@@ -55,13 +60,14 @@ public class ADcalculator {
     private double baseFrequency;
 
     public ADcalculator(int noradID, double timeInterval, ArrayList<Station> stations, double baseFrequency,double dopplerErrorTime,
-                        double signalBandwidth){
+                        double signalBandwidth, double recordTime){
         this.noradID=noradID;
         this.timeInterval=timeInterval;
         this.stations=stations;
         this.baseFrequency=baseFrequency;
         this.dopplerErrorTime=dopplerErrorTime;
         this.signalBandwidth=signalBandwidth;
+        this.recordTime=recordTime;
         try {
             satelliteOrbit=CelestrakImporter.importSatelliteData(noradID);
         } catch (IOException e) {
@@ -70,6 +76,14 @@ public class ADcalculator {
     }
 
     public ArrayList<Access> computeAccessTimes(AbsoluteDate endDate, boolean verbose){
+
+
+
+
+
+
+
+
 
         Frame inertialFrame = FramesFactory.getEME2000();
         TimeScale utc = TimeScalesFactory.getUTC();
@@ -142,7 +156,7 @@ public class ADcalculator {
             stationFramesForDoppler[i]=stations.get(i).getFrame();
         }
 
-        //OUTPUT Text File Header/ Formatting
+        //OUTPUT Text File Header/ Formatting/////////////////////////////////////////////////
         //TopocentricFrame stationFrameForDoppler=stations.get(stationFrameNo).getFrame();
         // crafting header string
         StringBuilder headerString=new StringBuilder();
@@ -150,8 +164,13 @@ public class ADcalculator {
             headerString = headerString.append(String.format("Sta # %d Nom         Lower           Upper       ", b));
         }
 
+        //Station Name Identifiers for the top of the output text
+        for (int p=0; p<stations.size();p++){
+            writeToText.append(stations.get(p).getFrame().getName()).append("\n");
+        }
+
         //pass thru variables for next phase of code flow
-        writeToText.append(String.format("baseFrequency=%.4f\nsignalBandwidth=%.4f\n",baseFrequency,signalBandwidth));
+        writeToText.append(String.format("baseFrequency=%.4f\nsignalBandwidth=%.4f\nrecordTime=%.4f\n",baseFrequency,signalBandwidth,recordTime));
 
         ArrayList<Access> accesses=new ArrayList<>();
         //For each event, propagate from the start to the end of the access with the specified interval time step.
@@ -174,6 +193,7 @@ public class ADcalculator {
 
         } //end of for loop for each station
         writeToFile();
+        TCPsend();
 
          return accesses;
         }
@@ -217,10 +237,44 @@ public class ADcalculator {
             System.out.println(e.getMessage());
         }
     }
+    public void TCPsend(){
+        int intSize = 4;
 
+        int Port = 5010;
+        String IpAddress = "129.21.145.85";
 
+        byte[] send = {'H', 'e', 'l', 'l', 'o', ',', ' ', 's', 'e', 'r', 'v', 'e', 'r'};
+        int send_size_int = send.length;
+        byte[] send_size_bytes;
+        byte[] recv = new byte[256];
 
+        try (Socket socket = new Socket(IpAddress, Port)) {
 
+            OutputStream output = socket.getOutputStream();
+            PrintWriter writer= new PrintWriter(output, true);
+            send_size_bytes = ByteBuffer.allocate(intSize).putInt(writeToText.length()).array();
+            output.write(send_size_bytes);
+            output.flush();  //finish sending stuff
 
+            writer.println(writeToText);
+            writer.flush();
+            socket.close();
+
+        } catch (UnknownHostException ex) {
+
+            System.out.println("Server not found: " + ex.getMessage());
+
+        } catch (IOException ex) {
+
+            System.out.println("I/O error: " + ex.getMessage());
+        }
+    }
 
 }
+
+
+
+
+
+
+
