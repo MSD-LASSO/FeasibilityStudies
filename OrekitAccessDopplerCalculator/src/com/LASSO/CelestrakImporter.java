@@ -5,19 +5,27 @@ import java.lang.NullPointerException;
 import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.net.UnknownHostException;
+import java.util.logging.Logger;
 
 public class CelestrakImporter {
 
     final static String NORAD_FILE = "http://www.celestrak.com/NORAD/elements/active.txt";
 
-    public static TLE importSatelliteData(int satelliteNumber) throws IOException,NullPointerException {
+    public static TLE importSatelliteData(int satelliteNumber) throws IOException,NoradIDnotFoundException {
+        return importSatelliteData(satelliteNumber,false);
+    }
+
+    public static TLE importSatelliteData(int satelliteNumber, boolean debug) throws IOException,NullPointerException {
         try {
             URL url = new URL(NORAD_FILE);
             HttpURLConnection httpConn = (HttpURLConnection) url.openConnection();
             int responseCode = httpConn.getResponseCode();
 
             if (responseCode == HttpURLConnection.HTTP_OK) {
-                System.out.println(httpConn.getContentLength());
+                if(debug) {
+                    System.out.println(httpConn.getContentLength());
+                }
 
                 InputStream inputStream = httpConn.getInputStream();
                 BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
@@ -31,22 +39,22 @@ public class CelestrakImporter {
                     if (satSet.getSatelliteNumber() == satelliteNumber) {
                         return satSet;
                     }
-                    //todo handle the fact this breaks if no satellite found
                 }
 
             } else {
-                throw new RuntimeException("Bad shit happened");
+                throw new RuntimeException("ERROR 005: The site was unresponsive. Failed to get the text file. NEEDS TEST CASE");
             }
-
-            throw new RuntimeException("NOT FOUND!");
+            throw new RuntimeException("ERROR 006: Not sure how the program got here. Debugging System required. NEEDS TEST CASE");
         }
         catch (NullPointerException problemo){
-
-            System.out.println("ERROR 002: The NORAD ID was not found!!!!!!!! Please check the input file!!!!!!!!!");
-            problemo.printStackTrace();
-            System.exit(-1);
-            return null;
-
+            String error="ERROR 002: The NORAD ID was not found!!!!!!!! Please check the input file!!!!!!!!!";
+//            System.out.println(error);
+//            problemo.printStackTrace();
+            throw new NoradIDnotFoundException(error);
+        }
+        catch (UnknownHostException e) {
+            String error="ERROR 007: Check internet connection.";
+            throw new UnknownHostException(error+", "+e.getMessage());
         }
     }
 }

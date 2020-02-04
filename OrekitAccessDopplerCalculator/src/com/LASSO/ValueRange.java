@@ -15,7 +15,10 @@ public class ValueRange {
         this.lowerBound=lowerBound;
         this.upperBound=upperBound;
         if(FastMath.abs(lowerBound)>FastMath.abs(upperBound)){
-                throw new InputMismatchException("Lower bound should be less than upper bound");
+                throw new InputMismatchException("ERROR 050: Lower bound should be less than upper bound");
+        }
+        if(FastMath.abs(nominal)<FastMath.abs(lowerBound) || FastMath.abs(nominal)>FastMath.abs(upperBound)){
+            throw new InputMismatchException("ERROR 051: Nominal should be between the upper and lower bounds.");
         }
     }
 
