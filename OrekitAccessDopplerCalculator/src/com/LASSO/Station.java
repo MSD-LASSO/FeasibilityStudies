@@ -13,8 +13,6 @@ import java.util.Random;
 
 public class Station {
 
-
-
     /** Describes the minimum elevation this station can record data at */
     private double minElevation;
 

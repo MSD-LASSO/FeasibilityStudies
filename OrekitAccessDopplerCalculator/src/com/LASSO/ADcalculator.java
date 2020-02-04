@@ -113,7 +113,14 @@ public class ADcalculator {
        // 2020-01-27T06:55:33.125
         AbsoluteDate initialDate=new AbsoluteDate(2020,1,27,8,40,00.000,utc);
         System.out.println("Start Date: "+initialDate.toString());
+        System.out.println(initialDate.compareTo(endDate));
+        if (initialDate.compareTo(endDate)>0)
+        {
 
+            System.out.println("ERROR 004: END DATE IS BEFORE THE PROGRAM START DATE!!!!! CHECK THE END DATE AGAIN!!!!!!");
+            System.exit(-1);
+
+        }
 
         //TODO How can we better quanitify these? Does it matter?
         double mass=100; // 54 kg is FalconSat3. 100kg assumption?
@@ -139,6 +146,11 @@ public class ADcalculator {
             System.out.println(initialDate.toString());
         }
 
+        if (stationOverlap.size()<=1)
+        {
+            System.out.println("ERROR 003: 00NO EVENTS BETWEEN PROGRAM START DATE AND INPUTTED END DATE!!!!!!!! CHECK END DATE!!!!!!!!!");
+            System.exit(-1);
+        }
         //CHECKING IF THE START OR END DATE WAS IN THE MIDDLE OF A PASS (this will screw up the outputted frequencies)
 
         if (! stationOverlap.get(0).isIncreasing()){  //if the 1st event returns false, it means that the event is an exit.
@@ -147,6 +159,15 @@ public class ADcalculator {
         if ( stationOverlap.get(stationOverlap.size()-1).isIncreasing() ){ //if the last event returns true, then it is an entry.
             stationOverlap.remove(stationOverlap.size()-1);         //You have an end date in the middle of a pass.
         }                                                                 // Remove this last pass to keep program working.
+
+        if (stationOverlap.size()<=1)
+        {
+            System.out.println("ERROR 003: NO EVENTS BETWEEN PROGRAM START DATE AND INPUTTED END DATE!!!!!!!! CHECK END DATE!!!!!!!!!");
+            System.exit(-1);
+        }
+
+
+
         //*/
         //Getting station frame array for doppler calcs.
         int stationFrameNo=2;
@@ -159,6 +180,7 @@ public class ADcalculator {
         //OUTPUT Text File Header/ Formatting/////////////////////////////////////////////////
         //TopocentricFrame stationFrameForDoppler=stations.get(stationFrameNo).getFrame();
         // crafting header string
+        writeToText.append("numStations="+stations.size()+"\n");
         StringBuilder headerString=new StringBuilder();
         for (int b=0; b<stations.size();b++) {
             headerString = headerString.append(String.format("Sta # %d Nom         Lower           Upper       ", b));
@@ -174,6 +196,7 @@ public class ADcalculator {
 
         ArrayList<Access> accesses=new ArrayList<>();
         //For each event, propagate from the start to the end of the access with the specified interval time step.
+        writeToText.append("numEvents="+stationOverlap.size()/2+"\n");
         for (int entryIndex=0;entryIndex<stationOverlap.size()-1;entryIndex=entryIndex+2) {
 
             writeToText.append("Access Number: ").append(entryIndex / 2).append("            "+headerString).append("\n");
@@ -193,11 +216,10 @@ public class ADcalculator {
 
         } //end of for loop for each station
         writeToFile();
-        TCPsend();
+        //TCPsend();
 
          return accesses;
         }
-
 
     /**
      * Creates a boolean event detector. Propagation triggers the detector when the specified satellite is in view of
