@@ -27,10 +27,12 @@ import java.util.ArrayList;
 public class Main {
 
     public static void main(String[] args) throws FileNotFoundException {
+
+
+        System.out.println(args[0]);
+
         String fileName="./LASSO_INPUT.txt";
         Runner runner=new Runner(fileName);
         runner.execute();
-
-
     }
 }
