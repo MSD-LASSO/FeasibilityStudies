@@ -200,7 +200,7 @@ public class ADcalculator {
         }
 
         //pass thru variables for next phase of code flow
-        writeToText.append(String.format("baseFrequency=%.4f\nsignalBandwidth=%.4f\nrecordTime=%.4f\n",baseFrequency,signalBandwidth,recordTime));
+        //writeToText.append(String.format("baseFrequency=%.4f\nsignalBandwidth=%.4f\nrecordTime=%.4f\n",baseFrequency,signalBandwidth,recordTime));
 
         ArrayList<Access> accesses=new ArrayList<>();
         //For each event, propagate from the start to the end of the access with the specified interval time step.
