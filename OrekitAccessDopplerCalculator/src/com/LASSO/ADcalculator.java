@@ -75,21 +75,13 @@ public class ADcalculator {
         }
     }
 
+    public void setSatelliteOrbit(TLE satelliteOrbit) {
+        this.satelliteOrbit = satelliteOrbit;
+    }
+
+
     public ArrayList<Access> computeAccessTimes(AbsoluteDate endDate, boolean verbose){
-
-
-
-
-
-
-
-
-
-        Frame inertialFrame = FramesFactory.getEME2000();
         TimeScale utc = TimeScalesFactory.getUTC();
-
-
-        // Using the Instant class to get UTC time at time the program runs.
 
         String initialTimeString=Instant.now().toString();
         String[] splitInitialTimeString=initialTimeString.split("T");
@@ -110,8 +102,24 @@ public class ADcalculator {
 
 
         //leaving the hardcode initial date line commented in for debugging
-       // 2020-01-27T06:55:33.125
+        // 2020-01-27T06:55:33.125
         AbsoluteDate initialDate=new AbsoluteDate(2020,1,27,8,40,00.000,utc);
+
+        return computeAccessTimes(initialDate,endDate,verbose);
+
+    }
+
+
+
+    public ArrayList<Access> computeAccessTimes(AbsoluteDate initialDate, AbsoluteDate endDate, boolean verbose){
+
+
+        Frame inertialFrame = FramesFactory.getEME2000();
+
+
+        // Using the Instant class to get UTC time at time the program runs.
+
+
         System.out.println("Start Date: "+initialDate.toString());
         System.out.println(initialDate.compareTo(endDate));
         if (initialDate.compareTo(endDate)>0)

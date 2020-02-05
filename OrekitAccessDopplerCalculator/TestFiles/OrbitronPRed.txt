@@ -1,0 +1,24 @@
+Satellite passes / Orbitron 3.71 / www.stoff.pl
+
+Location      : Brockport (77.9509° W, 43.2090° N)
+Time zone     : UTC
+Search period : 2020-02-05 00:00:00
+                2020-02-05 07:00:00
+Conditions    : Maximum sun elevation = None
+                Minimum sat elevation = 0 deg
+                Illumination NOT required
+
+Time                Satellite              Azm  Elv  Mag Range S.Azm S.Elv
+--------------------------------------------------------------------------
+2020-02-05 02:55:30 FALCONSAT-3          207.4  0.0  ecl  2505 298.6 -48.2
+2020-02-05 03:00:05 FALCONSAT-3          155.8  9.3  ecl  1629 299.8 -48.9
+2020-02-05 03:04:41 FALCONSAT-3          104.2  0.0  ecl  2515 301.1 -49.6
+
+2020-02-05 04:32:46 FALCONSAT-3          237.2  0.0  ecl  2506 333.3 -60.6
+2020-02-05 04:38:11 FALCONSAT-3          170.3 20.5  ecl  1082 335.9 -61.0
+2020-02-05 04:43:37 FALCONSAT-3          103.4  0.0  ecl  2516 338.5 -61.4
+
+2020-02-05 06:10:58 FALCONSAT-3          254.3  0.0  ecl  2512  23.0 -61.2
+2020-02-05 06:16:28 FALCONSAT-3          185.5 22.5  ecl  1019  25.6 -60.8
+2020-02-05 06:21:57 FALCONSAT-3          117.1  0.0  ecl  2510  28.1 -60.3
+
