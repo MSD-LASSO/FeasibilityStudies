@@ -28,35 +28,9 @@ public class Main {
 
     public static void main(String[] args) throws FileNotFoundException {
         String fileName="./LASSO_INPUT.txt";
-
-        ///* CASE 4: Mess Bristol , Brockport,   Webster High School:43.204291, -77.469981
-        double[] stationLatitudes= {43.209037, 42.700192,43.204291 };
-        double[] stationLongitudes=  {-77.950921,-77.408628,-77.469981};
-        String[] stationNames={"Brockport University", "Mees Bristol","Webster HS"};
+        Runner runner=new Runner(fileName);
+        runner.execute();
 
 
-//        double[] stationLatitudes= {43.1574, 43.1574,43.1574 };
-//        double[] stationLongitudes=  {-77.6042,-77.6042,-77.6042};
-
-
-        double[] stationAltitudes=  {0,  0,  0 };
-        double[] minElevations ={0,0,0};
-
-
-       /*
-        TimeScale utc = TimeScalesFactory.getUTC();
-        double baseFrequency=437;
-
-        //setting end date for propagation (initial is set in ADcalculator)?
-        AbsoluteDate endDate = new AbsoluteDate(2020, 1, 23, 0, 0, 00.000, utc);
-        */
-
-        System.out.println("End Date: "+endDate.toString());
-
-        ArrayList<Station> stations=Utils.createStations(false,stationLatitudes,stationLongitudes,stationAltitudes,minElevations,stationNames);
-
-        ADcalculator calc=new ADcalculator(noradID,timeInterval,stations,baseFrequency,dopplerErrorTime,signalBandwidth,recordTime);
-
-        calc.computeAccessTimes(endDate,true);
     }
 }
