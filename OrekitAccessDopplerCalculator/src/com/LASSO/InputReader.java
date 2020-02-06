@@ -19,8 +19,8 @@ public class InputReader {
     private double signalBandwidth;
     private AbsoluteDate endTime;
     private String inputFileName;
-    private double dopplerErrorTime;
-    private double recordTime;
+    private double errorTimeForTLE;
+    private double recordingRate;
     private File inputFile;
     private Scanner elScanner;
 
@@ -93,12 +93,12 @@ public class InputReader {
 
             //6th line: error time for doppler shift max min bound
             String errorTimeString = elScanner.next();
-            dopplerErrorTime = Double.valueOf(errorTimeString.replace("errorTime=", ""));
+            errorTimeForTLE = Double.valueOf(errorTimeString.replace("errorTimeForTLE=", ""));
             //System.out.println(dopplerErrorTime);
 
             //7th line: record time for SDR. How long it will record data for Cross Correlation purposes
             String recordTimeString = elScanner.next();
-            recordTime = Double.valueOf(recordTimeString.replace("recordTime=", ""));
+            recordingRate = Double.valueOf(recordTimeString.replace("recordingRate=", ""));
             elScanner.close();
         }
         catch (Exception problemo){
@@ -118,6 +118,133 @@ public class InputReader {
             */
 
                     problemo.printStackTrace();
+
+
+            //System.out.println("I'm in line #"+ )
+            System.exit(-1);
+        }
+
+
+    }
+    public void readFromTerminal(String[] args){
+        //New input reading from "args" variable from when this is run from the terminal.
+      /*
+        INPUTS CAN BE IN ANY ORDER!!!!!!!
+
+        initialDate (current time as DEFAULT)
+        endDate  (1 day ahead of initial date)
+        noradID= error thrown (legit error)
+        errorTimeForTLE (0.3 [s])
+        recordingRate     (60 [s] )
+        and then add default vals if none chosen. ^^^ in ( ) above.
+         */
+
+        //setting default values before reading in
+        recordingRate=60;
+        errorTimeForTLE=0.3;
+        initialDate
+
+        // check if the user actually put the stuff in
+        for (String argument: args)
+        {
+            if (argument.toLowerCase().contains("noradid=")){
+
+            }
+            else if (argument.toLowerCase().contains("initialdate=")){
+
+            }
+            else if (argument.toLowerCase().contains("enddate=")){
+
+            }
+            else if (argument.toLowerCase().contains("errortimefortle=")){
+
+            }
+            else if (argument.toLowerCase().contains("recordingDate=")){
+
+            }
+
+        }
+
+        try {
+            //1st line: Norad ID
+            String noradString = elScanner.next();
+            noradID = Integer.valueOf(noradString.replace("noradID=", ""));
+            //  System.out.println(noradID);
+
+            //2nd line: downlink base frequency
+            String baseFreqString = elScanner.next();
+            baseFrequency = Double.valueOf(baseFreqString.replace("baseFrequency=", ""));
+            //System.out.println(baseFrequency);
+
+            //3rd line: signal bandwidth
+            String signalBandwidthString = elScanner.next();
+            signalBandwidth = Double.valueOf(signalBandwidthString.replace("signalBandwidth=", ""));
+            //System.out.println(signalBandwidth);
+
+            //4th line: time interval for doppler shift tuning
+            String timeIntervalString = elScanner.next();
+            timeInterval = Double.valueOf(timeIntervalString.replace("timeInterval=", ""));
+            //System.out.println(timeInterval);
+
+            //5th line: End Time in Eastern Standard Time.
+            // NOTE: UTC time scale is +5 hrs ahead of EST!!!
+            //2020-01-19T10:20:00
+            //NOTE: the T after the day just is an indicator that the time part of the string is starting
+            //   Complete date plus hours, minutes, seconds and a decimal fraction of a
+            //second
+            // YYYY-MM-DDThh:mm:ss.sTZD
+            // TZD= +hh:mm or -hh:mm, to tell offset from UTC.
+            //1994-11-05T08:15:30-05:00 corresponds to November 5, 1994, 8:15:30 am, US Eastern Standard Time.
+            String endTimeString = elScanner.next();
+            endTimeString = endTimeString.replace("endTime=", "");
+            // System.out.println(endTimeString);
+
+            //splitting end date string into year month day and hour min sec components
+            String[] splitEndTimeString = endTimeString.split("T");
+
+            //splitting those strings and separating each component
+            String[] yearMonthDay = splitEndTimeString[0].split("-");
+            String hourMinSecString = splitEndTimeString[1].substring(0, 12);
+            String[] hourMinSec = hourMinSecString.split(":");
+
+            //timezone offset for offset from UTC scale
+            String timeZoneOffsetString = splitEndTimeString[1].substring(13, splitEndTimeString[1].length());
+            String[] hourMinOffset = timeZoneOffsetString.split(":");
+
+            //making AbsoluteDate object from the string date input
+            //AbsoluteDate(int year, int month, int day, int hour, int minute, double second, TimeScale timeScale)
+            //endTime=new AbsoluteDate(,,,);
+
+            endTime = convertToAbsoluteDate(yearMonthDay, hourMinSec, hourMinOffset);
+            //System.out.println(endTime.toString());
+
+            //6th line: error time for doppler shift max min bound
+            String errorTimeString = elScanner.next();
+            dopplerErrorTime = Double.valueOf(errorTimeString.replace("errorTime=", ""));
+            //System.out.println(dopplerErrorTime);
+
+            //7th line: record time for SDR. How long it will record data for Cross Correlation purposes
+            String recordTimeString = elScanner.next();
+            recordingRate = Double.valueOf(recordTimeString.replace("recordTime=", ""));
+            elScanner.close();
+        }
+        catch (Exception problemo){
+            int ERROR_WRONG_TEXT_INPUT = -1;
+            int ERROR_BAD_  = -2;
+            System.out.println("ERROR 001: Problem during input reading. Wrong # of inputs/Identifier strings messed up?");
+            System.out.println("Error message: "+problemo.getMessage());
+            /*
+            StackTraceElement trace = problemo.getStackTrace()[0];
+            System.out.println(
+                    "Class: + " + trace.getClassName()+" Method: "+trace.getMethodName()+"Line: "+
+                            trace.getLineNumber() );
+                            */
+            /*
+            System.out.println("I'm in line #" +
+                    problemo.getStackTrace()[4].getLineNumber());
+            */
+
+            problemo.printStackTrace();
 
 
             //System.out.println("I'm in line #"+ )
