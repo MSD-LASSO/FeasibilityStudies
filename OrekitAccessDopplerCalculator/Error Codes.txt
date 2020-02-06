@@ -1,0 +1,5 @@
+ERROR 002: The NORAD ID was not found!!!!!!!! Please check the input file!!!!!!!!!
+ERROR 003: NO EVENTS BETWEEN PROGRAM START DATE AND INPUTTED END DATE!!!!!!!! CHECK END DATE!!!!!!!!!
+ERROR 004: END DATE IS BEFORE THE PROGRAM START DATE!!!!! CHECK THE END DATE AGAIN!!!!!!
+
+ERROR: 009: Failed to read the LASSO Input.txt. Please verify it has all required inputs: noradID, endDate, errorTimeForTLE, recordingRate, channelFrequency
