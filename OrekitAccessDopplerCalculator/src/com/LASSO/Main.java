@@ -39,10 +39,9 @@ public class Main {
          */
         System.out.println(args[0]);
         System.out.println(args[1]);
+
         String fileName="./LASSO_INPUT.txt";
         Runner runner=new Runner(fileName);
         runner.execute();
-
-
     }
 }
