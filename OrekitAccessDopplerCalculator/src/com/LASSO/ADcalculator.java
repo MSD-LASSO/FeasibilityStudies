@@ -80,34 +80,17 @@ public class ADcalculator {
     }
 
 
-    public ArrayList<Access> computeAccessTimes(AbsoluteDate endDate, boolean verbose){
-        TimeScale utc = TimeScalesFactory.getUTC();
-
-        String initialTimeString=Instant.now().toString();
-        String[] splitInitialTimeString=initialTimeString.split("T");
-
-        //splitting those strings and separating each component
-        String[] yearMonthDay= splitInitialTimeString[0].split("-");
-        String hourMinSecString=splitInitialTimeString[1].replace("Z","");
-        String[] hourMinSec=hourMinSecString.split(":");
-        int year=Integer.valueOf(yearMonthDay[0]);
-        int month=Integer.valueOf(yearMonthDay[1]);
-        int day=Integer.valueOf(yearMonthDay[2]);
-        int hour=Integer.valueOf(hourMinSec[0]);
-        int min=Integer.valueOf(hourMinSec[1]);
-        double sec=Double.valueOf(hourMinSec[2]);
-        // defining the initialDate in AbsoluteDate form from the string components above.
-
-        //AbsoluteDate initialDate=new AbsoluteDate(year,month,day,hour,min,sec,utc);
-
-
-        //leaving the hardcode initial date line commented in for debugging
-        // 2020-01-27T06:55:33.125
-        AbsoluteDate initialDate=new AbsoluteDate(2020,1,27,8,40,00.000,utc);
-
-        return computeAccessTimes(initialDate,endDate,verbose);
-
-    }
+//    public ArrayList<Access> computeAccessTimes(AbsoluteDate endDate, boolean verbose){
+//
+//
+//
+//        //leaving the hardcode initial date line commented in for debugging
+//        // 2020-01-27T06:55:33.125
+//        AbsoluteDate initialDate=new AbsoluteDate(2020,1,27,8,40,00.000,utc);
+//
+//        return computeAccessTimes(initialDate,endDate,verbose);
+//
+//    }
 
 
 

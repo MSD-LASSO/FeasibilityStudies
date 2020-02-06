@@ -1,8 +1,12 @@
 package com.LASSO;
 
 import org.orekit.time.AbsoluteDate;
+import org.orekit.time.TimeScale;
+import org.orekit.time.TimeScalesFactory;
 
 import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.time.Instant;
 import java.util.ArrayList;
 
 public class Runner {
@@ -12,7 +16,7 @@ public class Runner {
 
     private int noradID;
 
-    private double TLEestimatedErrorTime;
+    private double errorTimeForTLE;
 
     private double recordingRate;
 
@@ -20,27 +24,47 @@ public class Runner {
 
     //initialDate, endDate, noradID, TLEestimatedErrorTime, recordingRate
 
-    public Runner(String filename){
-        this.fileName=filename;
+    public Runner(AbsoluteDate initialDate, AbsoluteDate endDate, int noradID, double errorTimeForTLE, double recordingRate){
+        this.noradID=noradID;
+        this.initialDate=initialDate;
+        this.endDate=endDate;
+        this.errorTimeForTLE=errorTimeForTLE;
+        this.recordingRate=recordingRate;
     }
 
 
-    public boolean execute() throws FileNotFoundException {
-        Utils.addOrekitData();
+    public Runner(String filename){
 
+        this.fileName=filename;
+        try {
+            readFromText();
+        } catch (IOException e){
+            System.out.println("Failed to read the LASSO Input.txt. Please verify it has all required inputs: noradID, endDate, errorTimeForTLE,");
+        }
+
+    }
+
+    public void readFromText() throws IOException {
         //gathering parameters from the input file
         InputReader theInputReader=new InputReader(fileName);
         theInputReader.read();
 
         //Declaring Variable Values from the input file
 
-        double baseFrequency=theInputReader.getBaseFrequency();
-        AbsoluteDate endDate= theInputReader.getEndTime();
-        int noradID=theInputReader.getNoradID();
-        double timeInterval=theInputReader.getTimeInterval();
-        double dopplerErrorTime=theInputReader.getDopplerErrorTime();
-        double signalBandwidth=theInputReader.getSignalBandwidth();
-        double recordTime=theInputReader.getRecordTime();
+        endDate= theInputReader.getEndTime();
+        noradID=theInputReader.getNoradID();
+        errorTimeForTLE=theInputReader.getDopplerErrorTime();
+        recordingRate=theInputReader.getRecordTime();
+
+        initialDate=Utils.getCurrentTime();
+    }
+
+
+
+    public boolean execute() throws FileNotFoundException {
+        Utils.addOrekitData();
+
+
 
 
 
@@ -73,7 +97,7 @@ public class Runner {
 
         ADcalculator calc=new ADcalculator(noradID,timeInterval,stations,baseFrequency,dopplerErrorTime,signalBandwidth,recordTime);
 
-        calc.computeAccessTimes(endDate,true);
+        calc.computeAccessTimes(initialDate, endDate,true);
         return true;
     }
 
