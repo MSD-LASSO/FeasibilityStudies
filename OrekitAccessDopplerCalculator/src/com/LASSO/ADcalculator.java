@@ -35,6 +35,9 @@ import java.util.Date;
 import java.util.List;
 import java.time.Instant;
 
+/** This class calculates the access times and the doppler shift during those access times for a given satellite noradID
+ * file and station lcoations.
+ * */
 public class ADcalculator {
 
     /**5 digit code assigned to the satellite to track */
@@ -45,8 +48,6 @@ public class ADcalculator {
 
     /** the time to shift back and forth for doppler upper and lower bound */
     private double dopplerErrorTime;
-    private double signalBandwidth;
-    private double recordTime;
     private TLE satelliteOrbit;
 
     private ArrayList<Station> stations;
@@ -59,19 +60,16 @@ public class ADcalculator {
     /**This is the frequency the satellite transmits at, NOT the frequency the receiver will get.*/
     private double baseFrequency;
 
-    public ADcalculator(int noradID, double timeInterval, ArrayList<Station> stations, double baseFrequency,double dopplerErrorTime,
-                        double signalBandwidth, double recordTime){
+    public ADcalculator(int noradID, double timeInterval, ArrayList<Station> stations, double baseFrequency,double dopplerErrorTime){
         this.noradID=noradID;
         this.timeInterval=timeInterval;
         this.stations=stations;
         this.baseFrequency=baseFrequency;
         this.dopplerErrorTime=dopplerErrorTime;
-        this.signalBandwidth=signalBandwidth;
-        this.recordTime=recordTime;
         try {
             satelliteOrbit=CelestrakImporter.importSatelliteData(noradID);
         } catch (IOException e) {
-            System.out.println("Fail to find Satellite");
+            throw new NoradIDnotFoundException("ERROR 002: The NORAD ID was not found!!!!!!!! Please check the input file!!!!!!!!!");
         }
     }
 
@@ -79,45 +77,18 @@ public class ADcalculator {
         this.satelliteOrbit = satelliteOrbit;
     }
 
-
-    public ArrayList<Access> computeAccessTimes(AbsoluteDate endDate, boolean verbose){
-        TimeScale utc = TimeScalesFactory.getUTC();
-
-        String initialTimeString=Instant.now().toString();
-        String[] splitInitialTimeString=initialTimeString.split("T");
-
-        //splitting those strings and separating each component
-        String[] yearMonthDay= splitInitialTimeString[0].split("-");
-        String hourMinSecString=splitInitialTimeString[1].replace("Z","");
-        String[] hourMinSec=hourMinSecString.split(":");
-        int year=Integer.valueOf(yearMonthDay[0]);
-        int month=Integer.valueOf(yearMonthDay[1]);
-        int day=Integer.valueOf(yearMonthDay[2]);
-        int hour=Integer.valueOf(hourMinSec[0]);
-        int min=Integer.valueOf(hourMinSec[1]);
-        double sec=Double.valueOf(hourMinSec[2]);
-        // defining the initialDate in AbsoluteDate form from the string components above.
-
-        //AbsoluteDate initialDate=new AbsoluteDate(year,month,day,hour,min,sec,utc);
-
-
-        //leaving the hardcode initial date line commented in for debugging
-        // 2020-01-27T06:55:33.125
-        AbsoluteDate initialDate=new AbsoluteDate(2020,1,27,8,40,00.000,utc);
-
-        return computeAccessTimes(initialDate,endDate,verbose);
-
-    }
-
-
-
+    /**
+     * Calculates all access times within the specified interval and outputs them to a text file with the name
+     * DopplerAndAccessXXXXX where XXXXX is the noradID.
+     * @param initialDate date to start looking for access times
+     * @param endDate date to stop looking for access times
+     * @param verbose set to true to get intermediate details. False to get no command outputs
+     * @return an arrayList of size equal to the number of independent access times.
+     */
     public ArrayList<Access> computeAccessTimes(AbsoluteDate initialDate, AbsoluteDate endDate, boolean verbose){
 
 
         Frame inertialFrame = FramesFactory.getEME2000();
-
-
-        // Using the Instant class to get UTC time at time the program runs.
 
 
         System.out.println("Start Date: "+initialDate.toString());
@@ -125,12 +96,11 @@ public class ADcalculator {
         if (initialDate.compareTo(endDate)>0)
         {
 
-            System.out.println("ERROR 004: END DATE IS BEFORE THE PROGRAM START DATE!!!!! CHECK THE END DATE AGAIN!!!!!!");
-            System.exit(-1);
+            throw new NoEventsFoundException("ERROR 004: END DATE IS BEFORE THE PROGRAM START DATE!!!!! CHECK THE END DATE AGAIN!!!!!!");
 
         }
 
-        //TODO How can we better quanitify these? Does it matter?
+        //TODO How can we better quanitify mass and attitude? Does it matter?
         double mass=100; // 54 kg is FalconSat3. 100kg assumption?
         NadirPointing nadirPointing = new NadirPointing(inertialFrame, stations.get(0).getEarth());
 
@@ -143,11 +113,14 @@ public class ADcalculator {
         double minElevation = 0;     //min elevation (trigger elevation)
         createBooleanDetector(maxCheck,threshold,minElevation);
 
-        EventsLogger booleanLogger=new EventsLogger(); //creating logger to get data from detector
-        oreTLEPropagator.addEventDetector(booleanLogger.monitorDetector(threeStationDetector));  //add event detector to propagator
+        //Create logger to buffer each event.
+        EventsLogger booleanLogger=new EventsLogger();
+        //add event detector to propagator
+        oreTLEPropagator.addEventDetector(booleanLogger.monitorDetector(threeStationDetector));
 
         //Propagation
         oreTLEPropagator.propagate(initialDate, endDate);
+        //Parse events
         List<EventsLogger.LoggedEvent> stationOverlap=booleanLogger.getLoggedEvents(); //getting event instances.
         if(verbose) {
             System.out.println(stationOverlap.get(0).getState().getDate().toString());
@@ -156,9 +129,9 @@ public class ADcalculator {
 
         if (stationOverlap.size()<=1)
         {
-            System.out.println("ERROR 003: 00NO EVENTS BETWEEN PROGRAM START DATE AND INPUTTED END DATE!!!!!!!! CHECK END DATE!!!!!!!!!");
-            System.exit(-1);
+            throw new NoEventsFoundException("ERROR 003: NO EVENTS BETWEEN PROGRAM START DATE AND INPUTTED END DATE!!!!!!!! CHECK END DATE!!!!!!!!!");
         }
+
         //CHECKING IF THE START OR END DATE WAS IN THE MIDDLE OF A PASS (this will screw up the outputted frequencies)
 
         if (! stationOverlap.get(0).isIncreasing()){  //if the 1st event returns false, it means that the event is an exit.
@@ -170,15 +143,13 @@ public class ADcalculator {
 
         if (stationOverlap.size()<=1)
         {
-            System.out.println("ERROR 003: NO EVENTS BETWEEN PROGRAM START DATE AND INPUTTED END DATE!!!!!!!! CHECK END DATE!!!!!!!!!");
-            System.exit(-1);
+            throw new NoEventsFoundException("ERROR 003: NO EVENTS BETWEEN PROGRAM START DATE AND INPUTTED END DATE!!!!!!!! CHECK END DATE!!!!!!!!!");
         }
 
 
 
         //*/
         //Getting station frame array for doppler calcs.
-        int stationFrameNo=2;
         TopocentricFrame[] stationFramesForDoppler=new TopocentricFrame[stations.size()];
 
         for (int i=0;i<stations.size();i++){
@@ -199,9 +170,6 @@ public class ADcalculator {
             writeToText.append(stations.get(p).getFrame().getName()).append("\n");
         }
 
-        //pass thru variables for next phase of code flow
-        //writeToText.append(String.format("baseFrequency=%.4f\nsignalBandwidth=%.4f\nrecordTime=%.4f\n",baseFrequency,signalBandwidth,recordTime));
-
         ArrayList<Access> accesses=new ArrayList<>();
         //For each event, propagate from the start to the end of the access with the specified interval time step.
         writeToText.append("numEvents="+stationOverlap.size()/2+"\n");
@@ -217,6 +185,7 @@ public class ADcalculator {
 
             accessPoint.computeAccessCalculations(300,timeInterval,stationFramesForDoppler,inertialFrame,dopplerErrorTime);
             writeToText.append(accessPoint.toStringStationList());
+//            int stationFrameNo=2;
             //writeToText.append(accessPoint.toString(stationFrameNo));  //debugging line to check each station output individually.
 
 
@@ -251,22 +220,27 @@ public class ADcalculator {
         threeStationDetector=BooleanDetector.andCombine(stationVisibilityDetectors).withHandler(new RecordAndContinue<>());
     }
 
+    /**
+     * Write the string output to a text file with the name DopplerAccessXXXXX.txt with XXXXXX as the noradID.
+     * */
     public void writeToFile(){
         try {
             PrintWriter unWriter= new PrintWriter("./DopplerAccess"+noradID+".txt", StandardCharsets.UTF_8);
             unWriter.print(writeToText);
             unWriter.close();
         } catch (FileNotFoundException e) {
-            System.out.println("Could not find specified file");
+            System.out.println("ERROR 010: Could not find specified file. Writing Failed.");
             System.out.println(e.getMessage());
         } catch (UnsupportedEncodingException e) {
-            System.out.println("Specified encoding not supported.");
+            System.out.println("ERROR 011: Specified encoding not supported. Writing Failed.");
             System.out.println(e.getMessage());
         } catch (IOException e) {
-            System.out.println("Wrong Input");
+            System.out.println("ERROR 012: Wrong Input. Writing Failed.");
             System.out.println(e.getMessage());
         }
     }
+
+
     public void TCPsend(){
         int intSize = 4;
 

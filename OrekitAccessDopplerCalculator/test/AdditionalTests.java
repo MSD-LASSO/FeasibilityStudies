@@ -9,6 +9,7 @@ import org.orekit.time.AbsoluteDate;
 import org.orekit.time.TimeScale;
 import org.orekit.time.TimeScalesFactory;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.InputMismatchException;
 
@@ -162,6 +163,20 @@ public class AdditionalTests {
 
     }
 
+    @Test
+    public void endDateBeforeStartDate(){
+        TimeScale utc = TimeScalesFactory.getUTC();
+        AbsoluteDate initialDate = new AbsoluteDate(2020, 2, 5, 0, 0, 00.000, utc);
+        AbsoluteDate endDate = new AbsoluteDate(2020, 2, 4, 7, 0, 00.000, utc);
+        Runner runner=new Runner(initialDate,endDate,30776,0.5,60,437);
+        try {
+            runner.execute();
+            Assert.fail("Failed to throw exception.");
+        } catch(NoEventsFoundException e) {
+            Assert.assertTrue(e.getMessage().contains("ERROR 004"));
+        }
+    }
+
     public ADcalculator setupEventTests() {
         //        FALCONSAT-3 from 2/5/2020
         String line1 = "1 30776U 07006E   20035.39966073  .00002439  00000-0  66842-4 0  9997";
@@ -178,10 +193,32 @@ public class AdditionalTests {
 
         ArrayList<Station> stations = Utils.createStations(false, stationLatitudes, stationLongitudes, stationAltitudes, minElevations, stationNames);
 
-        ADcalculator calc = new ADcalculator(30776, 150, stations, 437, 0.3, 1, 0.5);
+        ADcalculator calc = new ADcalculator(30776, 150, stations, 437, 0.3);
         calc.setSatelliteOrbit(test); //set to our static TLE for consistency.
 
         return calc;
+    }
+
+    @Test
+    public void readTextTest(){
+        TimeScale utc = TimeScalesFactory.getUTC();
+        Runner runner=new Runner("./TestFiles/LASSO_testINPUT.txt");
+        try {
+            runner.readFromText();
+            Assert.assertEquals(437.15,runner.getChannelFrequency(),0);
+            Assert.assertEquals(30776,runner.getNoradID());
+            Assert.assertEquals(60,runner.getRecordingRate(),0);
+            Assert.assertEquals(0.3,runner.getErrorTimeForTLE(),0);
+            AbsoluteDate endDate=new AbsoluteDate(2020,2,8,11,16,35.961,utc);
+            Assert.assertEquals(0,FastMath.abs(endDate.durationFrom(runner.getEndDate())),1e-4);
+
+        } catch (IOException e){
+            Assert.fail("Test input missing");
+        }
+
+
+
+
     }
 
 }

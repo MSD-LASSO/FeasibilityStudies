@@ -44,7 +44,7 @@ public class Utils {
         return stations;
     }
 
-    public AbsoluteDate getCurrentTime(){
+    public static AbsoluteDate getCurrentTime(){
         TimeScale utc = TimeScalesFactory.getUTC();
 
         String initialTimeString= Instant.now().toString();
