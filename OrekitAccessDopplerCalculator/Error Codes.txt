@@ -1,5 +1,16 @@
+ERROR 001: Problem during input reading. Wrong # of inputs/Identifier strings messed up?
 ERROR 002: The NORAD ID was not found!!!!!!!! Please check the input file!!!!!!!!!
 ERROR 003: NO EVENTS BETWEEN PROGRAM START DATE AND INPUTTED END DATE!!!!!!!! CHECK END DATE!!!!!!!!!
 ERROR 004: END DATE IS BEFORE THE PROGRAM START DATE!!!!! CHECK THE END DATE AGAIN!!!!!!
+ERROR 005: The site was unresponsive. Failed to get the text file. NEEDS TEST CASE
+ERROR 006: Not sure how the program got here. Debugging System required. NEEDS TEST CASE
+ERROR 007: Check internet connection.
+ERROR 008: UNKNOWN STRING WAS INPUTTED. CHECK AGAIN!!!!!!!!!!!!!!!
+ERROR 009: Failed to read the LASSO Input.txt. Please verify it has all required inputs: noradID, endDate, errorTimeForTLE, recordingRate, channelFrequency
+ERROR 010: Could not find specified file. Writing Failed.
+ERROR 011: Specified encoding not supported. Writing Failed.
+ERROR 012: Wrong Input. Writing Failed.
 
-ERROR: 009: Failed to read the LASSO Input.txt. Please verify it has all required inputs: noradID, endDate, errorTimeForTLE, recordingRate, channelFrequency
+
+ERROR 050: Lower bound should be less than upper bound.
+ERROR 051: Nominal should be between the upper and lower bounds.
