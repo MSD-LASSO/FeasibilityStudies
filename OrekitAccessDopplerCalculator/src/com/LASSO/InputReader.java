@@ -9,18 +9,18 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.lang.reflect.GenericDeclaration;
 import java.util.ArrayList;
+import java.util.InputMismatchException;
 import java.util.Scanner;
 
 public class InputReader {
 
     private int noradID;
-    private double timeInterval;
-    private double baseFrequency;
-    private double signalBandwidth;
+    private double channelFrequency;
     private AbsoluteDate endTime;
+    private AbsoluteDate initialTime;
     private String inputFileName;
-    private double dopplerErrorTime;
-    private double recordTime;
+    private double errorTimeForTLE;
+    private double recordingRate;
     private File inputFile;
     private Scanner elScanner;
 
@@ -29,8 +29,13 @@ public class InputReader {
         this.inputFile=new File(inputFileName);
         this.elScanner=new Scanner(this.inputFile);
     }
+
+    public InputReader(){
+        //this inputReader is to use for the terminal reading
+    }
+
     public void read(){
-        //store the parameters in input file as
+        //store tfhe parameters in input file as
 
         elScanner.useDelimiter("\n");
 
@@ -44,20 +49,20 @@ public class InputReader {
             noradID = Integer.valueOf(noradString.replace("noradID=", ""));
             //  System.out.println(noradID);
 
-            //2nd line: downlink base frequency
-            String baseFreqString = elScanner.next();
-            baseFrequency = Double.valueOf(baseFreqString.replace("baseFrequency=", ""));
-            //System.out.println(baseFrequency);
+            //2nd line: downlink channel frequency
+            String channelFreqString = elScanner.next();
+            channelFrequency = Double.valueOf(channelFreqString.replace("channelFrequency=", ""));
+            //System.out.println(channelFrequency);
 
             //3rd line: signal bandwidth
-            String signalBandwidthString = elScanner.next();
-            signalBandwidth = Double.valueOf(signalBandwidthString.replace("signalBandwidth=", ""));
+            //String signalBandwidthString = elScanner.next();
+            //signalBandwidth = Double.valueOf(signalBandwidthString.replace("signalBandwidth=", ""));
             //System.out.println(signalBandwidth);
 
             //4th line: time interval for doppler shift tuning
-            String timeIntervalString = elScanner.next();
-            timeInterval = Double.valueOf(timeIntervalString.replace("timeInterval=", ""));
-            //System.out.println(timeInterval);
+            String errorTimeForTLEstring = elScanner.next();
+            errorTimeForTLE = Double.valueOf(errorTimeForTLEstring.replace("errorTimeForTLE=", ""));
+            //System.out.println(recordingRate);
 
             //5th line: End Time in Eastern Standard Time.
             // NOTE: UTC time scale is +5 hrs ahead of EST!!!
@@ -93,12 +98,12 @@ public class InputReader {
 
             //6th line: error time for doppler shift max min bound
             String errorTimeString = elScanner.next();
-            dopplerErrorTime = Double.valueOf(errorTimeString.replace("errorTime=", ""));
+            errorTimeForTLE = Double.valueOf(errorTimeString.replace("errorTimeForTLE=", ""));
             //System.out.println(dopplerErrorTime);
 
             //7th line: record time for SDR. How long it will record data for Cross Correlation purposes
             String recordTimeString = elScanner.next();
-            recordTime = Double.valueOf(recordTimeString.replace("recordTime=", ""));
+            recordingRate = Double.valueOf(recordTimeString.replace("recordingRate=", ""));
             elScanner.close();
         }
         catch (Exception problemo){
@@ -126,6 +131,80 @@ public class InputReader {
 
 
     }
+    public void readFromTerminal(String[] args){
+        //New input reading from "args" variable from when this is run from the terminal.
+      /*
+        INPUTS CAN BE IN ANY ORDER!!!!!!!
+
+        initialDate (current time as DEFAULT)
+        endDate  (1 day ahead of initial date)
+        noradID= error thrown (legit error)
+        errorTimeForTLE (0.3 [s])
+        recordingRate     (60 [s] )
+        and then add default vals if none chosen. ^^^ in ( ) above.
+         */
+
+        //setting default values before reading in
+        recordingRate=60;
+        errorTimeForTLE=0.3;
+        initialTime=Utils.getCurrentTime();
+        int timeOffset=86400; //seconds in 1 day
+        endTime=initialTime.shiftedBy(timeOffset);
+        channelFrequency=437;
+        noradID=-1;
+        // check if the user actually put the stuff in
+        for (String argument: args)
+        {
+            if (argument.toLowerCase().contains("noradid=")){
+                noradID = Integer.valueOf(argument.toLowerCase().replace("noradid=", ""));
+            }
+            else if (argument.toLowerCase().contains("initialtime=")){
+                String initialTimeString =argument.toLowerCase();
+                initialTimeString = initialTimeString.replace("initialtime=", "");
+                String[] splitinitialTimeString = initialTimeString.split("T");
+                String[] yearMonthDay = splitinitialTimeString[0].split("-");
+                String hourMinSecString = splitinitialTimeString[1].substring(0, 12);
+                String[] hourMinSec = hourMinSecString.split(":");
+                String timeZoneOffsetString = splitinitialTimeString[1].substring(13, splitinitialTimeString[1].length());
+                String[] hourMinOffset = timeZoneOffsetString.split(":");
+                initialTime = convertToAbsoluteDate(yearMonthDay, hourMinSec, hourMinOffset);
+            }
+            else if (argument.toLowerCase().contains("endtime=")){
+                String endTimeString =argument.toLowerCase();
+                endTimeString = endTimeString.replace("endtime=", "");
+                String[] splitEndTimeString = endTimeString.split("t");
+                String[] yearMonthDay = splitEndTimeString[0].split("-");
+                String hourMinSecString = splitEndTimeString[1].substring(0, 12);
+                String[] hourMinSec = hourMinSecString.split(":");
+                String timeZoneOffsetString = splitEndTimeString[1].substring(13, splitEndTimeString[1].length());
+                String[] hourMinOffset = timeZoneOffsetString.split(":");
+                endTime = convertToAbsoluteDate(yearMonthDay, hourMinSec, hourMinOffset);
+            }
+            else if (argument.toLowerCase().contains("errortimefortle=")){
+               System.out.println(argument);
+                errorTimeForTLE=Double.valueOf(argument.toLowerCase().replace("errortimefortle=", ""));
+            }
+            else if (argument.toLowerCase().contains("recordingrate=")){
+                recordingRate=Double.valueOf(argument.toLowerCase().replace("recordingrate=", ""));
+            }
+            else if (argument.toLowerCase().contains("channelfrequency=")){
+                channelFrequency=Double.valueOf(argument.toLowerCase().replace("channelfrequency=", ""));
+            }
+            else{
+
+                throw new InputMismatchException("ERROR 015: UNKNOWN STRING WAS INPUTTED. CHECK AGAIN!!!!!!!!!!!!!!!");
+            }
+
+        }
+        if (noradID==-1){
+            throw new NoradIDnotFoundException("ERROR 002: The NORAD ID was not found!!!!!!!! Please check the command input!!!!!!!!");
+        }
+
+
+
+
+    }
+
     public static AbsoluteDate convertToAbsoluteDate(String[] yearMonthDay, String[] hourMinSec, String[] hourMinOffset){
 
         int year=Integer.valueOf(yearMonthDay[0]);
@@ -178,11 +257,10 @@ public class InputReader {
     public int getNoradID() {
         return noradID;
     }
-    public double getTimeInterval(){return timeInterval;}
-    public double getBaseFrequency(){return baseFrequency;}
+    public double getChannelFrequency(){return channelFrequency;}
     public AbsoluteDate getEndTime(){return endTime;}
-    public double getDopplerErrorTime(){return dopplerErrorTime;}
-    public double getSignalBandwidth(){return signalBandwidth;}
-    public double getRecordTime(){return recordTime;}
-
+    public AbsoluteDate getinitialTime(){return initialTime;}
+    public double getDopplerErrorTime(){return errorTimeForTLE;}
+    public double getRecordingRate(){return recordingRate;}
+    public double getErrorTimeForTLE(){return errorTimeForTLE;}
 }

@@ -27,12 +27,34 @@ import java.util.ArrayList;
 public class Main {
 
     public static void main(String[] args) throws FileNotFoundException {
+        /*
+        INPUTS CAN BE IN ANY ORDER!!!!!!!
 
-
+        initialDate (current time as DEFAULT)
+        endDate  (1 day ahead of initial date)
+        noradID= error thrown (legit error)
+        TLEestimatedErrorTimes (0.3 [s])
+        recordingRate     (60 [s] )
+        and then add default vals if none chosen. ^^^ in ( ) above.
+         */
         System.out.println(args[0]);
+        System.out.println(args[1]);
 
+        /* text version
         String fileName="./LASSO_INPUT.txt";
         Runner runner=new Runner(fileName);
         runner.execute();
+         */
+        Utils.addOrekitData();
+        InputReader terminalReader=new InputReader();
+        terminalReader.readFromTerminal(args);
+        int noradID=terminalReader.getNoradID();
+        AbsoluteDate initialDate=terminalReader.getinitialTime();
+        AbsoluteDate endDate=terminalReader.getEndTime();
+        double errorTimeForTLE=terminalReader.getErrorTimeForTLE();
+        double recordingRate=terminalReader.getRecordingRate();
+        double channelFrequency=terminalReader.getChannelFrequency();
+        Runner terminalRunner=new Runner(initialDate,endDate,noradID,errorTimeForTLE,recordingRate,channelFrequency);
+        terminalRunner.execute();
     }
 }
