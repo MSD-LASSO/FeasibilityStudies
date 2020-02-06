@@ -87,8 +87,8 @@ public class Runner {
         endDate= theInputReader.getEndTime();
         noradID=theInputReader.getNoradID();
         errorTimeForTLE=theInputReader.getDopplerErrorTime();
-        recordingRate=theInputReader.getTimeInterval();
-        channelFrequency=theInputReader.getBaseFrequency();
+        recordingRate=theInputReader.getRecordingRate();
+        channelFrequency=theInputReader.getChannelFrequency();
 
         initialDate=Utils.getCurrentTime();
     }
