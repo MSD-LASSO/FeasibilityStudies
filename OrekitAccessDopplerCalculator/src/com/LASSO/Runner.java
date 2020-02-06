@@ -22,26 +22,59 @@ public class Runner {
 
     private String fileName;
 
+    private double channelFrequency;
+
     //initialDate, endDate, noradID, TLEestimatedErrorTime, recordingRate
 
-    public Runner(AbsoluteDate initialDate, AbsoluteDate endDate, int noradID, double errorTimeForTLE, double recordingRate){
+    public Runner(AbsoluteDate initialDate, AbsoluteDate endDate, int noradID, double errorTimeForTLE, double recordingRate, double channelFrequency){
         this.noradID=noradID;
         this.initialDate=initialDate;
         this.endDate=endDate;
         this.errorTimeForTLE=errorTimeForTLE;
         this.recordingRate=recordingRate;
+        this.channelFrequency=channelFrequency;
+        Utils.addOrekitData();
     }
 
 
     public Runner(String filename){
 
         this.fileName=filename;
+        Utils.addOrekitData();
         try {
             readFromText();
         } catch (IOException e){
-            System.out.println("Failed to read the LASSO Input.txt. Please verify it has all required inputs: noradID, endDate, errorTimeForTLE,");
+            throw new NoradIDnotFoundException("ERROR: 009: Failed to read the LASSO Input.txt. Please verify it has all required inputs: noradID, endDate, errorTimeForTLE,");
         }
 
+    }
+
+    public AbsoluteDate getInitialDate() {
+        return initialDate;
+    }
+
+    public AbsoluteDate getEndDate() {
+        return endDate;
+    }
+
+    public int getNoradID() {
+        return noradID;
+    }
+
+    public double getErrorTimeForTLE() {
+        return errorTimeForTLE;
+    }
+
+    public double getRecordingRate() {
+        return recordingRate;
+    }
+
+    public String getFileName() {
+        return fileName;
+    }
+
+    public double getChannelFrequency() {
+        return channelFrequency;
     }
 
     public void readFromText() throws IOException {
@@ -54,48 +87,30 @@ public class Runner {
         endDate= theInputReader.getEndTime();
         noradID=theInputReader.getNoradID();
         errorTimeForTLE=theInputReader.getDopplerErrorTime();
-        recordingRate=theInputReader.getRecordTime();
+        recordingRate=theInputReader.getTimeInterval();
+        channelFrequency=theInputReader.getBaseFrequency();
 
         initialDate=Utils.getCurrentTime();
     }
 
 
 
-    public boolean execute() throws FileNotFoundException {
-        Utils.addOrekitData();
-
-
-
-
-
+    public boolean execute() {
 
         ///* CASE 4: Mess Bristol , Brockport,   Webster High School:43.204291, -77.469981
         double[] stationLatitudes= {43.209037, 42.700192,43.204291 };
         double[] stationLongitudes=  {-77.950921,-77.408628,-77.469981};
         String[] stationNames={"Brockport University", "Mees Bristol","Webster HS"};
 
-
-//        double[] stationLatitudes= {43.1574, 43.1574,43.1574 };
-//        double[] stationLongitudes=  {-77.6042,-77.6042,-77.6042};
-
-
         double[] stationAltitudes=  {0,  0,  0 };
         double[] minElevations ={0,0,0};
 
-
-       /*
-        TimeScale utc = TimeScalesFactory.getUTC();
-        double baseFrequency=437;
-
-        //setting end date for propagation (initial is set in ADcalculator)?
-        AbsoluteDate endDate = new AbsoluteDate(2020, 1, 23, 0, 0, 00.000, utc);
-        */
 
         System.out.println("End Date: "+endDate.toString());
 
         ArrayList<Station> stations=Utils.createStations(false,stationLatitudes,stationLongitudes,stationAltitudes,minElevations,stationNames);
 
-        ADcalculator calc=new ADcalculator(noradID,timeInterval,stations,baseFrequency,dopplerErrorTime,signalBandwidth,recordTime);
+        ADcalculator calc=new ADcalculator(noradID,recordingRate,stations,channelFrequency,errorTimeForTLE);
 
         calc.computeAccessTimes(initialDate, endDate,true);
         return true;
