@@ -38,7 +38,7 @@
     </param>
     <param>
       <key>generate_options</key>
-      <value>wx_gui</value>
+      <value>no_gui</value>
     </param>
     <param>
       <key>hier_block_src_path</key>
@@ -66,7 +66,7 @@
     </param>
     <param>
       <key>run_options</key>
-      <value>prompt</value>
+      <value>run</value>
     </param>
     <param>
       <key>run</key>
@@ -105,11 +105,11 @@
     </param>
     <param>
       <key>_enabled</key>
-      <value>1</value>
+      <value>0</value>
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(7, 474)</value>
+      <value>(136, 908)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -160,7 +160,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(7, 299)</value>
+      <value>(496, 852)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -203,7 +203,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(183, 339)</value>
+      <value>(192, 188)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -262,7 +262,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(1005, 227)</value>
+      <value>(304, 860)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -309,7 +309,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(1045, 363)</value>
+      <value>(352, 980)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -360,7 +360,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(973, 19)</value>
+      <value>(800, 164)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -411,7 +411,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(973, 698)</value>
+      <value>(1096, 956)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -458,11 +458,11 @@
     </param>
     <param>
       <key>file</key>
-      <value>/home/pentoo/Documents/GIT/FeasibilityStudies/GNU/Record_ref/ref_signal</value>
+      <value>C:\Users\devri\Documents\RIT\Sixth Semester\MSD I\GIT\readInData\initialDemo\Data\pi_2_ref_sig_3</value>
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(215, 35)</value>
+      <value>(424, 540)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -513,7 +513,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(742, 35)</value>
+      <value>(640, 180)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -564,7 +564,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(797, 714)</value>
+      <value>(920, 972)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -619,7 +619,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(1037, 299)</value>
+      <value>(336, 932)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -666,7 +666,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(462, 351)</value>
+      <value>(488, 168)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -717,7 +717,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(430, 51)</value>
+      <value>(656, 556)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -768,7 +768,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(159, 514)</value>
+      <value>(8, 188)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -815,7 +815,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(7, 371)</value>
+      <value>(8, 92)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -862,7 +862,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(279, 610)</value>
+      <value>(8, 476)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -929,7 +929,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(758, 123)</value>
+      <value>(56, 756)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -1004,7 +1004,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(542, 554)</value>
+      <value>(760, 828)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -1059,7 +1059,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(7, 594)</value>
+      <value>(8, 284)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -2394,7 +2394,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(127, 123)</value>
+      <value>(192, 8)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -2525,7 +2525,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(1013, 107)</value>
+      <value>(312, 740)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -2572,7 +2572,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(159, 610)</value>
+      <value>(8, 380)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -2643,7 +2643,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(1021, 466)</value>
+      <value>(808, 480)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -2730,7 +2730,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(829, 410)</value>
+      <value>(968, 868)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -2836,19 +2836,7 @@
     <sink_key>0</sink_key>
   </connection>
   <connection>
-    <source_block_id>blocks_multiply_xx_0</source_block_id>
-    <sink_block_id>low_pass_filter_0</sink_block_id>
-    <source_key>0</source_key>
-    <sink_key>0</sink_key>
-  </connection>
-  <connection>
-    <source_block_id>blocks_multiply_xx_0</source_block_id>
-    <sink_block_id>low_pass_filter_0_0</sink_block_id>
-    <source_key>0</source_key>
-    <sink_key>0</sink_key>
-  </connection>
-  <connection>
-    <source_block_id>blocks_multiply_xx_0</source_block_id>
+    <source_block_id>blocks_throttle_0</source_block_id>
     <sink_block_id>wxgui_fftsink2_0_0</sink_block_id>
     <source_key>0</source_key>
     <sink_key>0</sink_key>
@@ -2862,12 +2850,6 @@
   <connection>
     <source_block_id>low_pass_filter_0_0</source_block_id>
     <sink_block_id>blocks_head_0_0</sink_block_id>
-    <source_key>0</source_key>
-    <sink_key>0</sink_key>
-  </connection>
-  <connection>
-    <source_block_id>low_pass_filter_0_0</source_block_id>
-    <sink_block_id>wxgui_fftsink2_0_0</sink_block_id>
     <source_key>0</source_key>
     <sink_key>0</sink_key>
   </connection>

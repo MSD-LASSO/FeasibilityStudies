@@ -2,10 +2,11 @@
 # -*- coding: utf-8 -*-
 ##################################################
 # GNU Radio Python Flow Graph
-# Title: Filter Sig
+# Title: Filterdemod Ref
 # GNU Radio version: 3.7.13.5
 ##################################################
 
+from gnuradio import analog
 from gnuradio import blocks
 from gnuradio import eng_notation
 from gnuradio import filter
@@ -16,10 +17,10 @@ from optparse import OptionParser
 import pmt
 
 
-class filter_sig(gr.top_block):
+class filterDemod_ref(gr.top_block):
 
-    def __init__(self, cutoff_freq=12000, decimation=1, num_samples=10000000, samp_rate=20000000, save_file='', source_file='', trans_width=2000):
-        gr.top_block.__init__(self, "Filter Sig")
+    def __init__(self, cutoff_freq=12000, decimation=1, num_samples=10000000, samp_rate=2000000, save_file='', source_file='', trans_width=2000):
+        gr.top_block.__init__(self, "Filterdemod Ref")
 
         ##################################################
         # Parameters
@@ -37,22 +38,28 @@ class filter_sig(gr.top_block):
         ##################################################
         self.low_pass_filter_0_1 = filter.fir_filter_ccf(decimation, firdes.low_pass(
         	1, samp_rate, cutoff_freq, trans_width, firdes.WIN_HAMMING, 6.76))
+        self.blocks_wavfile_sink_0 = blocks.wavfile_sink('C:\\Users\\devri\\Documents\\RIT\\Sixth Semester\\MSD I\\GIT\\readInData\\filterDemodData\\pi_2_ref_sig_filter_demod_10.wav', 1, samp_rate, 8)
         self.blocks_throttle_0 = blocks.throttle(gr.sizeof_gr_complex*1, samp_rate,True)
-        self.blocks_head_0 = blocks.head(gr.sizeof_gr_complex*1, num_samples)
-        self.blocks_file_source_0 = blocks.file_source(gr.sizeof_gr_complex*1, source_file, True)
+        self.blocks_multiply_const_vxx_0 = blocks.multiply_const_vff((2, ))
+        self.blocks_head_0 = blocks.head(gr.sizeof_float*1, num_samples)
+        self.blocks_file_source_0 = blocks.file_source(gr.sizeof_gr_complex*1, 'C:\\Users\\devri\\Documents\\RIT\\Sixth Semester\\MSD I\\GIT\\readInData\\Data\\pi_2_ref_sig_10', True)
         self.blocks_file_source_0.set_begin_tag(pmt.PMT_NIL)
-        self.blocks_file_sink_1 = blocks.file_sink(gr.sizeof_gr_complex*1, save_file, False)
-        self.blocks_file_sink_1.set_unbuffered(False)
+        self.analog_wfm_rcv_0 = analog.wfm_rcv(
+        	quad_rate=2e6,
+        	audio_decimation=1,
+        )
 
 
 
         ##################################################
         # Connections
         ##################################################
+        self.connect((self.analog_wfm_rcv_0, 0), (self.blocks_multiply_const_vxx_0, 0))
         self.connect((self.blocks_file_source_0, 0), (self.blocks_throttle_0, 0))
-        self.connect((self.blocks_head_0, 0), (self.blocks_file_sink_1, 0))
+        self.connect((self.blocks_head_0, 0), (self.blocks_wavfile_sink_0, 0))
+        self.connect((self.blocks_multiply_const_vxx_0, 0), (self.blocks_head_0, 0))
         self.connect((self.blocks_throttle_0, 0), (self.low_pass_filter_0_1, 0))
-        self.connect((self.low_pass_filter_0_1, 0), (self.blocks_head_0, 0))
+        self.connect((self.low_pass_filter_0_1, 0), (self.analog_wfm_rcv_0, 0))
 
     def get_cutoff_freq(self):
         return self.cutoff_freq
@@ -87,14 +94,12 @@ class filter_sig(gr.top_block):
 
     def set_save_file(self, save_file):
         self.save_file = save_file
-        self.blocks_file_sink_1.open(self.save_file)
 
     def get_source_file(self):
         return self.source_file
 
     def set_source_file(self, source_file):
         self.source_file = source_file
-        self.blocks_file_source_0.open(self.source_file, True)
 
     def get_trans_width(self):
         return self.trans_width
@@ -116,7 +121,7 @@ def argument_parser():
         "", "--num-samples", dest="num_samples", type="intx", default=10000000,
         help="Set num_samples [default=%default]")
     parser.add_option(
-        "", "--samp-rate", dest="samp_rate", type="intx", default=20000000,
+        "", "--samp-rate", dest="samp_rate", type="intx", default=2000000,
         help="Set samp_rate [default=%default]")
     parser.add_option(
         "", "--save-file", dest="save_file", type="string", default='',
@@ -130,7 +135,7 @@ def argument_parser():
     return parser
 
 
-def main(top_block_cls=filter_sig, options=None):
+def main(top_block_cls=filterDemod_ref, options=None):
     if options is None:
         options, _ = argument_parser().parse_args()
 
