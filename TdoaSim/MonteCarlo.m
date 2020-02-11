@@ -6,7 +6,8 @@ function [means,stdDev,meanError,stdDevError, Data]=MonteCarlo(numTests,Az,El,Rn
 zPlanes=[50e3 400e3 1200e3];
 %% Invariants    
 Sphere=wgs84Ellipsoid;
-ReceiverError=[zeros(3,3) ClkError];
+% ReceiverError=[zeros(3,3) ClkError];
+ReceiverError=[RL_err ClkError];
 Rx=ReceiverLocations(1,1);
 Ry=ReceiverLocations(1,2);
 Rz=ReceiverLocations(1,3);
