@@ -14,13 +14,13 @@ numTests=length(Data.EstAzEl);
 % EstAzEl=Data.EstAzEl*180/pi;
 if ~(isnan(Az) || isnan(El))
     Errors=Data.Error*180/pi;
-    RefErrors=nan;
+%     RefErrors=nan;
 else
     Az=Data.EstAzEl(1,1);
     El=Data.EstAzEl(1,2);
     nominalReference=Data.EstRef(1,:);
     Errors=Data.EstAzEl-[Az El];
-    RefErrors=Data.References-nominalReference;
+%     RefErrors=Data.References-nominalReference;
 end
 
 figure()

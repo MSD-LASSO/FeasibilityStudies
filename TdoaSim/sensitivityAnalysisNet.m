@@ -66,8 +66,8 @@ ElevationRange=5:5:90;
 % ElevationRange=5:15:80;
 
 %for really quick testing
-% AzimuthRange=45;
-% ElevationRange=45;
+AzimuthRange=345;
+ElevationRange=45;
 
 %this set of inputs causes an error with sensitivity.
 % AzimuthRange=0:2.5:359; ElevationRange=1:1:4;

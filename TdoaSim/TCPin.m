@@ -1,4 +1,5 @@
 %Authors: Anthony Iannuzzi, awi7573@rit.edu and Zoe-Jerusha Beepat, zeb6290@g.rit.edu
+clearvars
 
 host='127.0.0.1';
 port=5010;
@@ -34,46 +35,110 @@ t = tcpclient(host, port);
 %                        between each station in the network.
 
 %% Read values from TCP
-% h1=read(t, sizeDouble*numArgs);
 h1=read(t);
 
+%% Figure out whether bytes need to be flipped.
+Nominal = typecast(h1(1:4), 'int32');
+if abs(Nominal)>2
+    Flipped = typecast(flip(h1(1:4)), 'int32');
+    if abs(Flipped)>2
+        error('ERROR 101: Byte Sequence unrecognized OR solver input was not 0,1,2');
+    else
+        flag=1;
+    end
+else
+    flag=0;
+end
 
-%%TODO instead of eval statements, assign everything to a cell array then
-%%resassign everything after the cell array. 
-strOfIntVars={'solver','n','m'};
-
+%% Read integers
 sizeInt=4;
 numArgs=3;
+strOfIntVars=zeros(numArgs,1);
 
-solver;n;m;
 for intIdx = 1:numArgs
     dataBytes = h1(1+(intIdx-1)*sizeInt : intIdx*sizeInt);
-    eval([strOfIntVars{intIdx} '=' 'typecast(flip(dataBytes), ''int'')']);
+    strOfIntVars(intIdx) = typecast(ToFlipOrNot(dataBytes,flag), 'int32');
 end
-k=n^2-n;
+solver=strOfIntVars(1);
+n=strOfIntVars(2);
+m=strOfIntVars(3);
+k=(n^2-n)/2;
+finalPreviousIdx=intIdx*sizeInt;
 
-
-
-
-
-
-
-
-
-
-RecieversGPS=zeros(n,3);
-RecieverGPSerr=zeros(n,3);
-TimeDifferenceList=zeros(k,m);
-TimeDifferenceErrList=zeros(k,m);
-ReferenceGPS=zeros(1,3);
-ReferenceGPSerr=zeros(1,3);
-strOfDoubleVars={'ReferenceGPS','ReferenceGPSerr','RecieversGPS','RecieverGPSerr','TimeDifferenceList','TimeDifferenceErrList'};
+%% Read Reference Data
+%expect Lat Long Altitude then error in Lat Long Altitude.
+ReferenceData=zeros(1,6);
 sizeDouble=8;
-numArgs = 3;
+numArgs=6;
 for doubleIdx = 1:numArgs
-    dataBytes = h1(1+(doubleIdx-1)*sizeDouble : doubleIdx*sizeDouble);
-    num = typecast(flip(dataBytes), 'double')
+    dataBytes = h1(finalPreviousIdx+1+(doubleIdx-1)*sizeDouble : finalPreviousIdx+doubleIdx*sizeDouble);
+    ReferenceData(doubleIdx) = typecast(ToFlipOrNot(dataBytes,flag), 'double');
 end
+ReferenceGPS=ReferenceData(1:3);
+ReferenceGPSerr=ReferenceData(4:6);
+finalPreviousIdx=finalPreviousIdx+doubleIdx*sizeDouble;
+
+%% Read Station Data
+%expect Lat Long Altitude of station 1, then Lat Long Altitude of station
+%2, etc. to station n
+%then expect error in Lat Long Altitude of station 1, then error in Lat Long 
+%Altitude of station 2, etc. to error in station n
+ReceiverData=zeros(n,3);
+sizeDouble=8;
+numArgs=3*n;
+row=1;
+col=1;
+for doubleIdx = 1:numArgs
+    dataBytes = h1(finalPreviousIdx+1+(doubleIdx-1)*sizeDouble : finalPreviousIdx+doubleIdx*sizeDouble);
+    ReceiverData(row,col) = typecast(ToFlipOrNot(dataBytes,flag), 'double');
+    col=col+1;
+    if col==4
+        row=row+1;
+        col=1;
+    end
+end
+RecieversGPS=ReceiverData;
+finalPreviousIdx=finalPreviousIdx+doubleIdx*sizeDouble;
+
+ReceiverData=zeros(n,4);
+sizeDouble=8;
+numArgs=4*n;
+row=1;
+col=1;
+for doubleIdx = 1:numArgs
+    dataBytes = h1(finalPreviousIdx+1+(doubleIdx-1)*sizeDouble : finalPreviousIdx+doubleIdx*sizeDouble);
+    ReceiverData(row,col) = typecast(ToFlipOrNot(dataBytes,flag), 'double');
+    col=col+1;
+    if col==5
+        row=row+1;
+        col=1;
+    end
+end
+RecieverGPSerr=ReceiverData;
+finalPreviousIdx=finalPreviousIdx+doubleIdx*sizeDouble;
+
+
+%% Read Time Difference Data
+%For 3 stations, expect Tab,Tac,Tbc, etc. for 1 point in sky
+%then for each point in sky.
+TimeData=zeros(k,2*m);
+sizeDouble=8;
+numArgs=2*k*m;
+row=1;
+col=1;
+for doubleIdx = 1:numArgs
+    dataBytes = h1(finalPreviousIdx+1+(doubleIdx-1)*sizeDouble : finalPreviousIdx+doubleIdx*sizeDouble);
+    TimeData(row,col) = typecast(ToFlipOrNot(dataBytes,flag), 'double');
+    row=row+1;
+    if row==k+1
+        row=1;
+        col=col+1;
+    end
+end
+TimeDifferenceList=TimeData(:,1:m);
+TimeDifferenceErrList=TimeData(:,m+1:2*m);
+finalPreviousIdx=finalPreviousIdx+doubleIdx*sizeDouble;
+
 
 
 
@@ -83,6 +148,8 @@ Sphere=wgs84Ellipsoid;
 zPlanes=[50e3 400e3 1200e3];
 DebugMode=0;
 
+addpath('TimeDiff')
+addpath('LocateSat')
 
 
 %% convert to TDoA inputs
@@ -109,16 +176,18 @@ for u=1:m
     p=1;
     for i=1:n
         for j=1:n
-            DistanceDiff{u,1}(i,j)=TimeDifferenceList(p,u);
-            DistanceDiff{u,2}(i,j)=TimeDifferenceErrList(p,u);
-            p=p+1;
+            if(i~=j && j>i)
+                DistanceDiff{u,1}(i,j)=TimeDifferenceList(p,u);
+                DistanceDiff{u,2}(i,j)=TimeDifferenceErrList(p,u);
+                p=p+1;
+            end
         end
     end
     
     %% Run TDoA
-    [location,location_error,Data]=TDoAwithErrorEstimation(numTests,RT_err,DistanceDiff{u,2},ReferenceGPSerr,RT,DistanceDiff{u,1},ReferenceGPS,Sphere,0,zPlanes,DebugMode,'',solver);
-    means{u}=Data.meanAzEl;
-    stdDev{u}=Data.AzElstandardDeviation;
+    [location,location_error,Data]=TDoAwithErrorEstimation(numTests,RT_err,DistanceDiff{u,2},ReferenceGPSerr,RT,DistanceDiff{u,1},ReferenceGPS,Sphere,0,zPlanes,DebugMode,'',solver,'Plots/TDoAsolutions');
+    meansDeg{u}=Data.meanAzEl*180/pi;
+    stdDevDeg{u}=Data.AzElstandardDeviation*180/pi;
     meanError{u}=(Data.nominalAzEl-Data.meanAzEl)*0; %zero out. doesn't seem like a good measure
     stdDevError{u}=Data.AzElstandardDeviation;
     allData{u}=Data;
@@ -146,3 +215,9 @@ end
 %for the server,
 %need to install matlab if I want to work in there.
 %work in the root. 
+
+function Ary=ToFlipOrNot(Ary,flag)
+    if flag==1
+        Ary=flip(Ary);
+    end
+end
