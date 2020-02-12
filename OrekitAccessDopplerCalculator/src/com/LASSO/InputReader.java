@@ -109,24 +109,7 @@ public class InputReader {
         catch (Exception problemo){
             int ERROR_WRONG_TEXT_INPUT = -1;
             int ERROR_BAD_  = -2;
-            System.out.println("ERROR 001: Problem during input reading. Wrong # of inputs/Identifier strings messed up?");
-            System.out.println("Error message: "+problemo.getMessage());
-            /*
-            StackTraceElement trace = problemo.getStackTrace()[0];
-            System.out.println(
-                    "Class: + " + trace.getClassName()+" Method: "+trace.getMethodName()+"Line: "+
-                            trace.getLineNumber() );
-                            */
-            /*
-            System.out.println("I'm in line #" +
-                    problemo.getStackTrace()[4].getLineNumber());
-            */
-
-                    problemo.printStackTrace();
-
-
-            //System.out.println("I'm in line #"+ )
-            System.exit(-1);
+            throw new InputMismatchException("ERROR 001: Problem during input reading. Wrong # of inputs/Identifier strings messed up?");
         }
 
 
@@ -192,7 +175,7 @@ public class InputReader {
             }
             else{
 
-                throw new InputMismatchException("ERROR 015: UNKNOWN STRING WAS INPUTTED. CHECK AGAIN!!!!!!!!!!!!!!!");
+                throw new InputMismatchException("ERROR 008: UNKNOWN STRING WAS INPUTTED. CHECK AGAIN!!!!!!!!!!!!!!!");
             }
 
         }

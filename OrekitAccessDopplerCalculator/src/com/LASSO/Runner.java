@@ -44,7 +44,7 @@ public class Runner {
         try {
             readFromText();
         } catch (IOException e){
-            throw new NoradIDnotFoundException("ERROR: 009: Failed to read the LASSO Input.txt. Please verify it has all required inputs: noradID, endDate, errorTimeForTLE,");
+            throw new NoradIDnotFoundException("ERROR 009: Failed to read the LASSO Input.txt. Please verify it has all required inputs: noradID, endDate, errorTimeForTLE, recordingRate, channelFrequency");
         }
 
     }
