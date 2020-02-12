@@ -34,19 +34,56 @@ t = tcpclient(host, port);
 %                        between each station in the network.
 
 %% Read values from TCP
-numTests=100;
-n
+% h1=read(t, sizeDouble*numArgs);
+h1=read(t);
+
+
+%%TODO instead of eval statements, assign everything to a cell array then
+%%resassign everything after the cell array. 
+strOfIntVars={'solver','n','m'};
+
+sizeInt=4;
+numArgs=3;
+
+solver;n;m;
+for intIdx = 1:numArgs
+    dataBytes = h1(1+(intIdx-1)*sizeInt : intIdx*sizeInt);
+    eval([strOfIntVars{intIdx} '=' 'typecast(flip(dataBytes), ''int'')']);
+end
 k=n^2-n;
-m
+
+
+
+
+
+
+
+
+
+
+RecieversGPS=zeros(n,3);
+RecieverGPSerr=zeros(n,3);
+TimeDifferenceList=zeros(k,m);
+TimeDifferenceErrList=zeros(k,m);
+ReferenceGPS=zeros(1,3);
+ReferenceGPSerr=zeros(1,3);
+strOfDoubleVars={'ReferenceGPS','ReferenceGPSerr','RecieversGPS','RecieverGPSerr','TimeDifferenceList','TimeDifferenceErrList'};
+sizeDouble=8;
+numArgs = 3;
+for doubleIdx = 1:numArgs
+    dataBytes = h1(1+(doubleIdx-1)*sizeDouble : doubleIdx*sizeDouble);
+    num = typecast(flip(dataBytes), 'double')
+end
+
+
+
+numTests=100;
+
 Sphere=wgs84Ellipsoid;
 zPlanes=[50e3 400e3 1200e3];
 DebugMode=0;
-RecieversGPS
-RecieverGPSerr
-TimeDifferenceList
-TimeDifferenceErrList
-ReferenceGPS
-ReferenceGPSerr
+
+
 
 %% convert to TDoA inputs
 Rx=ReferenceGPS(1,1);
@@ -54,13 +91,18 @@ Ry=ReferenceGPS(1,2);
 Rz=ReferenceGPS(1,3);
 GND=getStruct(RecieversGPS,RecieverGPSerr,ReferenceGPS,ReferenceGPSerr,Sphere);
 RT=[GND(1).Topocoord; GND(2).Topocoord; GND(3).Topocoord];
-RT_err=[GND(1).Topocoord; GND(2).Topocoord; GND(3).Topocoord];
+RT_err=[GND(1).Topocoord_error; GND(2).Topocoord_error; GND(3).Topocoord_error];
 
 %convert to time difference matrix. 
 DistanceDiff=cell(m,2);
 c=2.99792458e8;
 TimeDifferenceList=TimeDifferenceList*c;
 TimeDifferenceErrList=TimeDifferenceErrList*c;
+means=cell(m,1);
+stdDev=cell(m,1);
+meanError=cell(m,1);
+stdDevError=cell(m,1);
+allData=cell(m,1);
 for u=1:m
     DistanceDiff{u,1}=zeros(n,n);
     DistanceDiff{u,2}=zeros(n,n);
@@ -72,6 +114,15 @@ for u=1:m
             p=p+1;
         end
     end
+    
+    %% Run TDoA
+    [location,location_error,Data]=TDoAwithErrorEstimation(numTests,RT_err,DistanceDiff{u,2},ReferenceGPSerr,RT,DistanceDiff{u,1},ReferenceGPS,Sphere,0,zPlanes,DebugMode,'',solver);
+    means{u}=Data.meanAzEl;
+    stdDev{u}=Data.AzElstandardDeviation;
+    meanError{u}=(Data.nominalAzEl-Data.meanAzEl)*0; %zero out. doesn't seem like a good measure
+    stdDevError{u}=Data.AzElstandardDeviation;
+    allData{u}=Data;
+    
 end
 
 %to do: test the topocentric error implementation. Finish translating
@@ -82,12 +133,7 @@ end
 
 
 
-%% Run TDoA
-[location,location_error,Data]=TDoAwithErrorEstimation(numTests,ReceiverError(:,1:3),TimeDiffErr*3e8,ReferencError,ReceiverLocations,TimeDiff*3e8,Reference,Sphere,0,zPlanes,DebugMode,'',solver);
-    means=Data.meanAzEl;
-    stdDev=Data.AzElstandardDeviation;
-    meanError=(Data.nominalAzEl-Data.meanAzEl)*0; %zero out. doesn't seem like a good measure
-    stdDevError=Data.AzElstandardDeviation;
+
 
 %Figure out the inputs we are getting
 %Are those inputs the same every time?
