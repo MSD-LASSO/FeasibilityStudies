@@ -1,5 +1,7 @@
 %Authors: Anthony Iannuzzi, awi7573@rit.edu and Zoe-Jerusha Beepat, zeb6290@g.rit.edu
-clearvars
+function TDoAwithTCPin(filename)
+
+disp(filename)
 
 host='127.0.0.1';
 port=5010;
@@ -152,7 +154,7 @@ addpath('TimeDiff')
 addpath('LocateSat')
 
 %% Text file setup
-filename='./HelloWorld2';
+% filename='./HelloWorld2';
 txt1=fopen([filename '.txt'],'w');
 fprintf(txt1,'%-35s     %-17s     %-16s     %-22s     %-22s     %-22s     %-17s     %-16s     %-22s     %-22s     %-22s','Time','Azimuth (deg)','Elevation (deg)','Reference X (m)','Reference Y (m)','Reference Z (m)','Az 2-StdDev','El 2-StdDev','RefX 2-StdDev','RefY 2-StdDev','RefZ 2-StdDev');
 % fprintf(txt1,'\n');
@@ -171,8 +173,8 @@ DistanceDiff=cell(m,2);
 c=2.99792458e8;
 TimeDifferenceList=TimeDifferenceList*c;
 TimeDifferenceErrList=TimeDifferenceErrList*c;
-means=cell(m,1);
-stdDev=cell(m,1);
+meansDeg=cell(m,1);
+stdDevDeg=cell(m,1);
 meanError=cell(m,1);
 stdDevError=cell(m,1);
 allData=cell(m,1);
@@ -210,7 +212,7 @@ end
 
 fclose(txt1);
 
-
+end
 %to do: test the topocentric error implementation. Finish translating
 %inputs. Make TCP reader. 
         
