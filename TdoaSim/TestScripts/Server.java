@@ -1,5 +1,3 @@
-package com.LASSO;
-
 import java.io.*;
 import java.net.*;
 import java.util.Date;
@@ -95,10 +93,7 @@ public class Server {
 		//Absolute Times
 		StringBuilder timing= new StringBuilder();
 		for(int i=0;i<numDataPoints;i++){
-			if(i<numDataPoints-1)
-				timing.append(times[i]).append(",");
-			else
-				timing.append(times[i]);
+			timing.append(times[i]).append(",");
 		}
 
 
