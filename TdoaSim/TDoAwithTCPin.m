@@ -139,11 +139,11 @@ TimeDifferenceList=TimeData(:,1:m);
 TimeDifferenceErrList=TimeData(:,m+1:2*m);
 finalPreviousIdx=finalPreviousIdx+doubleIdx*sizeDouble;
 
-
+OutputTimes=char(h1(finalPreviousIdx+1:end));
+OutputTimesAry=strsplit(OutputTimes,',');
 
 
 numTests=100;
-
 Sphere=wgs84Ellipsoid;
 zPlanes=[50e3 400e3 1200e3];
 DebugMode=0;
@@ -151,7 +151,13 @@ DebugMode=0;
 addpath('TimeDiff')
 addpath('LocateSat')
 
-
+%% Text file setup
+filename='./HelloWorld2';
+txt1=fopen([filename '.txt'],'w');
+fprintf(txt1,'%-35s     %-17s     %-16s     %-22s     %-22s     %-22s     %-17s     %-16s     %-22s     %-22s     %-22s','Time','Azimuth (deg)','Elevation (deg)','Reference X (m)','Reference Y (m)','Reference Z (m)','Az 2-StdDev','El 2-StdDev','RefX 2-StdDev','RefY 2-StdDev','RefZ 2-StdDev');
+% fprintf(txt1,'\n');
+% fprintf(txt1,'%-35s     %-+3.12f     %-+2.12f     %-+1.15e     %-+1.15e     %-+1.15e     %-+3.12f     %-+2.12f     %-+1.15e     %-+1.15e     %-+1.15e','2020-02-08T11:16:35.961:+00:00',43.243523523542,-19.342342,5.42e5,-4.23e5,9.32e3,2.454,13.42,1e3,2e3,3e3);
+% fclose(txt1);
 %% convert to TDoA inputs
 Rx=ReferenceGPS(1,1);
 Ry=ReferenceGPS(1,2);
@@ -192,7 +198,18 @@ for u=1:m
     stdDevError{u}=Data.AzElstandardDeviation;
     allData{u}=Data;
     
+    fprintf(txt1,'\n');
+    strForm='%-35s     %-+3.12f     %-+3.12f     %-+1.15e     %-+1.15e     %-+1.15e     %-+3.12f     %-+3.12f     %-+1.15e     %-+1.15e     %-+1.15e';
+    fprintf(txt1,strForm,OutputTimesAry{u},meansDeg{u}(1),meansDeg{u}(2),...
+        Data.meanReference(1),Data.meanReference(2),Data.meanReference(3),...
+        Data.AzEluncertainty95percent(1)*180/pi,Data.AzEluncertainty95percent(2)*180/pi,...
+        Data.Refuncertainty95percent(1),Data.Refuncertainty95percent(2),Data.Refuncertainty95percent(3));
+
+    
 end
+
+fclose(txt1);
+
 
 %to do: test the topocentric error implementation. Finish translating
 %inputs. Make TCP reader. 
