@@ -182,10 +182,6 @@ meanError=cell(m,1);
 stdDevError=cell(m,1);
 allData=cell(m,1);
 for u=1:m
-    
-    fprintf('\n')
-    fprintf(['Time: ' OutputTimesAry{u} ' : ']);
-    
     DistanceDiff{u,1}=zeros(n,n);
     DistanceDiff{u,2}=zeros(n,n);
     p=1;
@@ -214,7 +210,8 @@ for u=1:m
         Data.AzEluncertainty95percent(1)*180/pi,Data.AzEluncertainty95percent(2)*180/pi,...
         Data.Refuncertainty95percent(1),Data.Refuncertainty95percent(2),Data.Refuncertainty95percent(3));
     
-
+    fprintf('\n'
+   )
     
 end
 
