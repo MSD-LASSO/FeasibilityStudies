@@ -70,7 +70,7 @@ for i=2:numTrials
     EstAzEl(i,:)=actualAzEl(1,1:2);
     EstRef(i,:)=estRef;
     
-    if mod(numTrials,10)==0
+    if mod(i,10)==0
         percentComplete=floor(i/numTrials*100);
         fprintf([', ' num2str(percentComplete) '%%']);
     end

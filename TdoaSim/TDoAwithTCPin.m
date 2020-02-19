@@ -219,6 +219,7 @@ for u=1:m
 end
 
 fclose(txt1);
+fprintf('\n')
 
 end
 %to do: test the topocentric error implementation. Finish translating
