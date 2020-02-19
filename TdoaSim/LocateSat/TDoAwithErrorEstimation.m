@@ -71,7 +71,7 @@ for i=2:numTrials
     EstRef(i,:)=estRef;
     
     if mod(i,10)==0
-        percentComplete=floor(i/numTrials*100);
+        percentComplete=ceil(i/numTrials*100);
         fprintf([', ' num2str(percentComplete) '%%']);
     end
 end
