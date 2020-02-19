@@ -24,7 +24,7 @@ t = tcpclient(host, port);
 %            [Lat,Long,altitude] decimal degrees and meters!
 %Reference Error - a 1x3 matrix denoting the reference location error
 %                  [dLat,dLong,daltitude]
-%Receiver Locations - a nx3 matrix denoting station location error with
+%Receiver Locations - a nx3 matrix denoting station location  with
 %                     respect to a reference, [Lat,Long,altitude].
 %                     Given 4 stations: a, b, c, d, the order is:
 %                     [Lata,Longa,Altitudea; Latb,Longb,Alttudeb; ...]
@@ -35,7 +35,9 @@ t = tcpclient(host, port);
 %                  [Tab; Tac; Tbc;] in units of microseconds 
 %Time Difference Error - a kxm matrix denoting every time difference error
 %                        between each station in the network.
-
+%Absolute Times - Continuous string with , delimintor between each time
+%value. Times are of form YY:MM:DDTHH:MM:SS.XXX:+YY:ZZ where YY:ZZ
+%represent offset from Greenwhich mean time.
 %% Read values from TCP
 h1=read(t);
 
