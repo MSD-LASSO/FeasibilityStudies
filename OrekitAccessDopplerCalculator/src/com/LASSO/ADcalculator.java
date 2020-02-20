@@ -92,7 +92,8 @@ public class ADcalculator {
 
 
         System.out.println("Start Date: "+initialDate.toString());
-        System.out.println(initialDate.compareTo(endDate));
+        System.out.println("End Date: "+endDate.toString());
+        //System.out.println(initialDate.compareTo(endDate));
         if (initialDate.compareTo(endDate)>0)
         {
 
@@ -123,8 +124,8 @@ public class ADcalculator {
         //Parse events
         List<EventsLogger.LoggedEvent> stationOverlap=booleanLogger.getLoggedEvents(); //getting event instances.
         if(verbose) {
-            System.out.println(stationOverlap.get(0).getState().getDate().toString());
-            System.out.println(initialDate.toString());
+           // System.out.println(stationOverlap.get(0).getState().getDate().toString());
+           // System.out.println(initialDate.toString());
         }
 
         if (stationOverlap.size()<=1)
@@ -173,25 +174,27 @@ public class ADcalculator {
         ArrayList<Access> accesses=new ArrayList<>();
         //For each event, propagate from the start to the end of the access with the specified interval time step.
         writeToText.append("numEvents="+stationOverlap.size()/2+"\n");
+        int accessCounter=0;
         for (int entryIndex=0;entryIndex<stationOverlap.size()-1;entryIndex=entryIndex+2) {
 
             writeToText.append("Access Number: ").append(entryIndex / 2).append("            "+headerString).append("\n");
             if(verbose) {
-                System.out.println("Event" +entryIndex);
+                //System.out.println("Event" +entryIndex);
             }
             Access accessPoint=new Access(noradID,stationOverlap.get(entryIndex),stationOverlap.get(entryIndex+1),oreTLEPropagator,baseFrequency);
-            System.out.println(stationOverlap.get(entryIndex).isIncreasing());
-            System.out.println(stationOverlap.get(entryIndex+1).isIncreasing());
+           // System.out.println(stationOverlap.get(entryIndex).isIncreasing());
+           // System.out.println(stationOverlap.get(entryIndex+1).isIncreasing());
 
             accessPoint.computeAccessCalculations(300,timeInterval,stationFramesForDoppler,inertialFrame,dopplerErrorTime);
             writeToText.append(accessPoint.toStringStationList());
 //            int stationFrameNo=2;
             //writeToText.append(accessPoint.toString(stationFrameNo));  //debugging line to check each station output individually.
 
-
+            accessCounter=accessCounter+1;
             accesses.add(accessPoint);
 
         } //end of for loop for each station
+        System.out.printf("Access times and doppler frequencies found for %d events \n.",accessCounter);
         writeToFile();
         //TCPsend();
 

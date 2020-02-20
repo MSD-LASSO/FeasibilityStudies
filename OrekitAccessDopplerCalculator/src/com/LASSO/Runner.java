@@ -106,8 +106,6 @@ public class Runner {
         double[] minElevations ={0,0,0};
 
 
-        System.out.println("End Date: "+endDate.toString());
-
         ArrayList<Station> stations=Utils.createStations(false,stationLatitudes,stationLongitudes,stationAltitudes,minElevations,stationNames);
 
         ADcalculator calc=new ADcalculator(noradID,recordingRate,stations,channelFrequency,errorTimeForTLE);

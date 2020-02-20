@@ -164,7 +164,7 @@ public class InputReader {
                 endTime = convertToAbsoluteDate(yearMonthDay, hourMinSec, hourMinOffset);
             }
             else if (argument.toLowerCase().contains("errortimefortle=")){
-               System.out.println(argument);
+            //   System.out.println(argument);
                 errorTimeForTLE=Double.valueOf(argument.toLowerCase().replace("errortimefortle=", ""));
             }
             else if (argument.toLowerCase().contains("recordingrate=")){
