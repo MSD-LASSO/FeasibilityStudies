@@ -86,7 +86,7 @@ class L76X(object):
         self.config.Uart_SendString(data)
         self.config.Uart_SendByte('\r')
         self.config.Uart_SendByte('\n')
-        print data
+        # print(data)
        
     def L76X_Get(self):
         data = self.config.Uart_ReceiveString(BUFFSIZE)
@@ -108,7 +108,7 @@ class L76X(object):
         for line in newStr:
             split = line.split(',')
     
-            print line
+            # print(line)
 
             if(len(split) >=11):
                 if(split[0] == "$GNGGA" or split[0] == "$GPGGA"):
