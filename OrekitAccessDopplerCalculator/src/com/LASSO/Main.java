@@ -37,8 +37,8 @@ public class Main {
         recordingRate     (60 [s] )
         and then add default vals if none chosen. ^^^ in ( ) above.
          */
-        System.out.println(args[0]);
-        System.out.println(args[1]);
+//        System.out.println(args[0]);
+//        System.out.println(args[1]);
 
         /* text version
         String fileName="./LASSO_INPUT.txt";
@@ -46,8 +46,13 @@ public class Main {
         runner.execute();
          */
         Utils.addOrekitData();
-        InputReader terminalReader=new InputReader();
-        terminalReader.readFromTerminal(args);
+        InputReader terminalReader;
+        try {
+            terminalReader = new InputReader();
+            terminalReader.readFromTerminal(args);
+        } catch(NoradIDnotFoundException ex) {
+            terminalReader = new InputReader("./Backup_Input.txt");
+        }
         int noradID=terminalReader.getNoradID();
         AbsoluteDate initialDate=terminalReader.getinitialTime();
         AbsoluteDate endDate=terminalReader.getEndTime();
