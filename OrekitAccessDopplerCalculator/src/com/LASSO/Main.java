@@ -1,5 +1,11 @@
 package com.LASSO;
 
+//LASSO 2020
+//3/24/20
+// Main.java is the main program, which starts the Orekit access time calculator from EITHER a run from the terminal,
+//or by using input from text file. Uncomment the code block for which option you'd like to run.
+
+
 import org.orekit.data.DataProvidersManager;
 import org.orekit.data.DirectoryCrawler;
 import org.orekit.propagation.analytical.tle.TLE;
@@ -28,8 +34,10 @@ public class Main {
 
     public static void main(String[] args) throws FileNotFoundException {
         /*
-        INPUTS CAN BE IN ANY ORDER!!!!!!!
+        /////////////////  TERMINAL VERSION OF RUNNING PROGRAM ////////////////////////
+        INPUTS CAN BE IN ANY ORDER!!
 
+        List of inputs:
         initialDate (current time as DEFAULT)
         endDate  (1 day ahead of initial date)
         noradID= error thrown (legit error)
@@ -37,21 +45,24 @@ public class Main {
         recordingRate     (60 [s] )
         and then add default vals if none chosen. ^^^ in ( ) above.
          */
+
 //        System.out.println(args[0]);
 //        System.out.println(args[1]);
 
-        /* text version
-        String fileName="./LASSO_INPUT.txt";
-        Runner runner=new Runner(fileName);
-        runner.execute();
-         */
+        //System.out.println(args[0]);    //debug line
+        //System.out.println(args[1]);    //debug line
+
+
+        ///*
         Utils.addOrekitData();
+
         InputReader terminalReader;
         try {
             terminalReader = new InputReader();
             terminalReader.readFromTerminal(args);
         } catch(NoradIDnotFoundException ex) {
             terminalReader = new InputReader("./Backup_Input.txt");
+            terminalReader.read();
         }
         int noradID=terminalReader.getNoradID();
         AbsoluteDate initialDate=terminalReader.getinitialTime();
@@ -60,6 +71,18 @@ public class Main {
         double recordingRate=terminalReader.getRecordingRate();
         double channelFrequency=terminalReader.getChannelFrequency();
         Runner terminalRunner=new Runner(initialDate,endDate,noradID,errorTimeForTLE,recordingRate,channelFrequency);
+
         terminalRunner.execute();
+        // */
+
+        /*    //uncomment this block to run program using text file inputs
+        /////////////////  INPUT TEXT FILE VERSION OF RUNNING PROGRAM ////////////////////////
+
+        String fileName = "./LASSO_INPUT.txt";
+        Runner runner = new Runner(fileName);
+        runner.execute();
+
+        // */
     }
+
 }

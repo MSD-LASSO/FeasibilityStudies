@@ -55,14 +55,36 @@ public class InputReader {
             //System.out.println(channelFrequency);
 
             //3rd line: signal bandwidth
-            //String signalBandwidthString = elScanner.next();
-            //signalBandwidth = Double.valueOf(signalBandwidthString.replace("signalBandwidth=", ""));
-            //System.out.println(signalBandwidth);
+//            String signalBandwidthString = elScanner.next();
+//            signalBandwidth = Double.valueOf(signalBandwidthString.replace("signalBandwidth=", ""));
+//            System.out.println(signalBandwidth);
 
             //4th line: time interval for doppler shift tuning
-            String errorTimeForTLEstring = elScanner.next();
-            errorTimeForTLE = Double.valueOf(errorTimeForTLEstring.replace("errorTimeForTLE=", ""));
+//            String errorTimeForTLEstring = elScanner.next();
+//            errorTimeForTLE = Double.valueOf(errorTimeForTLEstring.replace("errorTimeForTLE=", ""));
             //System.out.println(recordingRate);
+
+           String initialTimeString = elScanner.next();
+           initialTimeString = initialTimeString.replace("initialTime=", "");
+           // System.out.println(endTimeString);
+
+           //splitting end date string into year month day and hour min sec components
+           String[] splitIntTimeString = initialTimeString.split("T");
+
+           //splitting those strings and separating each component
+           String[] yearMonthDay = splitIntTimeString[0].split("-");
+           String hourMinSecString = splitIntTimeString[1].substring(0, 12);
+           String[] hourMinSec = hourMinSecString.split(":");
+
+           //timezone offset for offset from UTC scale
+           String timeZoneOffsetString = splitIntTimeString[1].substring(13, splitIntTimeString[1].length());
+           String[] hourMinOffset = timeZoneOffsetString.split(":");
+
+           //making AbsoluteDate object from the string date input
+           //AbsoluteDate(int year, int month, int day, int hour, int minute, double second, TimeScale timeScale)
+           //endTime=new AbsoluteDate(,,,);
+
+           initialTime = convertToAbsoluteDate(yearMonthDay, hourMinSec, hourMinOffset);
 
             //5th line: End Time in Eastern Standard Time.
             // NOTE: UTC time scale is +5 hrs ahead of EST!!!
@@ -81,13 +103,13 @@ public class InputReader {
             String[] splitEndTimeString = endTimeString.split("T");
 
             //splitting those strings and separating each component
-            String[] yearMonthDay = splitEndTimeString[0].split("-");
-            String hourMinSecString = splitEndTimeString[1].substring(0, 12);
-            String[] hourMinSec = hourMinSecString.split(":");
+            yearMonthDay = splitEndTimeString[0].split("-");
+            hourMinSecString = splitEndTimeString[1].substring(0, 12);
+            hourMinSec = hourMinSecString.split(":");
 
             //timezone offset for offset from UTC scale
-            String timeZoneOffsetString = splitEndTimeString[1].substring(13, splitEndTimeString[1].length());
-            String[] hourMinOffset = timeZoneOffsetString.split(":");
+            timeZoneOffsetString = splitEndTimeString[1].substring(13, splitEndTimeString[1].length());
+            hourMinOffset = timeZoneOffsetString.split(":");
 
             //making AbsoluteDate object from the string date input
             //AbsoluteDate(int year, int month, int day, int hour, int minute, double second, TimeScale timeScale)

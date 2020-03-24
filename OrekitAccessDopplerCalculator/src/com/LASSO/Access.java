@@ -16,6 +16,9 @@ public class Access {
 
     private ArrayList<TimeFrequencyPair> timesAndFrequency=new ArrayList<>();
     private List<List<TimeFrequencyPair>> timesAndFrequencyStationList=new ArrayList<List<TimeFrequencyPair>>();
+
+    private ArrayList<ArrayList<Double>> elevationStationList=new ArrayList<>();
+
     private int noradID;
 
     private EventsLogger.LoggedEvent begin;
@@ -74,6 +77,7 @@ public class Access {
         //simple loop to add X number of lists, based on X number of stations
         for (int a=0; a<staF.length;a++) {
             timesAndFrequencyStationList.add(new ArrayList<TimeFrequencyPair>());
+            elevationStationList.add(new ArrayList<Double>());
         }
 
         ArrayList<Double> dopplerVelocities=new ArrayList<Double>();
@@ -86,6 +90,12 @@ public class Access {
             for (int i=0; i<staF.length; i++) {
                 PVCoordinates pvInert = oreTLEPropagator.getPVCoordinates(propagateTime);
                 PVCoordinates pvStation = theInertialFrame.getTransformTo(staF[i], propagateTime).transformPVCoordinates(pvInert);
+
+                Vector3D positionVectorSatellite=pvInert.getPosition();   //3D vector of satellite in earth EME2000 frame.;
+                // Get the azimuth, elevation, and range from the .get functions.
+                // in reference to station Reference#. Position vector is in the inertial earth frame.
+                //double azimuth=staF[i].getAzimuth(positionVectorSatellite, inertialFrame,propagateTime );
+                double elevation=staF[i].getElevation(positionVectorSatellite, theInertialFrame, propagateTime);
 
                 AbsoluteDate behindTime = propagateTime.shiftedBy(-dopplerErrorTime);
                 PVCoordinates pvInertBehind = oreTLEPropagator.getPVCoordinates((behindTime));
@@ -108,7 +118,10 @@ public class Access {
                 TimeFrequencyPair omega = new TimeFrequencyPair(propagateTime, frequencyCalc(baseFrequency, dopplerVelocity,
                         dopplerVelocityAhead, dopplerVelocityBehind));
                 timesAndFrequencyStationList.get(i).add(omega);
-                timesAndFrequency.add(omega);
+
+                elevationStationList.get(i).add(elevation*180/Math.PI);
+                timesAndFrequency.add(omega); //not used
+
             }
             propagateTime = propagateTime.shiftedBy(timeInterval); //getting info every x seconds.
 
@@ -157,13 +170,36 @@ public class Access {
         for(int i=0;i<timesAndFrequencyStationList.get(0).size();i++){  //i is counter for each time interval of propagation
 
             for (int a=0;a<timesAndFrequencyStationList.size();a++) {  // a is counter for the dif stations
+
+                // this code is printing out frequencies. Should be used in Orekit output file.
+                /*
                 if (a==0) {
                     output.append(timesAndFrequencyStationList.get(a).get(i).toString());
                 }
                 else{
                     output.append(timesAndFrequencyStationList.get(a).get(i).toStringWithoutDate());
                 }
+                //*/
+                // This code is for elevation testing amidst COVID-19 quarantine. Should not be used in the actual output file.
+                /////////////////////////////////////////////////////////////////////////////////////////////////////////
+                if (a==timesAndFrequencyStationList.size()-1)
+                {
+                    output.append(timesAndFrequencyStationList.get(a).get(i).getDate().toString()+" | ");
+                    //output.append("\n");
+                    for (int f=0;f<elevationStationList.size();f++) {
+                        output.append(String.format("%.3f      ",elevationStationList.get(f).get(i)));
+
+                    }
+                }
+                /////////////////////////////////////////////////////////////////////////////////////////////////////////
+
             }
+            //output.append("\n");
+
+
+            //output.append("\n");
+
+            //output.append("elevations list size: "+ String.valueOf(elevationStationList.size()));
             output.append("\n");
         }
         return output.toString();

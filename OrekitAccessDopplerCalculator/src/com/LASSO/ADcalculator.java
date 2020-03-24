@@ -111,7 +111,7 @@ public class ADcalculator {
         // EVENT DETECTION USING ELEVATION DETECTORS//
         double maxCheck  = 60.0;  //"maximum checking interval"
         double threshold =  0.001; //convergence threshold value
-        double minElevation = 0;     //min elevation (trigger elevation)
+        double minElevation = 25 * Math.PI/180;     //min elevation (trigger elevation)
         createBooleanDetector(maxCheck,threshold,minElevation);
 
         //Create logger to buffer each event.
@@ -177,7 +177,17 @@ public class ADcalculator {
         int accessCounter=0;
         for (int entryIndex=0;entryIndex<stationOverlap.size()-1;entryIndex=entryIndex+2) {
 
-            writeToText.append("Access Number: ").append(entryIndex / 2).append("            "+headerString).append("\n");
+            //the following line is proper string for Frequency output.
+            //writeToText.append("Access Number: ").append(entryIndex / 2).append("            "+headerString).append("\n");
+
+            ///////////////////////////////////CO-VID Formatting///////////////////////////////////////////////////
+            if (accessCounter==0) {
+                writeToText.append("Access Number: ").append(entryIndex / 2).append("         Sat Elevation wrt Stations (deg)").append("\n");  //line for elevation info during COVID-19 quarantine.
+            }
+            else {
+                writeToText.append("Access Number: ").append(entryIndex / 2).append("\n");
+            }
+            //////////////////////////////////////////////////////////////////////////////////////
             if(verbose) {
                 //System.out.println("Event" +entryIndex);
             }
@@ -185,7 +195,8 @@ public class ADcalculator {
            // System.out.println(stationOverlap.get(entryIndex).isIncreasing());
            // System.out.println(stationOverlap.get(entryIndex+1).isIncreasing());
 
-            accessPoint.computeAccessCalculations(300,timeInterval,stationFramesForDoppler,inertialFrame,dopplerErrorTime);
+            double backUpTime=0; //BUFFER TIME FOR POTENTIAL ERROR IN TIMING (just starts the recording earlier)
+            accessPoint.computeAccessCalculations(backUpTime,timeInterval,stationFramesForDoppler,inertialFrame,dopplerErrorTime);
             writeToText.append(accessPoint.toStringStationList());
 //            int stationFrameNo=2;
             //writeToText.append(accessPoint.toString(stationFrameNo));  //debugging line to check each station output individually.
