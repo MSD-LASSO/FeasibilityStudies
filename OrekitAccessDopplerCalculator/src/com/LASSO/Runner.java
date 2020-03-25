@@ -122,12 +122,20 @@ public class Runner {
         //*/
         //test March 16th 2020. Checking NY Triangle "center", and then NY triangle due to Corona Outbreak.
         ///*
-        double[] stationLatitudes= {41.9540};
-        double[] stationLongitudes=  {-75.2805};
-        String[] stationNames={"COVID_Center: (41.9540, -75.2805)"};
-        double[] stationAltitudes=  {0};
-        double[] minElevations ={0};
+//        double[] stationLatitudes= {41.9540};
+//        double[] stationLongitudes=  {-75.2805};
+//        String[] stationNames={"COVID_Center: (41.9540, -75.2805)"};
+//        double[] stationAltitudes=  {0};
+//        double[] minElevations ={0};
         //*/
+
+        //NY Triangle 1: Luca, Anthony
+        double[] stationLatitudes= {43.109762 ,39.77444444};
+        double[] stationLongitudes=  {-77.410156, -76.67944444};
+        String[] stationNames={"Luca: (43.109762, -77.410156)", "Anthony: (39.7744, -76.679444)"};
+        double[] stationAltitudes=  {144.5,304.8};  // [m]
+        double[] minElevations ={0,0}; // I don't think this array is actually used. There is a "minElevation" variable in "ADcalculator.java"
+        //
 
         /*    NY Triangle 1: Luca, Connor, Anthony
         double[] stationLatitudes= {43.109762, 40.73902 ,39.77444444};

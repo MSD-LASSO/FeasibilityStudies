@@ -1,6 +1,6 @@
-noradID=30776
+noradID=45119
 channelFrequency=437.15
-initialTime=2020-03-23T00:00:00.000:+00:00
-endTime=2020-03-24T00:00:00.000:+00:00
+initialTime=2020-03-24T22:00:00.000:+00:00
+endTime=2020-03-30T00:00:00.000:+00:00
 errorTimeForTLE=0.3
-recordingRate=0.5
+recordingRate=60
