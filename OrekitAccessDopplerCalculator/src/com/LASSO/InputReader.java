@@ -21,6 +21,7 @@ public class InputReader {
     private String inputFileName;
     private double errorTimeForTLE;
     private double recordingRate;
+    private double paddingTime;
     private File inputFile;
     private Scanner elScanner;
 
@@ -47,22 +48,13 @@ public class InputReader {
             //1st line: Norad ID
             String noradString = elScanner.next();
             noradID = Integer.valueOf(noradString.replace("noradID=", ""));
-            //  System.out.println(noradID);
+             System.out.println(noradID);
 
             //2nd line: downlink channel frequency
             String channelFreqString = elScanner.next();
             channelFrequency = Double.valueOf(channelFreqString.replace("channelFrequency=", ""));
-            //System.out.println(channelFrequency);
+            System.out.println(channelFrequency);
 
-            //3rd line: signal bandwidth
-//            String signalBandwidthString = elScanner.next();
-//            signalBandwidth = Double.valueOf(signalBandwidthString.replace("signalBandwidth=", ""));
-//            System.out.println(signalBandwidth);
-
-            //4th line: time interval for doppler shift tuning
-//            String errorTimeForTLEstring = elScanner.next();
-//            errorTimeForTLE = Double.valueOf(errorTimeForTLEstring.replace("errorTimeForTLE=", ""));
-            //System.out.println(recordingRate);
 
            String initialTimeString = elScanner.next();
            initialTimeString = initialTimeString.replace("initialTime=", "");
@@ -116,16 +108,21 @@ public class InputReader {
             //endTime=new AbsoluteDate(,,,);
 
             endTime = convertToAbsoluteDate(yearMonthDay, hourMinSec, hourMinOffset);
-            //System.out.println(endTime.toString());
+            System.out.println(endTime.toString());
 
             //6th line: error time for doppler shift max min bound
             String errorTimeString = elScanner.next();
             errorTimeForTLE = Double.valueOf(errorTimeString.replace("errorTimeForTLE=", ""));
-            //System.out.println(dopplerErrorTime);
+            System.out.println(errorTimeForTLE);
 
             //7th line: record time for SDR. How long it will record data for Cross Correlation purposes
             String recordTimeString = elScanner.next();
             recordingRate = Double.valueOf(recordTimeString.replace("recordingRate=", ""));
+            System.out.println(recordingRate);
+            String paddingTimeString=elScanner.next();
+            paddingTime=  Double.valueOf(paddingTimeString.replace("paddingTime=", ""));
+           System.out.println(paddingTime);
+
             elScanner.close();
         }
         catch (Exception problemo){
@@ -157,6 +154,7 @@ public class InputReader {
         endTime=initialTime.shiftedBy(timeOffset);
         channelFrequency=437;
         noradID=-1;
+        paddingTime=0;
         // check if the user actually put the stuff in
         for (String argument: args)
         {
@@ -195,6 +193,9 @@ public class InputReader {
             else if (argument.toLowerCase().contains("channelfrequency=")){
                 channelFrequency=Double.valueOf(argument.toLowerCase().replace("channelfrequency=", ""));
             }
+            else if (argument.toLowerCase().contains("paddingtime=")){
+                paddingTime=Double.valueOf(argument.toLowerCase().replace("paddingtime=", ""));
+            }
             else{
 
                 throw new InputMismatchException("ERROR 008: UNKNOWN STRING WAS INPUTTED. CHECK AGAIN!!!!!!!!!!!!!!!");
@@ -204,9 +205,6 @@ public class InputReader {
         if (noradID==-1){
             throw new NoradIDnotFoundException("ERROR 002: The NORAD ID was not found!!!!!!!! Please check the command input!!!!!!!!");
         }
-
-
-
 
     }
 
@@ -268,4 +266,5 @@ public class InputReader {
     public double getDopplerErrorTime(){return errorTimeForTLE;}
     public double getRecordingRate(){return recordingRate;}
     public double getErrorTimeForTLE(){return errorTimeForTLE;}
+    public double getPaddingTime(){return paddingTime;}
 }

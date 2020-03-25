@@ -33,8 +33,8 @@ import java.util.ArrayList;
 public class Main {
 
     public static void main(String[] args) throws FileNotFoundException {
+        /** //////////////////////////  TERMINAL VERSION OF RUNNING PROGRAM //////////////////////// */
         /*
-        /////////////////  TERMINAL VERSION OF RUNNING PROGRAM ////////////////////////
         INPUTS CAN BE IN ANY ORDER!!
 
         List of inputs:
@@ -43,6 +43,7 @@ public class Main {
         noradID= error thrown (legit error)
         TLEestimatedErrorTimes (0.3 [s])
         recordingRate     (60 [s] )
+        paddingTime (0 [s])
         and then add default vals if none chosen. ^^^ in ( ) above.
          */
 
@@ -51,7 +52,6 @@ public class Main {
 
         //System.out.println(args[0]);    //debug line
         //System.out.println(args[1]);    //debug line
-
 
         ///*
         Utils.addOrekitData();
@@ -70,15 +70,18 @@ public class Main {
         double errorTimeForTLE=terminalReader.getErrorTimeForTLE();
         double recordingRate=terminalReader.getRecordingRate();
         double channelFrequency=terminalReader.getChannelFrequency();
-        Runner terminalRunner=new Runner(initialDate,endDate,noradID,errorTimeForTLE,recordingRate,channelFrequency);
+
+        double paddingTime=terminalReader.getPaddingTime();
+
+        Runner terminalRunner=new Runner(initialDate,endDate,noradID,errorTimeForTLE,recordingRate,channelFrequency,paddingTime);
 
         terminalRunner.execute();
         // */
-
+        /** /////////////////////INPUT TEXT FILE VERSION OF RUNNING THE PROGRAM////////////////////////// */
         /*    //uncomment this block to run program using text file inputs
         /////////////////  INPUT TEXT FILE VERSION OF RUNNING PROGRAM ////////////////////////
 
-        String fileName = "./LASSO_INPUT.txt";
+        String fileName = "./Backup_Input.txt";
         Runner runner = new Runner(fileName);
         runner.execute();
 

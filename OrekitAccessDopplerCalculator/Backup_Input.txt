@@ -4,3 +4,4 @@ initialTime=2020-03-23T00:00:00.000:+00:00
 endTime=2020-03-24T00:00:00.000:+00:00
 errorTimeForTLE=0.3
 recordingRate=0.5
+paddingTime=100
