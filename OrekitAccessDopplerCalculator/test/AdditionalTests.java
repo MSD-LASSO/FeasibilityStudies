@@ -168,7 +168,7 @@ public class AdditionalTests {
         TimeScale utc = TimeScalesFactory.getUTC();
         AbsoluteDate initialDate = new AbsoluteDate(2020, 2, 5, 0, 0, 00.000, utc);
         AbsoluteDate endDate = new AbsoluteDate(2020, 2, 4, 7, 0, 00.000, utc);
-        Runner runner=new Runner(initialDate,endDate,30776,0.5,60,437);
+        Runner runner=new Runner(initialDate,endDate,30776,0.5,60,437,0);
         try {
             runner.execute();
             Assert.fail("Failed to throw exception.");
@@ -193,7 +193,7 @@ public class AdditionalTests {
 
         ArrayList<Station> stations = Utils.createStations(false, stationLatitudes, stationLongitudes, stationAltitudes, minElevations, stationNames);
 
-        ADcalculator calc = new ADcalculator(30776, 150, stations, 437, 0.3);
+        ADcalculator calc = new ADcalculator(30776, 150, stations, 437, 0.3,0);
         calc.setSatelliteOrbit(test); //set to our static TLE for consistency.
 
         return calc;

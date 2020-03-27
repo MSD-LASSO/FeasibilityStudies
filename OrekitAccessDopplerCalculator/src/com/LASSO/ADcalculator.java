@@ -1,5 +1,10 @@
 package com.LASSO;
 
+// LASSO 2020
+// 3/24/20
+// ADcalculator.java simulates the satellite orbit and calculates access times.
+
+
 import java.net.Socket;
 import java.io.*;
 import java.nio.ByteBuffer;
@@ -50,9 +55,14 @@ public class ADcalculator {
     private double dopplerErrorTime;
     private TLE satelliteOrbit;
 
+    /** an extra time added to beginning of output file to start recording a little early*/
+    private double paddingTime;
+
     private ArrayList<Station> stations;
 
     private StringBuilder writeToText= new StringBuilder();
+
+    private StringBuilder writeToTextElAz=new StringBuilder();
 
     /** custom event detector used to determine when 3 stations have access to the satellite.*/
     private BooleanDetector threeStationDetector;
@@ -60,12 +70,13 @@ public class ADcalculator {
     /**This is the frequency the satellite transmits at, NOT the frequency the receiver will get.*/
     private double baseFrequency;
 
-    public ADcalculator(int noradID, double timeInterval, ArrayList<Station> stations, double baseFrequency,double dopplerErrorTime){
+    public ADcalculator(int noradID, double timeInterval, ArrayList<Station> stations, double baseFrequency,double dopplerErrorTime, double paddingTime){
         this.noradID=noradID;
         this.timeInterval=timeInterval;
         this.stations=stations;
         this.baseFrequency=baseFrequency;
         this.dopplerErrorTime=dopplerErrorTime;
+        this.paddingTime=paddingTime;
         try {
             satelliteOrbit=CelestrakImporter.importSatelliteData(noradID);
         } catch (IOException e) {
@@ -111,8 +122,7 @@ public class ADcalculator {
         // EVENT DETECTION USING ELEVATION DETECTORS//
         double maxCheck  = 60.0;  //"maximum checking interval"
         double threshold =  0.001; //convergence threshold value
-        double minElevation = 25 * Math.PI/180;     //min elevation (trigger elevation)
-        createBooleanDetector(maxCheck,threshold,minElevation);
+        createBooleanDetector(maxCheck,threshold);
 
         //Create logger to buffer each event.
         EventsLogger booleanLogger=new EventsLogger();
@@ -174,18 +184,20 @@ public class ADcalculator {
         ArrayList<Access> accesses=new ArrayList<>();
         //For each event, propagate from the start to the end of the access with the specified interval time step.
         writeToText.append("numEvents="+stationOverlap.size()/2+"\n");
+        writeToTextElAz.append(writeToText.toString());  //both text files will have same header stuff
+        writeToTextElAz.append("NOTE: Azimuth angles are measured clockwise from North. \n");
         int accessCounter=0;
         for (int entryIndex=0;entryIndex<stationOverlap.size()-1;entryIndex=entryIndex+2) {
 
             //the following line is proper string for Frequency output.
-            //writeToText.append("Access Number: ").append(entryIndex / 2).append("            "+headerString).append("\n");
+            writeToText.append("Access Number: ").append(entryIndex / 2).append("            "+headerString).append("\n");
 
-            ///////////////////////////////////CO-VID Formatting///////////////////////////////////////////////////
+            ///////////////////////////////////CO-VID Formatting AzEl File///////////////////////////////////////////////////
             if (accessCounter==0) {
-                writeToText.append("Access Number: ").append(entryIndex / 2).append("         Sat Elevation wrt Stations (deg)").append("\n");  //line for elevation info during COVID-19 quarantine.
+                writeToTextElAz.append("Access Number: ").append(entryIndex / 2).append("         Satellite (Elevation, Azimuth) wrt Stations (deg)").append("\n");  //line for elevation info during COVID-19 quarantine.
             }
             else {
-                writeToText.append("Access Number: ").append(entryIndex / 2).append("\n");
+                writeToTextElAz.append("Access Number: ").append(entryIndex / 2).append("\n");
             }
             //////////////////////////////////////////////////////////////////////////////////////
             if(verbose) {
@@ -195,10 +207,11 @@ public class ADcalculator {
            // System.out.println(stationOverlap.get(entryIndex).isIncreasing());
            // System.out.println(stationOverlap.get(entryIndex+1).isIncreasing());
 
-            double backUpTime=0; //BUFFER TIME FOR POTENTIAL ERROR IN TIMING (just starts the recording earlier)
+            double backUpTime=paddingTime; //BUFFER TIME FOR POTENTIAL ERROR IN TIMING (just starts the recording earlier and ends a little later)
             accessPoint.computeAccessCalculations(backUpTime,timeInterval,stationFramesForDoppler,inertialFrame,dopplerErrorTime);
             writeToText.append(accessPoint.toStringStationList());
-//            int stationFrameNo=2;
+            writeToTextElAz.append(accessPoint.toStringStationListElAz());
+//
             //writeToText.append(accessPoint.toString(stationFrameNo));  //debugging line to check each station output individually.
 
             accessCounter=accessCounter+1;
@@ -218,17 +231,15 @@ public class ADcalculator {
      * @param maxCheck Used to decide how often to check the event detector during propagation.
      * @param threshold The approximate accuracy of the event detector. WARNING: there is still inherent error in the
      *                  propagator itself.
-     * @param minElevation Use this if below a certain elevation, the stations cannot detect the object.
-     *                     //TODO consider changing minElevation to an ArrayList since each site may have a different min Elevation. The station object already has minElevation as an option.
-     * @return a booleanDetector to use for propagation.
+     @return a booleanDetector to use for propagation.
      */
-    public void createBooleanDetector(double maxCheck, double threshold, double minElevation) {
+    public void createBooleanDetector(double maxCheck, double threshold) {
 
         ArrayList<EventDetector> stationVisibilityDetectors=new ArrayList<>();
         for (Station station : stations) {
 
             stationVisibilityDetectors.add(new ElevationDetector(maxCheck, threshold, station.getFrame()).
-                    withConstantElevation(minElevation));
+                    withConstantElevation(station.getMinElevation() * Math.PI/180));
         }
 
         threeStationDetector=BooleanDetector.andCombine(stationVisibilityDetectors).withHandler(new RecordAndContinue<>());
@@ -239,9 +250,12 @@ public class ADcalculator {
      * */
     public void writeToFile(){
         try {
-            PrintWriter unWriter= new PrintWriter("./DopplerAccess"+noradID+".txt", StandardCharsets.UTF_8);
+            PrintWriter unWriter= new PrintWriter("./DopplerAccess"+noradID+"Freqs.txt", StandardCharsets.UTF_8);
             unWriter.print(writeToText);
             unWriter.close();
+            PrintWriter unWriterElAz= new PrintWriter("./DopplerAccess"+noradID+"ElAz.txt", StandardCharsets.UTF_8);
+            unWriterElAz.print(writeToTextElAz);
+            unWriterElAz.close();
         } catch (FileNotFoundException e) {
             System.out.println("ERROR 010: Could not find specified file. Writing Failed.");
             System.out.println(e.getMessage());
