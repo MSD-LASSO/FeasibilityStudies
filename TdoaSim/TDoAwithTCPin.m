@@ -24,7 +24,7 @@ t = tcpclient(host, port);
 %            [Lat,Long,altitude] decimal degrees and meters!
 %Reference Error - a 1x3 matrix denoting the reference location error
 %                  [dLat,dLong,daltitude]
-%Receiver Locations - a nx3 matrix denoting station location error with
+%Receiver Locations - a nx3 matrix denoting station location  with
 %                     respect to a reference, [Lat,Long,altitude].
 %                     Given 4 stations: a, b, c, d, the order is:
 %                     [Lata,Longa,Altitudea; Latb,Longb,Alttudeb; ...]
@@ -35,7 +35,9 @@ t = tcpclient(host, port);
 %                  [Tab; Tac; Tbc;] in units of microseconds 
 %Time Difference Error - a kxm matrix denoting every time difference error
 %                        between each station in the network.
-
+%Absolute Times - Continuous string with , delimintor between each time
+%value. Times are of form YY:MM:DDTHH:MM:SS.XXX:+YY:ZZ where YY:ZZ
+%represent offset from Greenwhich mean time.
 %% Read values from TCP
 h1=read(t);
 
@@ -168,6 +170,9 @@ GND=getStruct(RecieversGPS,RecieverGPSerr,ReferenceGPS,ReferenceGPSerr,Sphere);
 RT=[GND(1).Topocoord; GND(2).Topocoord; GND(3).Topocoord];
 RT_err=[GND(1).Topocoord_error; GND(2).Topocoord_error; GND(3).Topocoord_error];
 
+fprintf('Starting TDoA Calculations')
+fprintf('\n')
+
 %convert to time difference matrix. 
 DistanceDiff=cell(m,2);
 c=2.99792458e8;
@@ -179,6 +184,10 @@ meanError=cell(m,1);
 stdDevError=cell(m,1);
 allData=cell(m,1);
 for u=1:m
+    
+    fprintf('\n')
+    fprintf(['Time: ' OutputTimesAry{u} ' : ']);
+    
     DistanceDiff{u,1}=zeros(n,n);
     DistanceDiff{u,2}=zeros(n,n);
     p=1;
@@ -206,11 +215,13 @@ for u=1:m
         Data.meanReference(1),Data.meanReference(2),Data.meanReference(3),...
         Data.AzEluncertainty95percent(1)*180/pi,Data.AzEluncertainty95percent(2)*180/pi,...
         Data.Refuncertainty95percent(1),Data.Refuncertainty95percent(2),Data.Refuncertainty95percent(3));
+    
 
     
 end
 
 fclose(txt1);
+fprintf('\n')
 
 end
 %to do: test the topocentric error implementation. Finish translating

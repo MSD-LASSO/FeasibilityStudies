@@ -164,7 +164,7 @@ for i=1:m
             LineFit{i,2}=fitLineParametric(planarPoints(2:2:end,:));
         end
     end
-    fprintf(num2str(i)) %progress report.
+%     fprintf(num2str(i)) %progress report.
 end
 
 LineFit=LineFit(realLines(:,1),:); %remove fake lines.

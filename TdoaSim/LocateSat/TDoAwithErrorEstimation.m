@@ -28,7 +28,9 @@ function [location, location_error, Data] = TDoAwithErrorEstimation(numTrials,re
 %PlotSavePath: denoted as an absolute or relative path.
     %Location histograms will be saved IF debugMode=1
     
-%Last Updated: 1/13/2020
+%Last Updated: 2/19/2020
+
+fprintf('Beginning TDoA Estimation...')
 
 numTrials=numTrials+1; %add a trial to try nominal values.
 
@@ -68,6 +70,10 @@ for i=2:numTrials
     EstAzEl(i,:)=actualAzEl(1,1:2);
     EstRef(i,:)=estRef;
     
+    if mod(i,10)==0
+        percentComplete=ceil(i/numTrials*100);
+        fprintf([', ' num2str(percentComplete) '%%']);
+    end
 end
 
 %% Determine if the Estimated Azimuth values vary across 0. (i.e. we have 5 degrees and 359 degrees)
