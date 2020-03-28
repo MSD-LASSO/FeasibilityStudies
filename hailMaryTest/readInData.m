@@ -75,7 +75,7 @@ for i=1:length(RangeOfRelTimes)
     plot(RangeOfRelTimes{i},RangeOfTimeDiffs{i},'linewidth',3)
 %     color = get(lineH, 'Color');
     plot(mean(RangeOfRelTimes{i}),mean(RangeOfTimeDiffs{i}),'o','color','black','MarkerFaceColor','black')
-    
+    discretizedValues(i)=mean(RangeOfTimeDiffs{i}*1000);
     plot(mean(RangeOfRelTimes{i}),CCvalues(i),'s','color','black','linewidth',2)
 end
 
@@ -84,7 +84,6 @@ title('Time Differences of LUSAT pass starting at 2020-03-26T18:31:40.105');
 xlabel('Relative Time since start of pass (s)')
 ylabel('Time difference between Shrewsbury, PA and Fairport, NY')
 legend('Time Differences','Theoretical Maximum','Theoretical Minimum')
-
 
 
 
