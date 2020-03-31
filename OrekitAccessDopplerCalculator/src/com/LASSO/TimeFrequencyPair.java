@@ -10,6 +10,7 @@ public class TimeFrequencyPair {
 
     private AbsoluteDate date;
     private ValueRange frequency;
+    private double relativeTime;
 
     /**
      *
@@ -26,6 +27,9 @@ public class TimeFrequencyPair {
         this.date=date;
         this.frequency=frequency;
     }
+    public void calcRelativeTime(AbsoluteDate startDate){
+        relativeTime=date.durationFrom(startDate);
+    }
 
     public AbsoluteDate getDate() {
         return date;
@@ -36,10 +40,15 @@ public class TimeFrequencyPair {
     }
 
     public String toString(){
-        return String.format(date.toString()+"     %.8f     %.8f    %.8f", frequency.getNominal(),frequency.getLowerBound(),frequency.getUpperBound());
+
+        String outputString1=String.format(date.toString()+", %7.2f ",relativeTime);
+        String outputString2=String.format("             ,%.8f    ,%.8f   ,%.8f",frequency.getNominal(),frequency.getLowerBound(),frequency.getUpperBound());
+        //return String.format(date.toString()+", %7.2f, ",relativeTime,"    ,%.8f    ,%.8f   ,%.8f", frequency.getNominal(),frequency.getLowerBound(),frequency.getUpperBound());
+        return outputString1+outputString2;
+
 //        return date.toString() + "      "+ frequency.getNominal()+"     "+frequency.getLowerBound()+"       "+frequency.getUpperBound();
     }
     public String toStringWithoutDate(){
-        return String.format( "   %.8f     %.8f    %.8f", frequency.getNominal(),frequency.getLowerBound(),frequency.getUpperBound());
+        return String.format( "  ,%.8f    ,%.8f   ,%.8f", frequency.getNominal(),frequency.getLowerBound(),frequency.getUpperBound());
     }
 }

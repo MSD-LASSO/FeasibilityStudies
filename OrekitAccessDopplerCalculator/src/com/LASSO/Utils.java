@@ -38,7 +38,7 @@ public class Utils {
             if(inRadians) {
                 stations.add(new Station(identifier, new double[]{latArray[i], lonArray[i], altArray[i]}, new double[3], minElevations[i], 0, earth));
             } else {
-                stations.add(new Station(identifier, new double[]{FastMath.toRadians(latArray[i]),FastMath.toRadians(lonArray[i]),FastMath.toRadians(altArray[i])}, new double[3], minElevations[i], 0, earth));
+                stations.add(new Station(identifier, new double[]{FastMath.toRadians(latArray[i]),FastMath.toRadians(lonArray[i]),(altArray[i])}, new double[3], minElevations[i], 0, earth));
             }
         }
         return stations;

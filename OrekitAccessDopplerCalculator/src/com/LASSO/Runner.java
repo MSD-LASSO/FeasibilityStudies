@@ -137,7 +137,7 @@ public class Runner {
         //NY Triangle 1: Luca, Anthony, Canada
         double[] stationLatitudes= {43.109762 ,39.764722, 43.229};
         double[] stationLongitudes=  {-77.410156, -76.673888, -79.759};
-        String[] stationNames={"Luca: (43.109762, -77.410156)", "Anthony: (39.7744, -76.679444)","Satnogs: (43.229, -79.759)"};
+        String[] stationNames={"Luca: ", "Anthony: ","Satnogs: "};
         double[] stationAltitudes=  {144.5,304.8,66 };  // [m]
         double[] minElevations ={0,0,0}; // I don't think this array is actually used. There is a "minElevation" variable in "ADcalculator.java"
         //

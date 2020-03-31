@@ -70,6 +70,7 @@ public class Access {
      */
     public ArrayList<TimeFrequencyPair> computeAccessCalculations(double backupTime, double timeInterval,org.orekit.frames.TopocentricFrame[] staF,
                                                                   org.orekit.frames.Frame theInertialFrame, double dopplerErrorTime){
+        AbsoluteDate startTime=begin.getState().getDate();
         AbsoluteDate propagateTime= begin.getState().getDate(); //setting initial time for propagation.
         AbsoluteDate endTime=end.getState().getDate();
 
@@ -120,8 +121,8 @@ public class Access {
                 //System.out.println(doppler);
 
                 //insert whatever needed parameters into frequencyCalc.
-                TimeFrequencyPair omega = new TimeFrequencyPair(propagateTime, frequencyCalc(baseFrequency, dopplerVelocity,
-                        dopplerVelocityAhead, dopplerVelocityBehind));
+                TimeFrequencyPair omega = new TimeFrequencyPair(propagateTime, frequencyCalc(baseFrequency, dopplerVelocity, dopplerVelocityAhead, dopplerVelocityBehind));
+                omega.calcRelativeTime(startTime);
                 timesAndFrequencyStationList.get(i).add(omega);
 
                 elevationStationList.get(i).add(elevation*180/Math.PI);
@@ -205,10 +206,12 @@ public class Access {
                 /////////////////////////////////////////////////////////////////////////////////////////////////////////
                 if (a==timesAndFrequencyStationList.size()-1)
                 {
-                    output.append(timesAndFrequencyStationList.get(a).get(i).getDate().toString()+" | ");
+                    output.append(timesAndFrequencyStationList.get(a).get(i).getDate().toString()+" , ");
+                    double elapsedTime=timesAndFrequencyStationList.get(a).get(i).getDate().durationFrom(begin.getState().getDate()); //elapsed time from start
+                    output.append(String.format("%7.2f ",elapsedTime));
                     //output.append("\n");
                     for (int f=0;f<elevationStationList.size();f++) {
-                        output.append(String.format("%6.3f, %.3f, %6.15f      ",elevationStationList.get(f).get(i),azimuthStationList.get(f).get(i),rangeStationList.get(f).get(i)));
+                        output.append(String.format(",           %6.3f, %.3f, %6.15f      ",elevationStationList.get(f).get(i),azimuthStationList.get(f).get(i),rangeStationList.get(f).get(i)));
 
                     }
                 }
@@ -228,6 +231,7 @@ public class Access {
 
     public void getEndPointValues(org.orekit.frames.TopocentricFrame[] staF,
                                   org.orekit.frames.Frame theInertialFrame, double dopplerErrorTime, double backupTime){
+        AbsoluteDate startTime=begin.getState().getDate();
         AbsoluteDate endTime=end.getState().getDate();
         endTime=endTime.shiftedBy(backupTime);
         for (int i=0; i<staF.length; i++) {
@@ -261,6 +265,7 @@ public class Access {
             //insert whatever needed parameters into frequencyCalc.
             TimeFrequencyPair omega = new TimeFrequencyPair(endTime, frequencyCalc(baseFrequency, dopplerVelocity,
                     dopplerVelocityAhead, dopplerVelocityBehind));
+            omega.calcRelativeTime(startTime);
             timesAndFrequencyStationList.get(i).add(omega);
 
             elevationStationList.get(i).add(elevation*180/Math.PI);

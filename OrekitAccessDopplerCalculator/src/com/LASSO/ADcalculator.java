@@ -176,9 +176,12 @@ public class ADcalculator {
             headerString = headerString.append(String.format("Sta # %d Nom         Lower           Upper       ", b));
         }
 
-        //Station Name Identifiers for the top of the output text
+        //Station Name Identifiers for the top of the output text //////////////
         for (int p=0; p<stations.size();p++){
-            writeToText.append(stations.get(p).getFrame().getName()).append("\n");
+            double[] location=stations.get(p).getLocation();
+            location[0]=location[0]*180/Math.PI;
+            location[1]=location[1]*180/Math.PI;
+            writeToText.append(stations.get(p).getFrame().getName()).append(","+location[0]).append(" ,"+location[1]).append(", "+location[2]).append("\n");
         }
 
         ArrayList<Access> accesses=new ArrayList<>();
@@ -190,11 +193,11 @@ public class ADcalculator {
         for (int entryIndex=0;entryIndex<stationOverlap.size()-1;entryIndex=entryIndex+2) {
 
             //the following line is proper string for Frequency output.
-            writeToText.append("Access Number: ").append(entryIndex / 2).append("            "+headerString).append("\n");
+            writeToText.append("Access Number: ").append(entryIndex / 2).append("    Elapsed Time from Start              "+headerString).append("\n");
 
             ///////////////////////////////////CO-VID Formatting AzEl File///////////////////////////////////////////////////
             if (accessCounter==0) {
-                writeToTextElAz.append("Access Number: ").append(entryIndex / 2).append("         Satellite (Elevation, Azimuth) wrt Stations (deg)").append("\n");  //line for elevation info during COVID-19 quarantine.
+                writeToTextElAz.append("Access Number: ").append(entryIndex / 2).append("    Elapsed Time from Start          Satellite (Elevation, Azimuth, Range) wrt Stations (deg)").append("\n");  //line for elevation info during COVID-19 quarantine.
             }
             else {
                 writeToTextElAz.append("Access Number: ").append(entryIndex / 2).append("\n");
