@@ -35,17 +35,21 @@ for p=1:length(percents)
     Ts = 1 / Fs1;
     [d, lags] = xcov(x1(sa:en), x2(sa:en), max_lag_f);
     d_norm = abs(d)/max(abs(d));
-%     hold off
-%     figure()
-%     plot(lags*Ts, abs(d_norm))
-%     xlabel('Time Delay [s]');
-%     ylabel('Normalized Crosscorrelation');
-%     title([titleString 'Absolute Value Cross-covariance Plot at ' num2str(percents(p)*100) '%']);
-%     legend(strcat('first pi ',' - ',' second pi'));
+    figure()
+    plot(lags*Ts, abs(d_norm))
+    xlabel('Time Delay [s]');
+    ylabel('Normalized Crosscorrelation');
+    title([titleString 'Absolute Value Cross-covariance Plot at ' num2str(percents(p)*100) '%']);
+    legend(strcat('first pi ',' - ',' second pi'));
     [corr_factor, index_max] = max(abs(d));
     sample_delay(p) = index_max - round(size(lags, 2)/2); 
     lags_matrix = d;
+    
+    if mod(p,50)==0
+        GraphSaver({'png'},'Plots/millisecond150Intervals',1,0);
+    end
+    
 end
-% GraphSaver({'png'},'Plots/OneHalfSecondIntervals',1,0);
+GraphSaver({'png'},'Plots/millisecond150Intervals',1,0);
 end
 

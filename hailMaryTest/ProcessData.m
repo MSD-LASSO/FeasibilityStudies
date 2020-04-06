@@ -96,6 +96,63 @@ end
 
 
 %% Plot the Time Differences
+%% Log plot
+specificTimeAccuracy=[1e-6,1e-5, 1e-4, 5e-4, 1e-3];
+minElevation=20;
+timeAccuracy=logspace(-7,-3,1000);
+for i=1:length(timeAccuracy)
+    elLogit=elevations>minElevation;
+    output=elLogit(:,1)==1 & elLogit(:,2)==1;
+    applicableTimeDiffs=timeDifferences(output);
+    
+    if i<=length(specificTimeAccuracy)
+        Percent3(i)=sum(abs(applicableTimeDiffs)>specificTimeAccuracy(i)*10)/length(timeDifferences);
+        Percent4(i)=sum(abs(applicableTimeDiffs)>specificTimeAccuracy(i)*2)/length(timeDifferences);
+    end
+    
+    Percent(i)=sum(abs(applicableTimeDiffs)>timeAccuracy(i)*10)/length(timeDifferences);
+    Percent2(i)=sum(abs(applicableTimeDiffs)>timeAccuracy(i)*2)/length(timeDifferences);
+    
+end
+
+
+
+figure()
+semilogy(relTime,abs(timeDifferences),'linewidth',6,'color','yellow')
+hold on
+idx=(elevations(:,1)>minElevation & elevations(:,2)>minElevation);
+idx2=(abs(timeDifferences')>1e-6*10);
+idx3=(elevations(:,1)>minElevation & elevations(:,2)>minElevation & abs(timeDifferences')>1e-6*10);
+semilogy(relTime(idx),abs(timeDifferences(idx)),'linewidth',2,'color','black')
+semilogy(relTime(idx2),abs(timeDifferences(idx2)),'linewidth',2,'color',[0.8500, 0.3250, 0.0980])
+semilogy(relTime(idx3),abs(timeDifferences(idx3)),'linewidth',2,'color',[0.4660, 0.6740, 0.1880])
+% semilogy(elevations(:,1),abs(timeDifferences),'linewidth',2,'color','black')
+grid on
+legend('Entire Pass','Pass above 20° elevation','Pass within time Accuracy','Both constraints','location','southeast');
+xlabel('Time Since Start of Pass (s)')
+% xlabel('Elevation wrt to Fairport, NY (deg)')
+ylabel('Time Delay Between Stations log(s)')
+New_XTickLabel = get(gca,'xtick');
+set(gca,'XTickLabel',New_XTickLabel);
+title('Estimated Time Difference for LUSAT 80° Pass')
+
+
+figure()
+semilogx(timeAccuracy*1e6,Percent,'linewidth',2);
+hold on
+semilogx(timeAccuracy*1e6,Percent2,'linewidth',2);
+semilogx(specificTimeAccuracy*1e6,Percent3,'s','linewidth',2,'color','black');
+semilogx(specificTimeAccuracy*1e6,Percent4,'s','linewidth',2,'color','black');
+legend('10x Time Accuracy, 10% rel error','1x Time Accuracy, 50% rel error','location','southwest')
+New_XTickLabel = get(gca,'xtick');
+set(gca,'XTickLabel',New_XTickLabel);
+grid on
+xlabel('Time Synchronization Accuracy (us)')
+ylabel(['% Coverage, >10x Time Accuracy & >' num2str(minElevation) '° Elevation'])
+title('Percent Coverage of Sky for LUSAT 80° Pass')
+
+    
+
 %% Zoomed in
 figure()
 plot(relTime,timeDifferences,'linewidth',2,'color','black')
@@ -114,7 +171,7 @@ end
 grid on
 title(['Time Differences of LUSAT pass starting at 2020-03-26T18:31:40.105 Sample Length ' num2str(sampleLength)]);
 xlabel('Relative Time since start of pass (s)')
-ylabel('Time difference between Shrewsbury, PA and Fairport, NY')
+ylabel('Time difference between Shrewsbury, PA and Fairport, NY (s)')
 legend('Time Differences','Theoretical Maximum','Theoretical Minimum')
 ylim([-maxTimeDiff*3,maxTimeDiff*3])
 
@@ -161,6 +218,6 @@ ylabel('Time difference between Shrewsbury, PA and Fairport, NY')
 legend('Time Differences','Theoretical Maximum','Theoretical Minimum')
 ylim([-maxTimeDiff*750,maxTimeDiff*750])
 
-GraphSaver({'png','fig'},['Plots/FinalResult'],0,0);
+% GraphSaver({'png','fig'},['Plots/FinalResult'],0,0);
 RMS=rms(discretizedValues'-CCvalues)
 

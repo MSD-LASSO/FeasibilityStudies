@@ -1,4 +1,8 @@
-%tester
+%this script is here for compability's sake. It will work with the hailMary
+%test, but not neccessarily future tests. Use the getCrossCorrelation
+%located in the FilterDemod/ folder of the GNU git branch for the most
+%up-to-date copy.
+
 clearvars
 close all
 addpath('../TdoaSim/')
@@ -18,11 +22,14 @@ delta_scheduler = zeros(max-2,1);
 delta_file = zeros(max-2,4);
 file_save_time_1 = zeros(max-2, 4);
 file_save_time_2 = zeros(max-2, 4);
-fractionOfData=0.05;
+fractionOfData=0.0050;
 sample_delay = zeros(max-2,1/fractionOfData);
 time_delay = zeros(max-2,1/fractionOfData);
 offset = zeros(max-2,1/fractionOfData);
 for i = 3:length(pi1_directory)
+    if i~=11 && i~=12
+        continue
+    end
     i
     pi_1_file = [mainPath '\pi1_filtered\' pi1_directory(i).name];
     pi_2_file = [mainPath '\pi2_filtered\' pi2_directory(i).name];
@@ -104,8 +111,8 @@ disp(mean(abs(offset))); disp(std(abs(offset)))
 % GraphSaver({'png'},'Plots',0,0);
 close all
 
-save('getCrossCorrelation1_5sec.mat');
-save('getCC1_5secTD.mat','offset');
+% save('getCrossCorrelation1_5sec.mat');
+% save('getCC1_5secTD.mat','offset');
 
 % input_delay = -27;
 % 
