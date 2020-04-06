@@ -32,16 +32,18 @@ Solutions=struct2cell(SymbolicEqns); %easier to work with.
 % plot(double(vpa(Solutions{1})),double(vpa(Solutions{2})),'.','MarkerSize',20,'color','black')
 
 %% for each solution, verify it satisfies the equations. Needed for 1 sided Hyperbolas. 
-RemoveList=true(length(Solutions{1}),1);
-for i=1:size(Solutions{1},1)
-    Out=double(subs(Surf,SymVars,[Solutions{1}(i) Solutions{2}(i)]));
-    if sum(abs(Out)<1e-10)<2
-        RemoveList(i)=false;
+if length(SymVars)==2
+    RemoveList=true(length(Solutions{1}),1);
+    for i=1:size(Solutions{1},1)
+        Out=double(subs(Surf,SymVars,[Solutions{1}(i) Solutions{2}(i)]));
+        if sum(abs(Out)<1e-10)<2
+            RemoveList(i)=false;
+        end
     end
-end
 
-for i=1:2
-    Solutions{i}=Solutions{i}(RemoveList);
+    for i=1:2
+        Solutions{i}=Solutions{i}(RemoveList);
+    end
 end
 
 end

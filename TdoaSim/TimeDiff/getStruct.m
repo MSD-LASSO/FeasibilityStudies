@@ -8,6 +8,12 @@ function [a] = getStruct(Objects, Error, Reference,Reference_Error,Sphere)
 %Reference [lat long elev]
 %Sphere - Reference Sphereoid. If empty, will use Spherical Earth.
 
+if nargin<3
+    Reference=zeros(1,3);
+end
+if nargin<4
+    Reference_Error=zeros(1,3);
+end
 if nargin<5
     Sphere=referenceSphere('Earth');
 end

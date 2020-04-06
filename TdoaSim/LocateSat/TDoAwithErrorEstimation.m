@@ -222,7 +222,7 @@ location=[nominalAzEl 0; nominalReference; meanAzEl 0; meanRef];
 % location_error=[daz del 0; uncertaintyRef; daz del 0; uncertaintyRef];
 location_error=[uncerAzEl 0; uncertaintyRef; uncerAzEl 0; uncertaintyRef];
 
-if DebugMode>0
+if DebugMode>0&& isempty(plotSavePath)==0
     plotHistograms(rawData,nan(1,2),plotSavePath,1);
 end
 

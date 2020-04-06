@@ -46,7 +46,7 @@ function [location] = TDoA(receiverLocations,distanceDifferences,Reference,Spher
 
 n=size(receiverLocations,1);
 
-if isempty(Reference)==1
+if nargin<3 || isempty(Reference)==1
     %then ReceiverLocations are in Earth Centered Frame
     Reference=[0 0 0];
 end
@@ -373,6 +373,7 @@ function [location,potentialPoints]=findSolnsFromIntersects(Intersect2HypersX, I
         %2. figure out how many solutions there are and split up the "same"
         %points into different bins based on the number of solutions
         %3. Average the "same" points together.
+        
         %Removed because it doesn't always work. Replaced with above code.
 %         try
 %             %% Solve. 

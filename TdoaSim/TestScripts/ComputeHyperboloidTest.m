@@ -15,12 +15,17 @@ valExp=double(subs(Hyperboloid,SymVars,vec(1:2)'));
 AssertTolerance(valExp,val,1e-10);
 
 %% 2D. 45 degree angle. Centered around zero still.
-%The result is an ellispe.
+%The result of delta=2 is an ellispe.
 %This is because the delta chosen is larger than the maximum distance
 %between the stations. (not physically possible)
+% Using delta=2 WILL cause AssertTolerance to fail. This is because
+% CreateHyperboloid will return an imaginary value while computeHyperboloid
+% will return a real value. ComputeHyperboloid allows not physically
+% possible time differences using a hyperbole in this region: 1/xb^2-1/a^2
 R1=1/sqrt(2)*[-cosd(45) -sind(45) 0];
 R2=1/sqrt(2)*[cosd(45) sind(45) 0];
-delta=2;
+% delta=2;
+delta=1;
 [Hyperboloid,SymVars]=CreateHyperboloid(R1,R2,delta);
 vec=[10;-25;0];
 val=ComputeHyperboloid(R1,R2,delta,vec);
@@ -70,11 +75,12 @@ AssertTolerance(valExp,val,1e-10);
 
 
 %% 3D. 45 degree angle. With offset in z. 
-%The result is an ellispsoid.
-%Again the delta is too large. Not physically possible. 
+%The result is an ellispsoid for delta = 2.
+%Again the delta is too large. Not physically possible. See Test 2. 
 R1=1/sqrt(2)*[-cosd(45) -sind(45) 1];
 R2=1/sqrt(2)*[cosd(45) sind(45) 1];
-delta=2;
+% delta=2;
+delta=1;
 [Hyperboloid,SymVars]=CreateHyperboloid(R1,R2,delta);
 vec=[1;2;9];
 val=ComputeHyperboloid(R1,R2,delta,vec);

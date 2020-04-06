@@ -7,6 +7,9 @@ function [LocationsInTopocentricFrame,Error] = measureInTopocentricFrame(geodeti
 if nargin<3
     Sphere=referenceSphere('Earth');
 end
+if nargin<4
+    geoError=zeros(1,3);
+end
 
 [xEast, yNorth, zUp]=geodetic2enu(geodeticData(:,1),geodeticData(:,2),geodeticData(:,3),...
     geodeticPoint(1),geodeticPoint(2),geodeticPoint(3),Sphere);

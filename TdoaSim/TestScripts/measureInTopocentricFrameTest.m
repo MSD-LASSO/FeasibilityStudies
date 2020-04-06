@@ -12,17 +12,25 @@ yNorth=a*cos(az);
 
 out_ex=[xEast,yNorth,zUp];
 
-Out=measureInTopocentricFrame(Rsat,R0);
+Sphere=referenceSphere('Earth');
+Sphere2=referenceEllipsoid('Earth');
+Sphere.Radius=Sphere2.SemimajorAxis;
+
+Out=measureInTopocentricFrame(Rsat,R0,Sphere,zeros(1,3));
 AssertToleranceMatrix(out_ex,Out,1e-4);
 
 %% Many Sat locations.
-[stations,satellites,satellitesGT,GTframe,Time,names]=readGroundTrack('../TestData');
+[stations,satellites,satellitesGT,GTframe,Time,names]=readGroundTrack('../TestScripts/TestData');
 
 I=find(strcmp(names,'ForTopocentricTestLargeEarthRadius.txt'));
 
 el=satellitesGT{I}(:,1);
 az=satellitesGT{I}(:,2);
 rng=satellitesGT{I}(:,3);
+
+Sphere=referenceSphere('Earth');
+Sphere2=referenceEllipsoid('Earth');
+Sphere.Radius=Sphere2.SemimajorAxis;
 
 zUp=rng.*sin(el);
 a=rng.*cos(el);
@@ -33,5 +41,5 @@ out_ex=[xEast,yNorth,zUp];
 
 Rsat=[satellites{I}(:,1)*180/pi satellites{I}(:,2)*180/pi satellites{I}(:,3)];
 R0=[GTframe{I}(1)*180/pi GTframe{I}(2)*180/pi GTframe{I}(3)];
-Out=measureInTopocentricFrame(Rsat,R0);
+Out=measureInTopocentricFrame(Rsat,R0,Sphere,zeros(1,3));
 AssertToleranceMatrix(out_ex,Out,1e-4);

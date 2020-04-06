@@ -1,7 +1,11 @@
 function [azimuth,elevation] = geo2AzEl(Location,NewReference,CurrentReference,Sphere)
 %Location and New Reference are [X Y Z] measured in the ECEF frame if
-%CurrentReference = [0 0 0] and in a Topocentric Frame referenced at
-%coordinates CurrentReference in the ECEF Frame.
+%CurrentReference = [0 0 0] and are measured in a  Topocentric Frame
+%referenced from coordinates "CurrentReference", which are referenced from
+%the ECEF Frame.
+
+% The output is the azimuth and elevation with respect to the
+% "NewReference".
 
 if nargin<3
     CurrentReference=[0 0 0];

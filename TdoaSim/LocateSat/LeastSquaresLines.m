@@ -2,6 +2,9 @@ function [point,err] = LeastSquaresLines(LineFits)
 %This function will solve for the closest point of intersection between all
 %given lines.
 
+%This can be one method of solving for the exact satellite location instead
+%of a direction with 4+ stations. 
+
 %Each line has the form w=[x0 y0 z0; xd yd zd]. A 3D LINE.
 %Lines are in a nx1 cell array of n lines. 
 

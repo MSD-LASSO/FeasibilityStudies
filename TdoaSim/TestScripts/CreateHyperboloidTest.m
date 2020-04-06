@@ -39,7 +39,10 @@ plot(R2(1),R2(2),'.','MarkerSize',10);
 grid on
 fimplicit(Hyperboloid,[-2 2 -2 2],'linewidth',5);
 % expected=(3*x^2)/2 - x*y + (3*y^2)/2 - 1; %2 sided
-expected=(1 - 2*((2^(1/2)*x)/2 - (2^(1/2)*y)/2)^2)^(1/2) - (2^(1/2)*y)/2 - (2^(1/2)*x)/2; %1 sided
+
+% Both of these are acceptable expressions if you look at the plot.
+% expected=(1 - 2*((2^(1/2)*x)/2 - (2^(1/2)*y)/2)^2)^(1/2) - (2^(1/2)*y)/2 - (2^(1/2)*x)/2; %1 sided
+expected=(- x^2 + 2*x*y - y^2 + 1)^(1/2) - (2^(1/2)*y)/2 - (2^(1/2)*x)/2; 
 fimplicit(expected,'linewidth',3);
 assert(logical(expected==simplify(expand(Hyperboloid),'steps',10)));
 
@@ -80,7 +83,10 @@ grid on
 %2sided
 % expected=4*(x/2 + (3^(1/2)*(y - 5589081546040917/1125899906842624))/2 + 1346747901294977/4503599627370496)^2 - (4*((3^(1/2)*(x + 1346747901294977/2251799813685248))/2 - y/2 + 5589081546040917/2251799813685248)^2)/15 - 1;
 %1sided
-expected=((4*((3^(1/2)*(x + 1346747901294977/2251799813685248))/2 - y/2 + 5589081546040917/2251799813685248)^2)/15 + 1)^(1/2)/2 - (3^(1/2)*(y - 5589081546040917/1125899906842624))/2 - x/2 - 1346747901294977/4503599627370496;
+%Both are valid solutions as they both overlay with Hyperboloid on the
+%plot.
+% expected=((4*((3^(1/2)*(x + 1346747901294977/2251799813685248))/2 - y/2 + 5589081546040917/2251799813685248)^2)/15 + 1)^(1/2)/2 - (3^(1/2)*(y - 5589081546040917/1125899906842624))/2 - x/2 - 1346747901294977/4503599627370496;
+expected=((4*((3^(1/2)*(x + 2693495802589951/4503599627370496))/2 - y/2 + 5589081546040917/2251799813685248)^2)/15 + 1)^(1/2)/2 - (3^(1/2)*(y - 5589081546040917/1125899906842624))/2 - x/2 - 2693495802589951/9007199254740992;
 
 fimplicit(Hyperboloid,'linewidth',5);
 fimplicit(expected,'linewidth',2);
@@ -120,9 +126,10 @@ plot3(R2(1),R2(2),R1(3),'.','MarkerSize',10);
 grid on
 fimplicit3(Hyperboloid);
 % expected=(3*x^2)/2 - x*y + (3*y^2)/2 + 2*z^2 - 2*2^(1/2)*z; %2 sided
+
 expected=(1 - 2*(z - 2^(1/2)/2)^2 - 2*((2^(1/2)*x)/2 - (2^(1/2)*y)/2)^2)^(1/2) - (2^(1/2)*y)/2 - (2^(1/2)*x)/2;
 fimplicit3(expected);
-assert(logical(expected==simplify(expand(Hyperboloid))));
+assert(logical(expected==simplify(Hyperboloid)));
 
 %% 0 Difference
 R1=[-1 0 1];

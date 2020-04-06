@@ -1,6 +1,6 @@
 close all
 clearvars
-Folder='/TestData';
+Folder='../TestScripts/TestData';
 [stations,satellites,satellitesGT,GTframe,Time,fileName]=readGroundTrack(Folder);
 
 SE=[0.750	0.698	0.000;
@@ -41,10 +41,10 @@ TT=[
 '2019-10-20T23:50:25.227 '];
 
 fileName_actual='testOrbitDataV2.txt';
-assert(strcmp(fileName,fileName_actual));
+assert(strcmp(fileName{2},fileName_actual));
 
-AssertToleranceMatrix(SE,stations{1},0);
-AssertToleranceMatrix(SS,satellites{1},0);
-AssertToleranceMatrix(GT,satellitesGT{1},0);
+AssertToleranceMatrix(SE,stations{2},0);
+AssertToleranceMatrix(SS,satellites{2},0);
+AssertToleranceMatrix(GT,satellitesGT{2},0);
 % AssertToleranceMatrix(TT,Time{1},0) %don't feel like making a string comparer right now.
-AssertToleranceMatrix(SE(1,:),GTframe{1},0);
+AssertToleranceMatrix(SE(1,:),GTframe{2},0);

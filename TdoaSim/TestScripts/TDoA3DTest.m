@@ -26,20 +26,6 @@ location=TDoA([R1;R2;R3;R4],distanceDiffs);
 % location=TDoA([R1;R2;R3],distanceDiffs);
 AssertToleranceMatrix(expected,location,0.001);
 
-%% 
-% clearvars
-% figure()
-% start=-100;
-% stop=100;
-% step=1;
-% [x,y,z]=meshgrid(start:step:stop,start:step:stop,start:step:stop);
-% V=sqrt(x.^2+y.^2+z.^2)-sqrt((x-10).^2+y.^2+z.^2);
-% fv=isosurface(x,y,z,V,(sqrt(10065)-sqrt(10025)));
-% p=patch(fv); % This is the key step. It involves getting the part of the volume corresponding to the surface defined by the equation
-% set(p,'FaceColor','red','EdgeColor','none');
-% daspect([1 1 1])
-% view(3);
-% camlight
 %%
 clearvars
 syms x y z
