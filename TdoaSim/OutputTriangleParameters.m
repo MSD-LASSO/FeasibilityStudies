@@ -2,6 +2,13 @@ clearvars
 addpath('LocateSat')
 addpath('TimeDiff')
 
+%Run this script to see the average distance and maximum angle of each
+%proposed triangle. This script is not called by anything, just used as a
+%reference. The smaller the max angle, the better conditioned the triangle
+%is. The larger the mean distance, the better TDoA will perform.
+%These triangles are used in the SensitivityAnalysisNet.m.
+
+%Nominal location of all stations
 R1=[43.209037000000000	-77.950921000000010	175.000000000000000]; %brockport
 R2=[42.700192000000000	-77.408628000000010	701.000000000000000]; %mees
 R3=[43.204291000000000	-77.469981000000000	147.000000000000000]; %webster
@@ -12,7 +19,7 @@ R7=[43.0862850000000 -77.6680150000000 163.4+12*4]; %ellingson
 R8=[43.213809 -77.190456 140+2*4]; %williamson high school
 R9=[43.0162 -78.1380 272+3*4]; %GCC library
 
-
+%Triangles.
 TR{1}=[R2;R1;R3]; OF{1}='MeesBrockportWebster';
 TR{2}=[R2;R3;R4]; OF{2}='MeesWebsterPavilion';
 TR{3}=[R6;R5;R7]; OF{3}='InnInstituteEllingson';
@@ -49,23 +56,7 @@ for i=1:10
     
     Distance(i,:)=[d12 d13 d23 m]/1000;
     Angles(i,:)=[A B C max([A B C])];
-
     
-    
-    
-    %     RT=[GND(1).Topocoord; GND(2).Topocoord; GND(3).Topocoord]';
-%     d12=RT(:,2)-RT(:,1);
-%     d13=RT(:,3)-RT(:,1);
-%     d23=RT(:,3)-RT(:,2);
-%     m=mean([norm(d12) norm(d13) norm(d23)]);
-%     
-%     a1=acosd(dot(d12,d13)/(norm(d12)*norm(d13)));
-%     a2=acosd(dot(d12,d23)/(norm(d12)*norm(d23)));
-%     a3=acosd(dot(d23,d13)/(norm(d23)*norm(d13)));
-%     
-%     
-%     Distance(i,:)=[norm(d12) norm(d13) norm(d23) m/1000];
-%     Angles(i,:)=[a1 a2 a3 max([a1 a2 a3])];
 end
 
-table(Distance(:,4),Angles(:,4))
+table(Distance(:,4),Angles(:,4),'VariableNames',{'Mean Distance (km)','Max Angle (deg)'})

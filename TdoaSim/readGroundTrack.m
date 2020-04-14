@@ -3,10 +3,15 @@ function [stations,satellites,satellitesGT,GTframe,Time,names]=readGroundTrack(N
 %The expected text file format is as follows:
 %Lat Long Altitude
 % X   Y      Z
-%continue for each receiver
+% X1  Y1     Z1
+%etc. continue for each station
 %Elevation wrt E Azimuth Range Lat Long Altitude Time
 %    X              Y       Z    A    B     C       D
 %continue for each data point
+%Azimuth and Elevation are measured from Station number E.
+%See testOrbitDataV2 under TestScripts/TestData/ for an example. 
+%where X,Y,Z,A,B,C are numbers. D is a string, see below:
+
 
 %Time is expected as an AbsoluteDate in form
 %YYYY-DD-MMThh:min:sec.millisecond

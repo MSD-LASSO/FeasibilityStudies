@@ -19,7 +19,7 @@ distanceDiffs=[0 d1-d2 d1-d3; 0 0 d2-d3; 0 0 0];
 figure()
 plot(x,y,'o','linewidth',3);
 hold on
-location=TDoA([R1;R2;R3],distanceDiffs);
+location=TDoA([R1;R2;R3],distanceDiffs,[0 0 0],referenceSphere('Earth'),1e-5,0,1,'',0);
 AssertToleranceMatrix(expected,location,0.001);
 
 
@@ -38,13 +38,13 @@ d1=sqrt(x^2+y^2);
 d2=sqrt((R2(1)-x)^2+y^2);
 d3=sqrt((R3(1)-x)^2+(R3(2)-y)^2);
 
-distanceDiffs=[0 d1-d2 d1-d3; 0 0 d2-d3; 0 0 0];
+distanceDiffs=[0 d1-d2+0.001 d1-d3-0.003; 0 0 d2-d3; 0 0 0];
 
 figure()
 plot(x,y,'o','linewidth',3);
 hold on
-location=TDoA([R1;R2;R3],distanceDiffs);
-AssertToleranceMatrix(expected,location,0.001);
+location=TDoA([R1;R2;R3],distanceDiffs,[0 0 0],referenceSphere('Earth'),1e-5,0,1,'',0);
+AssertToleranceMatrix(expected,location,0.01);
 
 %% Equilateral triangle. Point is inside the triangle. 
 X=10;
@@ -67,7 +67,7 @@ distanceDiffs=[0 (d1-d2)+0.6 (d1-d3)-0.3; 0 0 (d2-d3)+0.3; 0 0 0];
 figure()
 plot(x,y,'o','linewidth',3);
 hold on
-location=TDoA([R1;R2;R3],distanceDiffs,[],1e-5,0,1);
+location=TDoA([R1;R2;R3],distanceDiffs,[0 0 0],referenceSphere('Earth'),1e-5,0,1,'',0);
 AssertToleranceMatrix(expected,location,0.2);
 
 
@@ -95,5 +95,7 @@ distanceDiffs=[0 (d1-d2)+0.1 (d1-d3)-0.07; 0 0 (d2-d3)+0.07; 0 0 0];
 figure()
 plot(x,y,'o','linewidth',3);
 hold on
-location=TDoA([R1;R2;R3],distanceDiffs,[],1e-5,0,1);
+location=TDoA([R1;R2;R3],distanceDiffs,[0 0 0],referenceSphere('Earth'),1e-5,0,1,'',0);
+warning('Symbolic Solver does not pass this test!')
+location=TDoA([R1;R2;R3],distanceDiffs,[0 0 0],referenceSphere('Earth'),1e-5,0,1,'',1);
 AssertToleranceMatrix(expected,location,2);

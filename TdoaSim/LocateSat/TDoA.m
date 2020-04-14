@@ -72,7 +72,7 @@ if nargin<8
 end
 
 if nargin<9
-    solver=0;
+    solver=1;
 end
 
 if solver~=0

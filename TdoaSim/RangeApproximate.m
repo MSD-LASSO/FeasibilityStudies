@@ -1,4 +1,7 @@
 function out=RangeApproximate(Data,al,P)
+%Will estimate the range based on the satellites' altitude and elevation.
+%NOTE: if the polynomial values are not given, it will try to load them. If
+%it can't find them this WILL throw an error.
 
 if nargin<3
     load RangePolynomial.mat

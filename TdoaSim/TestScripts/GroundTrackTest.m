@@ -61,7 +61,7 @@ end
 GND=getStruct(R, zeros(3,4), reference,zeros(1,4),Sphere);
 SAT=getStruct(CorrectLatLong, zeros(4,4), reference,zeros(1,4),Sphere);
 
-%% Tests
+% Tests
 Elevation={'90','60','30','0'};
 Range=2800000; %I chose this value for the plot. 
 % Range=1951354.31734960;
@@ -102,7 +102,7 @@ FurtherPointCorrect(i,:)=[x y z]-virtualStation(i,:);
 soln1(i,:)=expectedAzEl-actualAzEl;
 end
 
-%% Final Visualization
+% Final Visualization
 figure(h(5))
 plot3(virtualStation(:,1),virtualStation(:,2),virtualStation(:,3),'d','color','blue','linewidth',3)
 for i=1:numTests

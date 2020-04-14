@@ -2,18 +2,14 @@
 %This range approximation is based off of 4 different simulated satellite
 %passes. Input the elevation then multiply by the semimajor axis of the
 %satellite. Recommended use is limited to circular orbits. 
-Data=xlsread('RangeApproximationVals.xlsx','Sheet2');
-% Data(:,[3:5 8:10 13:15])=[];
 
-% P=zeros(4,7);
-% figure()
-% for i=1:4
-%     plot(Data(:,2*i-1),Data(:,2*i))
-%     hold on
-%     P(i,:)=polyfit(Data(:,2*i-1),Data(:,2*i),6);
-% end
-% P
-% Pmean=mean(P)
+%This is used for the sensitivityAnalysisNet.m
+%The Net creates satellite points all over the sky; we want to best
+%approximate the usual range of these satellites given their location in
+%the sky.
+Data=xlsread('RangeApproximationVals.xlsx','Sheet2');
+
+
 Data(:,1)=Data(:,1)*180/pi;
 Data(:,2)=Data(:,2)/500e3 %scale by satellite range.
 P=polyfit(Data(:,1),Data(:,2),6);
@@ -46,5 +42,5 @@ title(['Average Percent Error: ' num2str(mean(PercentError)) '%'])
 xlabel('Elevation (deg)')
 ylabel('Percent Error (%)')
 
-GraphSaver({'fig','png'},'Plots/RangeApproximation',1);
-save('RangePolynomial','P');
+% GraphSaver({'fig','png'},'Plots/RangeApproximation',1);
+% save('RangePolynomial','P');
