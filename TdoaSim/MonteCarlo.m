@@ -2,17 +2,28 @@ function [means,stdDev,meanError,stdDevError, Data]=MonteCarlo(numTests,Az,El,Rn
 %This function perturbates the given parameters by their error,
 %approximated as a Gaussian. This will give us insight into approximate
 %uncertainties.
+
+%ASSUMES that RL_err is error in rectilinear coordinates with units of m.
+%It is not expecting lat, long, altitude error.
+
 % numTests=numTests+1; %we always sample 0 error as a baseline. 
 zPlanes=[50e3 400e3 1200e3];
 %% Invariants    
 Sphere=wgs84Ellipsoid;
-% ReceiverError=[zeros(3,3) ClkError];
-ReceiverError=[RL_err ClkError];
+ReceiverError=[zeros(3,3) ClkError];
+%Use this if you want to input lat,long,altitude error!
+% ReceiverError=[RL_err ClkError]; 
 Rx=ReceiverLocations(1,1);
 Ry=ReceiverLocations(1,2);
 Rz=ReceiverLocations(1,3);
 Reference=[Rx,Ry,Rz];
 GND=getStruct(ReceiverLocations,ReceiverError,Reference,ReceiverError(1,:),Sphere);
+
+%Use these only when inputting rectilinear error (NOT geo error).
+GND(1).ECFcoord_error=RL_err(1,:);
+GND(2).ECFcoord_error=RL_err(2,:);
+GND(3).ECFcoord_error=RL_err(3,:);
+
 RT=[GND(1).Topocoord; GND(2).Topocoord; GND(3).Topocoord];
 
 [lat, long, h]=enu2geodetic(Rng*cosd(El)*sind(Az),Rng*cosd(El)*cosd(Az),Rng*sind(El),...
@@ -28,7 +39,7 @@ expected=SAT.Topocoord;
 %% Estimate using relative error if asked
 if useAbsoluteError==0
     TR_err=[1e-5*pi/180 1e-5*pi/180 3];
-    [location,location_error,Data]=TDoAwithErrorEstimation(numTests,ReceiverError(:,1:3),TimeDiffErr*3e8,TR_err,RT,TimeDiff*3e8,TR,Sphere,0,zPlanes,DebugMode,'',solver);
+    [location,location_error,Data]=TDoAwithErrorEstimation(numTests,ReceiverError(:,1:3),TimeDiffErr*3e8,TR_err,RT,TimeDiff*3e8,TR,Sphere,0,zPlanes,DebugMode,'',solver,'DebuggingMonte');
     means=Data.meanAzEl;
     stdDev=Data.AzElstandardDeviation;
     meanError=(Data.nominalAzEl-Data.meanAzEl)*0; %zero out. doesn't seem like a good measure
@@ -112,10 +123,6 @@ if flag==1
 end
 
 if DebugMode>=0
-%     AzX=[min(EstAzEl(:,1)) max(EstAzEl(:,1))];
-%     ElX=[min(EstAzEl(:,2)) max(EstAzEl(:,2))];
-%     AzR=normpdf(AzX,means(1),stdDev(1));
-%     ElR=normpdf(ElX,means(2),stdDev(2));
 %    plotHistograms(Data,[Az El]);
 end
 end

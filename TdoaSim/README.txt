@@ -16,6 +16,27 @@ SensitivityResults             -- .mat files saved from One-at-a-time runs
 TestScripts                    -- unit and integration tests
 TimeDiff                       -- Homemade data structures and Time difference calculation scripts.
 
+What's broken:
+TDoAExploration shows the best example. It appears that something is not working when trying to
+compare the three TDoA solvers to each other. See the TDoAalgorithm powerpoint for an example
+of this functionality working and run TDoAExploration to show it not working. 
+
+OneAtaTime4 and the function call to it in OneAtaTime.m are NOT updated. TDoA.m and its derivatives
+are NOT updated for localization with 4+ networks.
+	TDoA has some old code for 4+ networks that finds closest intersection of lines -- 
+		does not work well
+	TDoA with least squares should work with additional stations. You'll just need to solve on
+		the hyperboloid instead of on a plane.
+
+What could be improved:
+getStruct (under TimeDiff) is what is used to create station and satellite objects. It only takes one
+type of error input: geodetic (lat, long, altitude errors). If you want to express error in terms
+of Topocentric or ECEF coordinates, you must manually modify the ECEF_error and Topocentric_error
+handlers which is a bit of a "hack"
+	
+
+
+
 Scripts:
 
 
@@ -23,9 +44,6 @@ GraphSaver -- used all over the project. Saves all plots open in Matlab. This is
 	      powerful function. Please cite Anthony Iannuzzi if you use it anywhere.
 
 OutputTriangleParameters -- Run this script to see how well conditioned a triangle of stations is.
-
-
-
 
 
 -----------TCP------------------
@@ -48,9 +66,30 @@ RangeApproximationVals.xlsx -- dataset for range fitting.
 
 -----Standalone Simulations------
 SentinelSat -- simple TDoA simulation with stations around RIT and satellite in single location.
-
-
+	       This was one of the first simulations created and is pretty old.
+TDoAexploration.m -- similar code to senisivityAnalysis.net, designed for comparing various solver
+		     methods. Does NOT appear to be working right now. The output comparisons are
+		     NOT informative. 
 ---------------------------------
+
+
+
+
+--------Sensitivity-----------
+sensitivityAnalysisNet.m -- Primary runner of sensitivity. Create a "net" of satellites around the
+			    the sky and simulate/estimate uncertainty at each "node" in the sky. 
+
+OneAtaTime.m -- Switching function between the OneAtaTime functions.
+OneAtaTime3.m -- need to check
+OneAtaTime4.m -- needs updating. Update TDoA to work for 4+ stations first.
+MonteCarlo.m -- needs commenting
+
+plotSensivity.m -- read the Sensitivity results and plot them. Very similar in code to plotMonteCarlo
+plotMonteCarlo.m -- read the Monte Carlo results and plot them. 
+plotHistograms.m -- plots the histograms from Monte Carlo runs
+---------------------------------
+
+
 
 
 
@@ -67,23 +106,16 @@ Unknown Status:
 
 
 
-GPSmeans.mat -- where does this belong?
 
-GroundTrackNear90.m -- one-at-a-time needs updating
-MonteCarlo.m -- needs commenting
 
-OneAtaTime.m -- need to check
-OneAtaTime3.m -- need to check
-OneAtaTime4.m -- needs updating. 4+ station TDoA??????????
 
-TDoAexploration.m -- needs updating with MonteCarlo
 TDoAwithErrorEstimationComparison.m -- needs commenting. Rectify absolute vs. relative?
 
-plotHistograms.m -- needs comments
-plotMonteCarlo.m -- needs comments
-plotSensivity.m -- need comments
 
-sensitivityAnalysisNet.m -- needs comments. 
+
+
+
+
 
 
 

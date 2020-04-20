@@ -1,4 +1,5 @@
 function OneAtaTime4(GND,SAT,time,location,folderName)
+%BROKEN. 
 %This function will perform a OneAtaTime uncertainty analysis for the Time
 %Difference of Arrival signal. 
 %It takes each parameter with a specified error and varies that parameter

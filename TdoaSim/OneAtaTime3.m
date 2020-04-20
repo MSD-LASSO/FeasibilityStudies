@@ -5,9 +5,6 @@ function [SensitivityLocation, SensitivityTime]=OneAtaTime3(GND,SAT,time,locatio
 %when it calls TDoA. 
 %It then creates plots of perturbation amount vs. absolute error.
 
-% load turnOffSpuriousSolns.mat
-% id = w.identifier;
-% warning('off',id)
 
 if nargin<6
     Frame=1; %use Topo Frame. 
@@ -44,7 +41,6 @@ SensitivityLocation=cell(2,1);
 SensitivityTime=cell(2,1);
 
 if Frame==1
-    %zPlanes=[0 50e3 100e3 200e3 500e3 2000e3];
     zPlanes=[50e3 400e3 1200e3];
 else
     zPlanes=[4.5e6 4.8e6 5.1e6];

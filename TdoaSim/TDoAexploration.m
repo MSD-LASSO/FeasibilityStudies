@@ -2,6 +2,8 @@
 %this script has similar format to sensitivityhAnalysisNet.m, but only uses
 %Monte Carlo. It uses a debugmode=1 to save intermediate plots that show
 %TDoA solutions using all solvers. 
+
+%It is designed as a lighter version of sensitivityAnalysisNet.m
 clearvars
 close all
 
@@ -24,7 +26,7 @@ TR=[R2;R9;R8]; OF='MeesGCCWilliamson';
 
 % TimeSyncErrFar=100e-9; %100ns time sync error.
 TimeSyncErrFar=5e-6;
-RL_err=ones(3,3)*9; %9m location error.
+RL_rect_err=ones(3,3)*9; %9m location error.
 
 %% Invariants
 ClkError=ones(3,1)*TimeSyncErrFar; %3x1
@@ -34,20 +36,13 @@ Sphere=wgs84Ellipsoid;
 ReceiverError=[zeros(3,3) ClkError];
 
 %% Input Ranges
-%For nominal tests.
-% AzimuthRange=0:10:359; %ALWAYS wrt to the first receiver. 
-% ElevationRange=5:5:90;
-
 %for quick testing
 % AzimuthRange=0:45:360;
 % ElevationRange=5:15:80;
 
 %for really quick testing
-AzimuthRange=180;
-ElevationRange=5;
-
-%this set of inputs causes an error!
-% AzimuthRange=0:2.5:359; ElevationRange=1:1:4;
+AzimuthRange=65;
+ElevationRange=50;
 
 
 SatelliteAltitudeRange=500e3; %range of satellite range values.
@@ -60,10 +55,10 @@ start=1;
 numTests=30;
 solver=0; %0 symbolic solver, 1 least squares.
 %% Create satellite test case, run sensitivity.
-GND=getStruct(T,ReceiverError,T(1,:),ReceiverError(1,:),Sphere);
-GND(1).ECFcoord_error=RL_err(1,:);
-GND(2).ECFcoord_error=RL_err(2,:);
-GND(3).ECFcoord_error=RL_err(3,:);
+% GND=getStruct(T,ReceiverError,T(1,:),ReceiverError(1,:),Sphere);
+% GND(1).ECFcoord_error=RL_err(1,:);
+% GND(2).ECFcoord_error=RL_err(2,:);
+% GND(3).ECFcoord_error=RL_err(3,:);
 
 Test=zeros(length(AzimuthRange)*length(ElevationRange),2);
 p=0;
@@ -93,25 +88,17 @@ for i=start:p
     Az=Azimuths(i);
     El=Elevations(i);
     Rng=Ranges(i);
-%     try
-        [means,stdDev,meanError,stdDevError, Data]=MonteCarlo(numTests,Az,El,Rng,T,RL_err,ClkError,DebugMode,solver);
-        AllMeans(i,:)=means;
-        AllstdDevs(i,:)=stdDev;
-        AllMeanErrors(i,:)=meanError;
-        AllstdDevError(i,:)=stdDevError;
-        AllRawData{i}=Data;
-%     catch ME
-%         fprintf('\n')
-%         fprintf(['Test ' num2str(i) ' failed due to ' ME.message ' on line ' num2str(ME.stack(end).line)]);
-%         fprintf('\n')
-%     end
+
+    [means,stdDev,meanError,stdDevError, Data]=MonteCarlo(numTests,Az,El,Rng,T,RL_rect_err,ClkError,DebugMode,solver,1,T(1,:));
+    AllMeans(i,:)=means;
+    AllstdDevs(i,:)=stdDev;
+    AllMeanErrors(i,:)=meanError;
+    AllstdDevError(i,:)=stdDevError;
+    AllRawData{i}=Data;
+
 end
 % GraphSaver({'png','fig'},'../Plots/TDoAexploration',1);
 
 save(['OutputTDoAExperiment' OutputFolder])
-
-% for i=1:p
-%     plotHistograms(AllRawData{i},[Azimuths(i) Elevations(i)],['Plots/MonteCarloHistograms/' OutputFolder]);
-% end
 
 

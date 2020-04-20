@@ -59,4 +59,5 @@ for i=1:10
     
 end
 
-table(Distance(:,4),Angles(:,4),'VariableNames',{'Mean Distance (km)','Max Angle (deg)'})
+disp('Table of Triangles')
+table(OF',Distance(:,4),Angles(:,4),'VariableNames',{'Name','Mean Distance (km)','Max Angle (deg)'})

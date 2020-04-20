@@ -10,25 +10,23 @@ addpath('TimeDiff')
 % load OutputSensitivityForwardDiff.mat
 % load OutputMBW500Altitude.mat
 
+%% The order of triangles. Same as OutputTriangleParameters
+OutputTriangleParameters
 
-OF{1}='MeesBrockportWebster';
-OF{2}='MeesWebsterPavilion';
-OF{3}='InnInstituteEllingson';
-OF{4}='MeesPavilionInn';
-OF{5}='InnBrockportWebster';
-OF{6}='MeesWilliamsonBrockport';
-OF{7}='InnGCCBrockport';
-OF{8}='MeesGCCWilliamson';
-OF{9}='MeesWebsterGCC';
-OF{10}='MeesInnWilliamson';
-InputFolder='SensitivityResults';
-PlotOutputFolder='Sensitivity10Triangles';
 
-numRows=17; numRows=18; %numRows=6;
+%% Inputs -- Change these --
+%See plot Monte Carlo for descriptions of these inputs.
+
+InputFolder='SensitivityResults/LeastSquares';
+% PlotOutputFolder='Sensitivity10Triangles';
+PlotOutputFolder='Dummy';
+
+numRows=18; %numRows=6;
 numCols=36; %numCols=9;
-MinElCriteria=.5; %what is the minimum elevation criteria.
+MinElCriteria=5; %what is the minimum elevation criteria.
 Vals=[0.5 1 2 5];
 UncertaintyCriteria=1; %index of Vals to use. 
+minTD=1e-6; %the minimum acceptable time delay. 
 %some variable names
 % Azimuths;
 % Elevations;
@@ -38,8 +36,9 @@ UncertaintyCriteria=1; %index of Vals to use.
 
 % TestsToRun=[1 2 3 4 5 6 7 8 9 10];
 TestsToRun=[1];
-plotIntermediates=0;
+plotIntermediates=1;
 
+%% Begin Plotting.
 n=length(TestsToRun);
 TDoACoverage=zeros(n,1);
 UncertaintyCoverage=zeros(n,4);
@@ -117,12 +116,12 @@ for i=1:2 %azimuth then elevation
         temp=Data{i}(:,j);
         
          %%%This can be used to filter really high uncertainties.%%%%
-%         if TotalUncertainty(i,1)>180 %can't be worse than 180 degrees off in azimuth.
-%             TotalUncertainty(i,1)=nan;
-%         end
-%         if TotalUncertainty(i,2)>90 %can't be worse than 90 degrees off in elevation.
-%             TotalUncertainty(i,2)=nan;
-%         end
+        if TotalUncertainty(i,1)>180 %can't be worse than 180 degrees off in azimuth.
+            TotalUncertainty(i,1)=nan;
+        end
+        if TotalUncertainty(i,2)>90 %can't be worse than 90 degrees off in elevation.
+            TotalUncertainty(i,2)=nan;
+        end
 
         z=reshape(temp,numRows,numCols);
         if j>1
@@ -227,7 +226,7 @@ end
 %Avg Uncertainty with std. dev. and Box Plot with median.
 
 
-TDoACoverage(TN)=sum(min(abs(timeDiffs),[],2)>100e-9)/size(timeDiffs,1);
+TDoACoverage(TN)=sum(min(abs(timeDiffs),[],2)>minTD)/size(timeDiffs,1);
 maxUncertainty=max(TotalUncertainty,[],2);
 UncertaintyCoverage(TN,1)=sum(maxUncertainty<Vals(1))/size(TotalUncertainty,1);
 UncertaintyCoverage(TN,2)=sum(maxUncertainty<Vals(2))/size(TotalUncertainty,1);
@@ -297,7 +296,7 @@ for k=1:2 %azimuth / Elevation
     for i=1:12 %for each variable
         subplot(4,3,i)
         temp=zeros(length(OF),1);
-        for j=1:length(OF) %get sensitivity for each variable
+        for j=1:length(TestsToRun) %get sensitivity for each variable
             temp(j)=abs(MaxSensitivities{j}(i,3*k));
         end
         semilogy(1:1:length(OF),temp,'o','linewidth',3)

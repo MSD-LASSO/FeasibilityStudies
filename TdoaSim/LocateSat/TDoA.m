@@ -346,6 +346,11 @@ function [location,potentialPoints]=findSolnsFromIntersects(Intersect2HypersX, I
         
         realPoints=true(length(potentialPoints),1);
         for i=1:length(potentialPoints)
+            
+%             if isempty(potentialPoints(i,:))==0
+%                 error('TDoA did NOT find any solutions with the specified solver. This is likely due to the hyperboloids NOT intersecting on a plane.')
+%             end
+            
             if isreal(potentialPoints(i,:))==0
                 %not a real intersection
                 realPoints(i)=false;

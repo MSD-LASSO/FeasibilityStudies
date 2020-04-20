@@ -11,7 +11,9 @@ close all
 % h1=gcp;
 % h1=parpool;
 
-AddAllPaths
+addpath('./LocateSat')
+addpath('./TimeDiff')
+addpath('./TestScripts/')
 load RangePolynomial.mat;
 P;
 
@@ -97,7 +99,7 @@ RL_errForTest(1,:)=0;
 RT=[GND(1).Topocoord; GND(2).Topocoord; GND(3).Topocoord];
 zPlanes=[50e3 400e3 1200e3];
 costFunction=1;
-plotSavePath='';
+plotSavePath='Dummy';
 numTests=100;
 %%
 

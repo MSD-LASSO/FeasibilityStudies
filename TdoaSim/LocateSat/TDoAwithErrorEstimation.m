@@ -36,7 +36,7 @@ numTrials=numTrials+1; %add a trial to try nominal values.
 
 DDs=zeros(numTrials,3);
 Rlocations=cell(numTrials,1);
-References=cell(numTrials,3);
+References=cell(numTrials,1);
 TDoAsolution=cell(numTrials,1);
 EstAzEl=zeros(numTrials,2);
 EstRef=zeros(numTrials,3); %measured w.r.t. Reference
