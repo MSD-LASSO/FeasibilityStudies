@@ -1,22 +1,56 @@
-function [SensitivityLocation, SensitivityTime]=OneAtaTime3(GND,SAT,time,location,folderName,Frame,DebugMode,numSamples,Sphere,solver)
+function [SensitivityLocation, SensitivityTime]=OneAtaTime3(GND,SAT,time,location,folderName,Frame,DebugMode,numSamples,earthModel,solver)
 %This function will perform a OneAtaTime uncertainty analysis for the Time
 %Difference of Arrival signal. 
 %It takes each parameter with a specified error and varies that parameter
 %when it calls TDoA. 
 %It then creates plots of perturbation amount vs. absolute error.
 
+%For high errors, which we have, its recommended to use MonteCarlo.m for
+%uncertainty predictions; however, one-at-a-time can help predict sensitive
+%areas of the sky. 
 
-if nargin<6
-    Frame=1; %use Topo Frame. 
-end
+%THIS FUNCTION needs a little work.
+%it does NOT calculate sensitivity of the output reference, only the
+%azimuth and elevation. 
+%we could combine redundant code between location and time. 
 
+%INPUTS:
+%GND object containing all stations
+
+%SAT object containing the satellite location
+
+%time switch function. =1 run sensitivity on clock error. =0 skip clock
+%sensitivity
+
+%location switch function. =1 run sensitivity on location error. =0 skip.
+
+%folderName to save plots to.
+
+%Frame. Solve TDoA in Topocentric (=1, recommended) or ECEF Frame (=2)
+
+%DebugMode =1 to see ALL plots. =0 to see FINAL plots. =-1 to see NO plots.
+%numSamples: number of samples to take before estimating the uncertainty.
+%One sample works just fine, but more samples will better estimate the
+%derivative and hence the sensitivity. Recommended 1 for speed and 7 for a
+%good visual of the surfaces we are approximating. 
+
+%earthModel: the model used for Earth. WGS84 or a sphere, for example.
+
+%solver: what method TDoA should use. =0 symbolic, =1 distance least
+%squares (recommended), =2 time difference least squares. 
+
+
+%get the correct answer.
 if Frame==1
     expected=SAT.Topocoord;
 else
     expected=SAT.ECFcoord;
 end
 
+%m is the number of stations
 m=length(GND);
+
+%Gathers all errors. Again, we assume a rectilinear error on station location.
 LocationErrs=zeros(m,3);
 Receivers=zeros(m,3);
 timeSyncErrs=zeros(m,1);
@@ -37,9 +71,12 @@ for i=1:m
     GNDforTime(i).ECFcoord_error=[0,0,0];
 end
 
+
 SensitivityLocation=cell(2,1);
 SensitivityTime=cell(2,1);
 
+%For the ECEF frame (largely deprecated), we have different planes that we
+%solve on. NOTE: these plane choices are heuristic. 
 if Frame==1
     zPlanes=[50e3 400e3 1200e3];
 else
@@ -48,14 +85,18 @@ end
 
 if numSamples==1
     %then we are only doing a forward difference.
+    
+    %get the nominal answer with no error.
     [TimeDiffs,TimeDiffErr]=timeDifftoMatrix(GND,SAT);
-    locations=TDoA(Receivers,TimeDiffs*3e8,Reference,Sphere,10,zPlanes,DebugMode,'No error nominal run',solver);
+    locations=TDoA(Receivers,TimeDiffs*3e8,Reference,earthModel,10,zPlanes,DebugMode,'No error nominal run',solver);
     [az, el]=geo2AzEl(expected,locations(2,:),Reference);
     expectedAzEl=[az el 0];
     actualAzEl=locations(1,:);
     
-    %ignore 2nd solution...momentarily.
+
     soln1=expectedAzEl-actualAzEl;
+    %If using 2 sided hyperboloids (unsigned time differences, you'd need
+    %to account for both solutions. This is deprecated). 
     %             soln2=expectedAzEl-locations(3,:);
     AbsErrControl=soln1;
     AbsTotalErrControl=norm(AbsErrControl);
@@ -79,16 +120,17 @@ for i=1:3 %cycle through x,y,z.
         ErrorMax=LocationErrs(j,i); %get the location error for this test
         test{j,i}=linspace(-ErrorMax,ErrorMax,numSamples); %set up a range.
         if DebugMode>=0 && numSamples~=1
-            test{j,i}=[0 test{j,i}]; %control. no error case.
+            test{j,i}=[0 test{j,i}]; %0 is the control. no error case. used only when numSamples>1. largely deprecated.
         end
+        
         AbsErr{j,i}=zeros(length(test{j,i}),3);
         AbsTotalErr{j,i}=zeros(length(test{j,i}),1);
         AngleSensitivityOut{j,i}=zeros(length(test{j,i}),2);
         AngleSensitivityIn{j,i}=zeros(length(test{j,i}),1);
 
         for k=1:length(test{j,i})
-            %for that test range, perturbate a GND coordinate, but don't
-            %change the time differences.
+            %for that test range, perturbate a single GND coordinate, but
+            %don't change the time differences or other coordinates.
             RT=Receivers;
             Err=zeros(1,3);
             Err(1,i)=test{j,i}(k);
@@ -96,40 +138,25 @@ for i=1:3 %cycle through x,y,z.
             AngleSensitivityIn{j,i}(k)=RT(j,i);
             if DebugMode==1
                 figure()
-    %             expected=[1114097.00526875,-5098751.55457051,4881274.05987576];
                 plot3(expected(1),expected(2),expected(3),'.','MarkerSize',100,'color','green');
                 title(['3 Stations Direction Test - ' 'With Receiver ' num2str(j) ' Location Error = ' num2str(Err)])
-                % plot3(
                 grid on
                 hold on
             end
             
             ErrStr=num2str(Err);
-%             ErrStr=strrep(ErrStr,'-','a');
-            locations=TDoA(RT,TimeDiffs*3e8,Reference,Sphere,10,zPlanes,DebugMode,['Run ' num2str(k) ' With Receiver ' num2str(j) ' Location Error = ' ErrStr],solver);
+            %estimate the direction with the single perturbation.
+            locations=TDoA(RT,TimeDiffs*3e8,Reference,earthModel,10,zPlanes,DebugMode,['Run ' num2str(k) ' With Receiver ' num2str(j) ' Location Error = ' ErrStr],solver);
             
             if isempty(locations)==0 && size(locations,1)==4
                 %if we don't have lineFits, then we don't have a solution.
-                %not needed. ---
-%                 if Frame==1 
-%                     temp=locations([2 4],:);
-%                     tempGeo=SAT(1).RelativeToGeo;
-%                     Sphere=referenceSphere('Earth');
-% %                     Sphere.Radius=6378137;
-%                     [xE, yN, zU]=ecef2enu(temp(:,1),temp(:,2),temp(:,3),tempGeo(1),tempGeo(2),tempGeo(3),Sphere);
-%                 end
-%               ---
 
                 %Sat in TDoA generated frame location.
-    %             expectedShifted=expected-locations(2,:);
-    %             [az, el]=getAzEl(expectedShifted);
                 [az, el]=geo2AzEl(expected,locations(2,:),Reference);
                 expectedAzEl=[az el 0];
                 actualAzEl=locations(1,:);
                 
-                %ignore 2nd solution...momentarily. 
                 soln1=expectedAzEl-actualAzEl;
-    %             soln2=expectedAzEl-locations(3,:);
                 AbsErr{j,i}(k,:)=soln1;
                 AbsTotalErr{j,i}(k)=norm(AbsErr{j,i}(k,:));
                 AngleSensitivityOut{j,i}(k,:)=locations(1,1:2);
@@ -160,6 +187,10 @@ for i=1:3 %cycle through x,y,z.
         
         for k=1:2   
             %fit half the points to a line.
+            %For forward difference, this doesn't matter. For higher order
+            %methods, i.e. numSamples>1, we choose only one side since
+            %sometimes the shape of the surface is a "v" or like abs(x). If
+            %we used both sides, we'd get a slope of 0!
             if numSamples>2
                 M=[AngleSensitivityIn{j,i},AngleSensitivityOut{j,i}(:,k)];
                 [~,idx] = sort(M(:,1)-mean(M(:,1))); % sort just the first column
@@ -176,10 +207,13 @@ for i=1:3 %cycle through x,y,z.
                     SensitivityLocation{2,k}(j,i)=tempStruct.normr;
                 end
             elseif numSamples==2
+                %not recommended because of the abs(x) shape that is
+                %observed sometimes. 
                 %equivalent to dfdx=(f(x+h)-f(x-h))/(2h)
                 SensitivityLocation{1,k}(j,i)=(AngleSensitivityOut{j,i}(end-1,k)-AngleSensitivityOut{j,i}(end,k))/...
                     (AngleSensitivityIn{j,i}(end-1)-AngleSensitivityIn{j,i}(end));
             else
+                %forward difference.
                 SensitivityLocation{1,k}(j,i)=(AngleSensitivityOutControl(k)-AngleSensitivityOut{j,i}(end,k))/...
                     (-AngleSensitivityIn{j,i}(end));
             end
@@ -196,12 +230,7 @@ for i=1:3 %cycle through x,y,z.
         end
 
         if DebugMode==1
-            %Separate folders.
-%             GraphSaver({'png'},['Plots/' folderName '/OneAtaTime3Stations/' Axis{i} 'Receiver' num2str(j)],1);
             GraphSaver({'png'},['Plots/' folderName '/' Axis{i} 'Receiver' num2str(j)],1);
-%         else
-%             %same folder.
-%             GraphSaver({'png'},['Plots/' folderName '/OneAtaTime3Stations/'],1);
         end            
     end
 end
@@ -221,7 +250,7 @@ for i=1:1 %cycle through nothing. Clock error is 1D.
         if numSamples~=1
             test{j,i}=linspace(-ErrorMax,ErrorMax,numSamples-1); %set up a range.
             if  DebugMode>=0 || numSamples==2
-                test{j,i}=[0 test{j,i}]; %control. no error case.
+                test{j,i}=[0 test{j,i}]; %=0 is the no error case. Not recommended. 
             end
         else
             test{j,i}=ErrorMax;
@@ -240,24 +269,19 @@ for i=1:1 %cycle through nothing. Clock error is 1D.
             [TimeDiffs,TimeDiffErr]=timeDifftoMatrix(GNDt,SAT);
             RT=Receivers;
             ErrStr=num2str(num2str([TimeDiffErr(1,2) TimeDiffErr(1,3) TimeDiffErr(2,3)]));
-%             ErrStr=strrep(ErrStr,'-','a');
 
             
             if DebugMode==1
                 figure()
-                %             expected=[1114097.00526875,-5098751.55457051,4881274.05987576];
                 plot3(expected(1),expected(2),expected(3),'.','MarkerSize',100,'color','green');
                 title(['3 Stations Direction Test - ' 'With Receiver ' num2str(j) ' Time Error = ' ErrStr])
                 grid on
                 hold on
             end
             
-            locations=TDoA(RT,(TimeDiffs+TimeDiffErr)*3e8,Reference,Sphere,100,zPlanes,DebugMode,['Run ' num2str(k) ' With Time Error = ' ErrStr],solver);
+            locations=TDoA(RT,(TimeDiffs+TimeDiffErr)*3e8,Reference,earthModel,100,zPlanes,DebugMode,['Run ' num2str(k) ' With Time Error = ' ErrStr],solver);
             
             if isempty(locations)==0
-                %Sat in TDoA generated frame location.
-    %             expectedShifted=expected-locations(2,:);
-    %             [az, el]=getAzEl(expectedShifted);
                 [az, el]=geo2AzEl(expected,locations(2,:),Reference);
                 expectedAzEl=[az el 0];
 
@@ -308,10 +332,12 @@ for i=1:1 %cycle through nothing. Clock error is 1D.
                 end
             
             elseif numSamples==2
+                %not recommended
                 %equivalent to dfdx=(f(x+h)-f(x-h))/(2h)
                 SensitivityTime{1,k}(j,i)=(AngleSensitivityOut{j,i}(end-1,k)-AngleSensitivityOut{j,i}(end,k))/...
                     (AngleSensitivityIn{j,i}(end-1)-AngleSensitivityIn{j,i}(end));
             else
+                %Forward difference
                 SensitivityTime{1,k}(j,i)=(AngleSensitivityOutControl(k)-AngleSensitivityOut{j,i}(end,k))/...
                     (-AngleSensitivityIn{j,i}(end));
             end
@@ -327,11 +353,7 @@ for i=1:1 %cycle through nothing. Clock error is 1D.
         
         
         if DebugMode==1
-            %Separate folders.
             GraphSaver({'png'},['Plots/' folderName '/ClockErrInReceiver' num2str(j)],1);
-%         else
-%             %same folder.
-%             GraphSaver({'png'},['Plots/' folderName '/OneAtaTime3Stations/'],1);
         end
     end
 end

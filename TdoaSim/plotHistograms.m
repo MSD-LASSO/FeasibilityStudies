@@ -37,6 +37,7 @@ if isempty(Data)==0
         El=Data.EstAzEl(1,2);
         nominalReference=Data.EstRef(1,:);
         Errors=Data.EstAzEl-[Az El];
+        Errors=Errors*180/pi; %convert to degrees. 
         RefErrors=Data.EstRef-nominalReference;
     end
     

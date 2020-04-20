@@ -25,14 +25,14 @@ RL_err=ones(3,3)*9; %9m location error.
 ClkError=ones(3,1)*TimeSyncErrFar; %3x1
 Sphere=wgs84Ellipsoid;
 %numSamples to estimate the partial derivative. Min is 1.
-numSamples=nan; %1 %for OneAtATime. Set to nan to skip.
+numSamples=1; %1 %for OneAtATime. Set to nan to skip.
 %numTests to run before running statistics. Min is 15-30 by Central Limit
 %Theorem. Recommended: 1000. This is not practical for the symbolic solver.
 numTests=30; %nan %for MonteCarlo. Set to nan to skip.
 useAbsoluteError=0; %for MonteCarlo. Set to 1 to use the actual satellite position in the error calculation. 
 %leave at 0 to allow code to estimate its error based on statistics. 
-DebugMode=1; %-1 tells OneAtATime to not output anything. 
-solver=0; %0 symbolic solver, 1 least squares distance (recommended), 2 time difference.
+DebugMode=-1; %-1 tells OneAtATime to not plot anything. 
+solver=1; %0 symbolic solver, 1 least squares distance (recommended), 2 time difference.
 
 ReceiverError=[zeros(3,3) ClkError];
 

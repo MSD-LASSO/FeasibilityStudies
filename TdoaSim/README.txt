@@ -17,9 +17,6 @@ TestScripts                    -- unit and integration tests
 TimeDiff                       -- Homemade data structures and Time difference calculation scripts.
 
 What's broken:
-TDoAExploration shows the best example. It appears that something is not working when trying to
-compare the three TDoA solvers to each other. See the TDoAalgorithm powerpoint for an example
-of this functionality working and run TDoAExploration to show it not working. 
 
 OneAtaTime4 and the function call to it in OneAtaTime.m are NOT updated. TDoA.m and its derivatives
 are NOT updated for localization with 4+ networks.
@@ -67,9 +64,10 @@ RangeApproximationVals.xlsx -- dataset for range fitting.
 -----Standalone Simulations------
 SentinelSat -- simple TDoA simulation with stations around RIT and satellite in single location.
 	       This was one of the first simulations created and is pretty old.
-TDoAexploration.m -- similar code to senisivityAnalysis.net, designed for comparing various solver
-		     methods. Does NOT appear to be working right now. The output comparisons are
-		     NOT informative. 
+TDoAexploration.m -- similar code to senisivityAnalysisNet, designed for comparing various solver
+		     methods.
+TDoAwithErrorEstimationComparison.m -- Can combpare absolute and relative errors to each other.
+				       Similar in code to sensitivityAnalysisNet
 ---------------------------------
 
 
@@ -80,9 +78,11 @@ sensitivityAnalysisNet.m -- Primary runner of sensitivity. Create a "net" of sat
 			    the sky and simulate/estimate uncertainty at each "node" in the sky. 
 
 OneAtaTime.m -- Switching function between the OneAtaTime functions.
-OneAtaTime3.m -- need to check
+OneAtaTime3.m -- Will solve TDoA while perturbating one error at a time. This is useful to learn
+		 the sensitive areas of the system.
 OneAtaTime4.m -- needs updating. Update TDoA to work for 4+ stations first.
-MonteCarlo.m -- needs commenting
+MonteCarlo.m -- Will solve TDoA with absolute or relative error the specified number of times and
+		based on the statistics of the output between the tests, estimate uncertainty. 
 
 plotSensivity.m -- read the Sensitivity results and plot them. Very similar in code to plotMonteCarlo
 plotMonteCarlo.m -- read the Monte Carlo results and plot them. 
@@ -102,30 +102,9 @@ timeDiff3toMatrix -- used specifically for 3 stations and 1 satellite position. 
 ---------------------------------
 
 
-Unknown Status:
 
 
-
-
-
-
-TDoAwithErrorEstimationComparison.m -- needs commenting. Rectify absolute vs. relative?
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+Deprecated Information
 
 This folder contains a program to run a 3 station TDoA simulation, which will be used to easily see the effects that different parameters (e.g., ground station location, ground station location error, clock synchronization error, satellite position) will have on our TDoA calculations. We will use a spherical earth for the calculations.
 

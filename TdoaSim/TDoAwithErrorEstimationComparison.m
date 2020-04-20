@@ -3,6 +3,9 @@
 
 %NEED TO TEST OVER ENTIRE RANGE AND EXPLORE WHETHER METHODS FOR CALCULATING
 %UNCERTAINTY VARY SIGNIFICANTLY BETWEEN. 
+
+%The output distribution appears to be approximatable as Gaussian at
+%Elevations > 10 degrees. 
 clearvars
 close all
 
@@ -14,6 +17,7 @@ close all
 addpath('./LocateSat')
 addpath('./TimeDiff')
 addpath('./TestScripts/')
+
 load RangePolynomial.mat;
 P;
 
@@ -27,10 +31,11 @@ TR=[R2;R9;R8]; OF='MeesGCCWilliamson';
 % TimeSyncErrFar=100e-9; %100ns time sync error.
 TimeSyncErrFar=5e-6;
 RL_err=ones(3,3)*9; %9m location error.
-
+DebugMode=1;
+solver=1; %0 symbolic solver, 1 or 2 least squares. 1 or 2 highly recommended here.
 %% Invariants
 ClkError=ones(3,1)*TimeSyncErrFar; %3x1
-Sphere=wgs84Ellipsoid;
+earthModel=wgs84Ellipsoid;
 
 
 ReceiverError=[zeros(3,3) ClkError];
@@ -56,15 +61,14 @@ ElevationRange=45;
 SatelliteAltitudeRange=500e3; %range of satellite range values.
 
 
-DebugMode=1;
+
 T=TR;
 OutputFolder=OF;
 start=1;
 
-solver=1; %0 symbolic solver, 1 least squares.
 
 %% Create satellite test case, run Monte Carlo
-GND=getStruct(T,ReceiverError,T(1,:),ReceiverError(1,:),Sphere);
+GND=getStruct(T,ReceiverError,T(1,:),ReceiverError(1,:),earthModel);
 GND(1).ECFcoord_error=RL_err(1,:);
 GND(2).ECFcoord_error=RL_err(2,:);
 GND(3).ECFcoord_error=RL_err(3,:);
@@ -91,7 +95,6 @@ AllMeanErrors=zeros(p,2);
 AllstdDevError=zeros(p,2);
 AllRawData=cell(p,1);
 
-%    parfor i=start:p
 
 %% Test Parameters
 RL_errForTest=RL_err;
@@ -99,33 +102,37 @@ RL_errForTest(1,:)=0;
 RT=[GND(1).Topocoord; GND(2).Topocoord; GND(3).Topocoord];
 zPlanes=[50e3 400e3 1200e3];
 costFunction=1;
-plotSavePath='Dummy';
+plotSavePath='';
 numTests=100;
 %%
 
 %% Run Tests
 for i=start:p
+    %Run Monte Carlo with Absolute Error calculations.
     Az=Azimuths(i);
     El=Elevations(i);
     Rng=Ranges(i);
-        [means,stdDev,meanError,stdDevError, Data]=MonteCarlo(numTests,Az,El,Rng,T,RL_err,ClkError,DebugMode,solver,1);
-        AllMeans(i,:)=means;
-        AllstdDevs(i,:)=stdDev;
-        AllMeanErrors(i,:)=meanError;
-        AllstdDevError(i,:)=stdDevError;
-        AllRawData{i}=Data;
-        
-        [lat, long, h]=enu2geodetic(Rng*cosd(El)*sind(Az),Rng*cosd(El)*cosd(Az),Rng*sind(El),TR(1,1),TR(1,2),TR(1,3),Sphere);
-        SAT=getStruct([lat long h],zeros(1,4),RT(1,:),zeros(1,4),Sphere);
-        [TimeDiff, TimeDiffErr]=timeDiff3toMatrix(GND,SAT);
-        TR_err=[1e-5*pi/180 1e-5*pi/180 3];
-        [location,location_error,rawData]=TDoAwithErrorEstimation(numTests,RL_errForTest(:,1:3),TimeDiffErr*3e8,TR_err,RT,TimeDiff*3e8,TR(1,:),Sphere,0,zPlanes,DebugMode,'',costFunction,plotSavePath);
-
-        disp(i)
-        fprintf('\n')
-        AssertToleranceMatrix(means*180/pi,location(1,1:2)*180/pi,2);
-        AssertToleranceMatrix(means*180/pi,location(3,1:2)*180/pi,2);
-        AssertToleranceMatrix(stdDev*180/pi,location_error(1,1:2)*180/pi,2);
+    [means,stdDev,meanError,stdDevError, Data]=MonteCarlo(numTests,Az,El,Rng,T,RL_err,ClkError,DebugMode,solver,1);
+    AllMeans(i,:)=means;
+    AllstdDevs(i,:)=stdDev;
+    AllMeanErrors(i,:)=meanError;
+    AllstdDevError(i,:)=stdDevError;
+    AllRawData{i}=Data;
+    
+    
+    %Run a Monte Carlo with Relative Error calculations. 
+    [lat, long, h]=enu2geodetic(Rng*cosd(El)*sind(Az),Rng*cosd(El)*cosd(Az),Rng*sind(El),TR(1,1),TR(1,2),TR(1,3),earthModel);
+    SAT=getStruct([lat long h],zeros(1,4),RT(1,:),zeros(1,4),earthModel);
+    [TimeDiff, TimeDiffErr]=timeDiff3toMatrix(GND,SAT);
+    TR_err=[1e-5*pi/180 1e-5*pi/180 3];
+    [location,location_error,rawData]=TDoAwithErrorEstimation(numTests,RL_errForTest(:,1:3),TimeDiffErr*3e8,TR_err,RT,TimeDiff*3e8,TR(1,:),earthModel,0,zPlanes,DebugMode,'',costFunction,plotSavePath);
+    
+    disp(i)
+    fprintf('\n')
+    %This losely compares the 2 methods.
+    AssertToleranceMatrix(means*180/pi,location(1,1:2)*180/pi,2);
+    AssertToleranceMatrix(means*180/pi,location(3,1:2)*180/pi,2);
+    AssertToleranceMatrix(stdDev*180/pi,location_error(1,1:2)*180/pi,2);
 
 end
 % GraphSaver({'png','fig'},'../Plots/TDoAexploration',1);
