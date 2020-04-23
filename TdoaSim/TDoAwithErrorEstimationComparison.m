@@ -137,7 +137,7 @@ for i=start:p
 end
 % GraphSaver({'png','fig'},'../Plots/TDoAexploration',1);
 
-save(['UncertaintyTestResults/' OutputFolder])
+save(['UncertaintyTestResults' OutputFolder])
 
 
 

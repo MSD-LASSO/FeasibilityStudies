@@ -22,11 +22,11 @@ TR=[R2;R9;R8]; OF='MeesGCCWilliamson';
 
 
 % TimeSyncErrFar=100e-9; %100ns time sync error.
-TimeSyncErrFar=1e-3 %5e-6;
+TimeSyncErrFar=5e-6;
 RL_rect_err=ones(3,3)*9; %9m location error.
 
 DebugMode=1; %set to 0 to not see plots. Recommended: 1
-numTests=30; %number of tests. Recommended: 30
+numTests=1; %number of tests. Recommended: 30
 solver=0; %0 symbolic solver, 1 least squares. Using 0 will get the solver type comparison plots
 
 %% Invariants
