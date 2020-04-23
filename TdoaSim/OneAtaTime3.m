@@ -39,6 +39,16 @@ function [SensitivityLocation, SensitivityTime]=OneAtaTime3(GND,SAT,time,locatio
 %solver: what method TDoA should use. =0 symbolic, =1 distance least
 %squares (recommended), =2 time difference least squares. 
 
+%OUTPUT are the sensitivities with respect to each input in a cell array
+%format.
+%Both outputs are a 2x2 cell array, Azimuth col 1, Elevation col 2,
+%the 1st row is forward difference, the 2nd row is backward difference and
+%is only filled in for odd Samples >1
+%SensitivityLocation{1} is the sensitivity of Azimuth to Station 1 X, Y, Z
+                                                        %Station 2 X, Y, Z,
+                                                        %etc...
+%SensitivityTime{2} is the sensitivity of Elevation to Station 1 Clk err,
+%Station 2 Clk error, etc...
 
 %get the correct answer.
 if Frame==1
@@ -303,11 +313,11 @@ for i=1:1 %cycle through nothing. Clock error is 1D.
             plot(test{j,i},AbsTotalErr{j,i},'.','MarkerSize',20);
             title(['Total Error based on Error in Receiver: ' num2str(j) ' and Clock Error: ' num2str(j)])
             
-            variable={'x','y','z'};
+            variable={'Az','El','N/A'};
             for k=2:4
                 subplot(2,2,k)
                 plot(test{j,i},AbsErr{j,i}(:,k-1),'.','MarkerSize',20);
-                title(['Resulting Sat Error from Clk Coord: ' num2str(j)]);
+                title(['Resulting Sat Error from Clk Coord: ' variable{k-1}]);
             end
             
             figure()

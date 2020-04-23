@@ -1,5 +1,9 @@
 function [location] = TDoA(receiverLocations,distanceDifferences,Reference,Sphere,AcceptanceTolerance,zPlanes,DebugMode,AdditionalTitleStr,solver)
 %Author: Anthony Iannuzzi, P20151 Team LASSO, email: awi7573@rit.edu
+
+%Not recommended to run with more than 3 stations. Needs to be updated for
+%that capability. 
+
 %INPUTS: nx3 vector of receiver Locations (x,y,z) pairs, all measured from 
             %a fixed reference.
         %nxn upper triangular matrix of all combinations of 
@@ -36,8 +40,9 @@ function [location] = TDoA(receiverLocations,distanceDifferences,Reference,Spher
             
             % 0 is most accurate, 1 is slightly less accurate, but faster,
             % 2 is the simpliest.
-            %Default is 0.
-%OUTPUTS: Location of the transmitter in form (x,y,z)
+            %Default is 1.
+%OUTPUTS: Location of the transmitter in form (Az El 0); (x,y,z)
+            % 2 rows, 1 row of Az El, 1 row of its reference coordinates.
             % It will return more than 1 result if solution is ambigious
             % and solver is set to 0. 
             %Least squares will always return one answer.
@@ -213,6 +218,8 @@ end
 location=computeDirection(m,LineFit,Reference,Sphere);
 
 end
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 function location=solvePlanes(HyperboloidSet,zPlanes,SymVars,AcceptanceTolerance,h1,AdditionalTitleStr,planarPointsLS,planarPointsTD)
 %HyperboloidSet should be 3 Hyperboloids

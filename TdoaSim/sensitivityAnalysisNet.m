@@ -1,11 +1,13 @@
 %This script will evaluate sensitivity or Monte Carlo over a dynamic range.
 %WARNING: running Monte Carlo on 1 test takes 9 hours on 6 cores for the
 %symbolic solver.
+
 %Using a least squares solver is MUCH faster.
 clearvars
 close all
 OutputTriangleParameters %get the triangles.
 
+% Load the fit for the satellite range.
 load RangePolynomial.mat;
 P;
 
@@ -22,10 +24,8 @@ TimeSyncErrFar=5e-6;
 RL_err=ones(3,3)*9; %9m location error.
 
 %% Invariants
-ClkError=ones(3,1)*TimeSyncErrFar; %3x1
-Sphere=wgs84Ellipsoid;
 %numSamples to estimate the partial derivative. Min is 1.
-numSamples=1; %1 %for OneAtATime. Set to nan to skip.
+numSamples=nan; %1 %for OneAtATime. Set to nan to skip.
 %numTests to run before running statistics. Min is 15-30 by Central Limit
 %Theorem. Recommended: 1000. This is not practical for the symbolic solver.
 numTests=30; %nan %for MonteCarlo. Set to nan to skip.
@@ -34,7 +34,7 @@ useAbsoluteError=0; %for MonteCarlo. Set to 1 to use the actual satellite positi
 DebugMode=-1; %-1 tells OneAtATime to not plot anything. 
 solver=1; %0 symbolic solver, 1 least squares distance (recommended), 2 time difference.
 
-ReceiverError=[zeros(3,3) ClkError];
+
 
 %% Input Ranges
 %For nominal tests.
@@ -46,8 +46,8 @@ ElevationRange=5:5:90;
 % ElevationRange=5:15:80;
 
 %for really quick testing
-AzimuthRange=345;
-ElevationRange=45;
+% AzimuthRange=345;
+% ElevationRange=45;
 
 %this set of inputs causes an error with sensitivity.
 % AzimuthRange=0:2.5:359; ElevationRange=1:1:4;
@@ -64,6 +64,9 @@ Tests=8;
 
 
 %% Loops.
+ClkError=ones(3,1)*TimeSyncErrFar; %3x1
+ReceiverError=[zeros(3,3) ClkError];
+Sphere=wgs84Ellipsoid;
 %Outer most for loop. Don't put this one in parallel.
 for TestNum=1:length(Tests)
 

@@ -62,8 +62,8 @@ RangeApproximationVals.xlsx -- dataset for range fitting.
 ---------------------------------
 
 -----Standalone Simulations------
-SentinelSat -- simple TDoA simulation with stations around RIT and satellite in single location.
-	       This was one of the first simulations created and is pretty old.
+SentinelSat -- TUTORIAL. Simple TDoA simulation with stations around RIT and satellite in single 
+	       location.
 TDoAexploration.m -- similar code to senisivityAnalysisNet, designed for comparing various solver
 		     methods.
 TDoAwithErrorEstimationComparison.m -- Can combpare absolute and relative errors to each other.

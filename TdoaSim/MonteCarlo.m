@@ -20,7 +20,7 @@ function [means,stdDev,meanError,stdDevError, Data]=MonteCarlo(numTests,Az,El,Rn
 %ClkError -- error in clocks at each station. This includes absolute errors
 %and relative errors.
 
-%DebugMode -- set to 1 to see TDoA plots. Set to 0 to see nothing
+%DebugMode -- set to 1 to see TDoA and histogram plots. Set to 0 to see nothing
 
 %solver -- the solver TDoA will use. =0 symbolic, =1 distance least
 %squares, =2 time difference least squares. See TDoA.m
@@ -31,6 +31,13 @@ function [means,stdDev,meanError,stdDevError, Data]=MonteCarlo(numTests,Az,El,Rn
 
 %referenceStation -- station that satellite az,el,rng is measured from.
 %Default value is the FIRST station
+
+%OUTPUTS:
+%mean direction
+%Standard deviation of those directions
+%mean error wrt using an absolute or relative approach. Always 0 for
+%relative. 
+%standard deviation of error wrt using an absolute or relative approach.
 
 
 if nargin<11
