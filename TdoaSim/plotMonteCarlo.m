@@ -23,13 +23,18 @@ OutputTriangleParameters
 %parameters.
 
 % specify the input folder where .mats are located.
-InputFolder='MonteCarloResults/Estimated Uncertainty';
+% InputFolder='MonteCarloResults/Estimated Uncertainty';
+% InputFolder='MonteCarloResults/TutorialAbsolute';
+InputFolder='MonteCarloResults/Tutorial';
 % InputFolder='.'; %use the current directory.
 
 %Specify where plots will be saved to. Automatically in plots/ directory.
 %this will be a sub directory.
 % PlotOutputFolder='MonteCarlo10TrianglesEstimatedUncertainty';
-PlotOutputFolder='dummy';
+% PlotOutputFolder='MonteCarloTutorial';
+% PlotOutputFolder='MonteCarloTutorialRelAbs';
+PlotOutputFolder='MonteCarloTutorialRelOnly';
+% PlotOutputFolder='dummy';
 
 %The number of rows and cols depends on the resolution of the net generated
 %from sensitivityAnalysisNet. The latest use numRows and numCols.
@@ -50,17 +55,18 @@ UncertaintyCriteria=5; %Use this index of Vals for the z limit in 3D mesh drawin
 % SensitivityTest;
 
 %TestsToRun correspond to which triangles you want to run.
-% TestsToRun=[1 2 3 4 5 6 7 8 9 10]; 
-TestsToRun=[8];
+TestsToRun=[1 2 3 4 5 6 7 8 9 10]; 
+% TestsToRun=[8];
 
 %Set to 0 to only show only final plots comparing all triangles in main dataset
 %Set to 1 to show 3D meshes for the main dataset
-%Set to 2 to show 3D meshes for main dataset AND 3D meshes comparing the
-%main and auxilary datasets. 
-plotIntermediates=2;
+%Set to 2 to show 3D meshes comparing the main and auxilary datasets. 
+plotIntermediates=1;
 %If you want to compare two datasets to each other. Use the AuxInput to
 %load the second dataset. Format is same as InputFolder
-AuxInput='MonteCarloResults/EdgesAdjustedClosestHyperbolaCost';
+% AuxInput='MonteCarloResults/EdgesAdjustedClosestHyperbolaCost';
+AuxInput='MonteCarloResults/TutorialAbsolute';
+% AuxInput='';
 
 
 
@@ -86,6 +92,11 @@ if plotIntermediates==2
     AllstdDevError(AllstdDevError==0)=nan; %when there's no data for a node in the net, set to Nan to show a hole in the 3D mesh.
     %% Reorganize the data
     TotalUncertaintyAux=(AllMeanErrors+2*AllstdDevError)*180/pi; %get error in degrees.
+    
+    %Scale the azimuth error depending on the elevation. As elevation
+    %increases, the azimuth error becomes less important.
+    TotalUncertaintyAux(:,1)=TotalUncertaintyAux(:,1).*cosd(Elevations);
+    
     zAux=reshape(TotalUncertaintyAux(:,1),numRows,numCols);
     z2Aux=reshape(TotalUncertaintyAux(:,2),numRows,numCols);
 end
@@ -96,6 +107,11 @@ load([InputFolder '/OutputMonteCarlo' matName])
 AllstdDevError(AllstdDevError==0)=nan; %make holes in mesh where Monte Carlo failed or there's no data.
 %% Reorganize the data
 TotalUncertainty=(AllMeanErrors+2*AllstdDevError)*180/pi; %get error in degrees. 
+
+%Scale the azimuth error depending on the elevation. As elevation
+%increases, the azimuth error becomes less important.
+TotalUncertainty(:,1)=TotalUncertainty(:,1).*cosd(Elevations);
+
 if TotalUncertainty(i,1)>180 %can't be worse than 180 degrees off in azimuth.
     TotalUncertainty(i,1)=nan;
 end

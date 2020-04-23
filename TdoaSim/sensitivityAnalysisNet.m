@@ -29,7 +29,7 @@ numSamples=nan; %1 %for OneAtATime. Set to nan to skip.
 %numTests to run before running statistics. Min is 15-30 by Central Limit
 %Theorem. Recommended: 1000. This is not practical for the symbolic solver.
 numTests=30; %nan %for MonteCarlo. Set to nan to skip.
-useAbsoluteError=0; %for MonteCarlo. Set to 1 to use the actual satellite position in the error calculation. 
+useAbsoluteError=1; %for MonteCarlo. Set to 1 to use the actual satellite position in the error calculation. 
 %leave at 0 to allow code to estimate its error based on statistics. 
 DebugMode=-1; %-1 tells OneAtATime to not plot anything. 
 solver=1; %0 symbolic solver, 1 least squares distance (recommended), 2 time difference.
@@ -58,8 +58,8 @@ ElevationRange=5:5:90;
 SatelliteAltitudeRange=500e3; %range of satellite range values.
 
 %Dictate which triangles to simulate on.
-% Tests=[1,2,3,4,5,6,7,8,9,10]; 
-Tests=8; 
+Tests=[1,2,3,4,5,6,7,8,9,10]; 
+% Tests=8; 
 
 
 
@@ -102,10 +102,10 @@ timeDiffs=zeros(p,3);
 
 start=1; %dictate which test to start on. Might be used for debugging purposes. 
 if ~isnan(numSamples)
-%     parfor i=start:p
+    parfor i=start:p
         %uncomment for and comment out parfor to switch to serial
         %execution. 
-    for i=start:p
+%     for i=start:p
             %% Run One-at-a-time
             Az=Azimuths(i);
             El=Elevations(i);
@@ -146,8 +146,8 @@ if ~isnan(numTests)
     AllstdDevError=zeros(p,2);
     AllRawData=cell(p,1);
     
-%     parfor i=start:p
-    for i=start:p
+    parfor i=start:p
+%     for i=start:p
         Az=Azimuths(i);
         El=Elevations(i);
         Rng=Ranges(i);

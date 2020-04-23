@@ -16,3 +16,6 @@ RangeApproximation -- plots showing that a range approximator function has suffi
 Sensitivity10Triangles -- One-at-a-time sensivity analysis for the symbolic solver.                           
 TDoA with all 3 solvers -- comparisons of the three solver methods on a myraid of errors.                          
 at e5 zenith planes -- Comparison of using 50km, 400km, 1200km and 50Mm, 400Mm, 1200Mm planes. 
+
+MonteCarloTutorialXXX_static folders -- see the user manual. These are example plots
+SensitivityTutorialStatic -- see the user manual. These are example plots. 

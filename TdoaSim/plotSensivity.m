@@ -17,9 +17,11 @@ OutputTriangleParameters
 %% Inputs -- Change these --
 %See plot Monte Carlo for descriptions of these inputs.
 
-InputFolder='SensitivityResults/LeastSquares';
+% InputFolder='SensitivityResults/LeastSquares';
+InputFolder='SensitivityResults/Tutorial';
 % PlotOutputFolder='Sensitivity10Triangles';
-PlotOutputFolder='Dummy';
+PlotOutputFolder='SensitivityTutorial';
+% PlotOutputFolder='Dummy';
 
 numRows=18; %numRows=6;
 numCols=36; %numCols=9;
@@ -34,8 +36,8 @@ minTD=1e-6; %the minimum acceptable time delay.
 % RL_err;
 % SensitivityTest;
 
-% TestsToRun=[1 2 3 4 5 6 7 8 9 10];
-TestsToRun=[1];
+TestsToRun=[1 2 3 4 5 6 7 8 9 10];
+% TestsToRun=[1];
 plotIntermediates=1;
 
 %% Begin Plotting.
@@ -74,6 +76,11 @@ for i=1:p
     end
    TotalUncertainty(i,1)=sqrt(sum(sum((LocationSensAz{i}.*RL_err).^2))+sum((TimeSensAz{i}.*ClkError).^2))*180/pi;
    TotalUncertainty(i,2)=sqrt(sum(sum((LocationSensEl{i}.*RL_err).^2))+sum((TimeSensEl{i}.*ClkError).^2))*180/pi;
+   
+   %Scale the azimuth error depending on the elevation. As elevation
+   %increases, the azimuth error becomes less important.
+   TotalUncertainty(i,1)=TotalUncertainty(i,1).*cosd(Elevations(i));
+   
    if TotalUncertainty(i,1)>180 %can't be worse than 180 degrees off in azimuth.
        TotalUncertainty(i,1)=nan;
    end
@@ -216,7 +223,7 @@ if plotIntermediates==1
     % plot3(Azimuths,Elevations,TotalUncertainty(:,2),'*')
     legend('Azimuth Uncertainty','Elevation Uncertainty')
     zlim([0 0.5])
-%     GraphSaver({'png','fig'},['Plots/' PlotOutputFolder '/' matName],1,1);
+    GraphSaver({'png','fig'},['Plots/' PlotOutputFolder '/' matName],1,1);
 end
 
 %Metrics for each triangle
