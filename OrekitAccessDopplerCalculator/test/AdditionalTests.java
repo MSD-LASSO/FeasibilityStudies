@@ -159,7 +159,7 @@ public class AdditionalTests {
         Assert.assertEquals(3, accessTimes.size(), 0);
         Assert.assertEquals(groundTruthDoppler[0],accessTimes.get(1).getTimesAndFrequency().get(0).getFrequency().getNominal(),1e-4);
         Assert.assertEquals(groundTruthDoppler[1],accessTimes.get(1).getTimesAndFrequency().get(3).getFrequency().getNominal(),1e-4);
-        Assert.assertEquals(groundTruthDoppler[2],accessTimes.get(1).getTimesAndFrequency().get(6).getFrequency().getNominal(),1e-4);
+        Assert.assertEquals(groundTruthDoppler[2],accessTimes.get(1).getTimesAndFrequency().get(5).getFrequency().getNominal(),4e-4);
 
     }
 
@@ -202,7 +202,7 @@ public class AdditionalTests {
     @Test
     public void readTextTest(){
         TimeScale utc = TimeScalesFactory.getUTC();
-        Runner runner=new Runner("./TestFiles/LASSO_testINPUT.txt");
+        Runner runner=new Runner("./OrekitAccessDopplerCalculator/TestFiles/LASSO_testINPUT.txt");
         try {
             runner.readFromText();
             Assert.assertEquals(437.15,runner.getChannelFrequency(),0);

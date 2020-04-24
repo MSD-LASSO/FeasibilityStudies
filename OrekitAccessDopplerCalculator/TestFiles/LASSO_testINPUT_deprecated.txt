@@ -1,0 +1,7 @@
+noradID=30776
+baseFrequency=437.15
+signalBandwidth=4000
+timeInterval=60
+endTime=2020-02-08T11:16:35.961:+00:00
+errorTime=0.3
+recordTime=0.5

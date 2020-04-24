@@ -61,7 +61,7 @@ public class Main {
             terminalReader = new InputReader();
             terminalReader.readFromTerminal(args);
         } catch(NoradIDnotFoundException ex) {
-            terminalReader = new InputReader("./Backup_Input.txt");
+            terminalReader = new InputReader("./OrekitAccessDopplerCalculator/Backup_Input.txt");
             terminalReader.read();
         }
         int noradID=terminalReader.getNoradID();
