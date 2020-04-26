@@ -1,5 +1,6 @@
 function [stations,satellites,satellitesGT,GTframe,Time,names]=readGroundTrack(Name)
-%This data will read the output ground track from Orekit. 
+%This data will read the output ground track produced from the Java class 
+%called:  
 %The expected text file format is as follows:
 %Lat Long Altitude
 % X   Y      Z

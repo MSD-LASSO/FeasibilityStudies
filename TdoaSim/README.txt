@@ -94,8 +94,9 @@ plotHistograms.m -- plots the histograms from Monte Carlo runs
 
 
 --------------Utils--------------
-readGroundTrack -- Read a ground track produced by Orekit XXXXXXXXX.class in StandAlone simulations
-		-- TODO update to new Orekit format?
+readGroundTrack -- Read a ground track produced by Orekit StationDetectionModular.java class in StandAlonesimulations
+		   in the DopplerAndAccess Java project.
+		-- TODO update to new Orekit format
 
 timeDiff3toMatrix -- used specifically for 3 stations and 1 satellite position. It converts the
 		     timediff structure array to an array shaped for TDoA input.
