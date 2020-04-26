@@ -148,6 +148,7 @@ for i=1:m
         [~,PlanarPointsTD]=TDoAleastSquares(receiverSet{i},distanceDiffSet{i},Reference,Sphere,AcceptanceTolerance,zPlanes,DebugMode,AdditionalTitleStr,2);
     else
         PlanarPointsLS=[];
+        PlanarPointsTD=[];
     end
     planarPoints=solvePlanes(HyperboloidSet{i},zPlanes,SymVars,AcceptanceTolerance,h1,AdditionalTitleStr,PlanarPointsLS,PlanarPointsTD);
     
